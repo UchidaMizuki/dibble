@@ -5,4 +5,9 @@ test_that("dibble", {
     dplyr::mutate(value = dplyr::row_number(),
                   value2 = value + 1) %>%
     as_dibble(dim_names = c("from", "to", "mode"))
+
+  x2 <- tidyr::expand_grid(from = letters[1:10],
+                           to = letters[1:10]) %>%
+    dplyr::mutate(value = rnorm(dplyr::n())) %>%
+    as_dibble(dim_names = c("from", "to"))
 })

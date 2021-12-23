@@ -1,5 +1,6 @@
 new_dim_col <- function(x, dim_names) {
-  dim <- lengths(dim_names, use.names = FALSE)
+  dim <- lengths(dim_names,
+                 use.names = FALSE)
   size <- prod(dim)
   structure(array(vctrs::vec_recycle(as.vector(x), size),
                   dim = dim),
@@ -46,39 +47,20 @@ dim.dim_col <- function(x) {
   stop()
 }
 
-#' @importFrom tibble as_tibble
-#' @export
-as_tibble.dim_col <- function(x, ...) {
-  dim <- expand.grid(dimnames(x),
-                     KEEP.OUT.ATTRS = FALSE,
-                     stringsAsFactors = FALSE)
-
-  tibble::tibble(dim = as_tibble(dim),
-                 value = as.vector(x))
-}
-
-
-
-# Verbs -------------------------------------------------------------------
-
-#' @importFrom dplyr slice
-#' @export
-slice.dim_col <- function(.data, ...) {
-  slice_dibble(.data, ...)
-}
-
 
 
 # Printing ----------------------------------------------------------------
 
 #' @export
 print.dim_col <- function(x, n = NULL, ...) {
-  out <- head_dibble(x, n)
-  out <- vctrs::new_data_frame(as_tibble(out),
-                               class = c("tbl_dim_impl", "tbl"))
-  attr(out, "tbl_sum") <- c(`A dimensional column` = obj_sum(x))
-  attr(out, "rows_total") <- prod(dim(x))
-  print(out)
+  x_head <- head_dibble(x, n)
+  df <- as_tibble_dibble(x_head,
+                         pack = TRUE)
+  df <- vctrs::new_data_frame(df,
+                              class = c("tbl_dim_impl", "tbl"))
+  attr(df, "tbl_sum") <- c(`A dimensional column` = obj_sum(x))
+  attr(df, "rows_total") <- prod(dim(x))
+  print(df)
 
   invisible(x)
 }
@@ -86,5 +68,5 @@ print.dim_col <- function(x, n = NULL, ...) {
 #' @importFrom pillar obj_sum
 #' @export
 obj_sum.dim_col <- function(x) {
-  paste0("dim", pillar::size_sum(x))
+  paste("dim", pillar::size_sum(x))
 }

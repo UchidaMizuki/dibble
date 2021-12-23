@@ -1,6 +1,6 @@
 Package: dibble
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Dimensional Data Frames
 Version: 0.1.0
 Author: Who wrote it
 Maintainer: The package maintainer <yourself@somewhere.net>
@@ -10,7 +10,13 @@ License: What license is it under?
 Encoding: UTF-8
 LazyData: true
 Imports: 
+    dplyr,
     ellipsis,
+    pillar,
+    purrr,
+    rlang,
+    tibble,
+    tidyselect,
     vctrs
 RoxygenNote: 7.1.2
 Suggests: 

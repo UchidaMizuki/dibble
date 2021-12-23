@@ -1,19 +1,18 @@
-new_dibble <- function(x, dim_names) {
-  dim <- lengths(dim_names, use.names = FALSE)
+new_tbl_dim <- function(x, dim_names) {
+  dim <- lengths(dim_names,
+                 use.names = FALSE)
   size <- prod(dim)
-  structure(lapply(x,
-                   function(x) {
-                     stopifnot(
-                       length(x) == size
-                     )
-                     array(x,
-                           dim = dim)
-                   }),
+  x <- purrr::modify(as.list(x),
+                     function(x) {
+                       array(vctrs::vec_recycle(as.vector(x),
+                                                size = size),
+                             dim = dim)
+                     })
+  structure(x,
             class = "tbl_dim",
             dim_names = dim_names)
 }
 
-#' @export
 dibble <- function() {
   # TODO
 }
@@ -38,28 +37,23 @@ as_dibble.data.frame <- function(x, dim_names, cols = NULL, ...) {
     !vctrs::vec_duplicate_any(x[axes])
   )
 
-  dim_names <- mapply(dim_names, axes,
-                      FUN = function(dim, axis) {
-                        dim %||% unique(x[[axis]])
-                      },
-                      SIMPLIFY = FALSE)
-  x[axes] <- mapply(x[axes], dim_names,
-                    FUN = function(x, dim) {
-                      vctrs::vec_match(x, dim)
-                    },
-                    SIMPLIFY = FALSE)
+  dim_names <- purrr::modify2(dim_names, axes,
+                              function(dim, axis) {
+                                dim %||% unique(x[[axis]])
+                              })
+  x[axes] <- purrr::modify2(x[axes], dim_names, vctrs::vec_match)
 
-  ids <- expand.grid(lapply(dim_names, seq_along),
+  ids <- expand.grid(purrr::modify(dim_names, seq_along),
                      KEEP.OUT.ATTRS = FALSE,
                      stringsAsFactors = FALSE)
   x <- dplyr::left_join(ids, x,
                         by = axes)
-  new_dibble(x[cols],
-             dim_names = dim_names)
+  new_tbl_dim(x[cols],
+              dim_names = dim_names)
 }
 
 #' @export
-is_dibble <- function(x) {
+is_tbl_dim <- function(x) {
   inherits(x, "tbl_dim")
 }
 
@@ -91,16 +85,45 @@ dim.tbl_dim <- function(x) {
   stop()
 }
 
+#' @export
+nrow <- function(x) {
+  UseMethod("nrow")
+}
+registerS3method("nrow", "default", base::nrow)
+#' @export
+nrow.tbl_dim <- function(x) {
+  prod(dim(x))
+}
+
+#' @export
+ncol <- function(x) {
+  UseMethod("ncol")
+}
+registerS3method("ncol", "default", base::ncol)
+#' @export
+ncol.tbl_dim <- function(x) {
+  length(as.list(x))
+}
+
 #' @importFrom tibble as_tibble
 #' @export
 as_tibble.tbl_dim <- function(x, ...) {
-  dim <- expand.grid(dimnames(x),
-                     KEEP.OUT.ATTRS = FALSE,
-                     stringsAsFactors = FALSE)
-  col <- lapply(x, as.vector)
+  as_tibble_dibble(x, ...)
+}
 
-  tibble::tibble(dim = as_tibble(dim),
-                 col = as_tibble(col))
+#' @export
+aperm.tbl_dim <- function(a, perm, ...) {
+  dim_names <- dimnames(a)
+
+  perm <- vctrs::vec_match(perm, names(dim_names))
+  dim_names <- dim_names[perm]
+
+  new_tbl_dim(purrr::modify(a,
+                            function(x) {
+                              aperm(as.array(x),
+                                    perm = perm)
+                            }),
+              dim_names = dim_names)
 }
 
 
@@ -108,10 +131,15 @@ as_tibble.tbl_dim <- function(x, ...) {
 # Subsetting --------------------------------------------------------------
 
 #' @export
-`[.tbl_dim` <- function(x, ...) {
+`[.tbl_dim` <- function(x, i) {
   structure(NextMethod(),
             class = "tbl_dim",
             dim_names = dimnames(x))
+}
+
+#' @export
+`[<-.tbl_dim` <- function(x, i, value) {
+
 }
 
 #' @export
@@ -142,12 +170,12 @@ slice.tbl_dim <- function(.data, ...) {
 
 #' @export
 print.tbl_dim <- function(x, n = NULL, ...) {
-  out <- head_dibble(x, n)
-  out <- vctrs::new_data_frame(as_tibble(out),
-                               class = c("tbl_dim_impl", "tbl"))
-  attr(out, "tbl_sum") <- c(`A dimensional tibble` = obj_sum(x))
-  attr(out, "rows_total") <- prod(dim(x))
-  print(out)
+  df <- vctrs::new_data_frame(as_tibble_dibble(head_dibble(x, n),
+                                               .pack = TRUE),
+                              class = c("tbl_dim_impl", "tbl"))
+  attr(df, "tbl_sum") <- c(`A dimensional tibble` = obj_sum(x))
+  attr(df, "rows_total") <- prod(dim(x))
+  print(df)
 
   invisible(x)
 }
@@ -167,16 +195,22 @@ head_dibble <- function(x, n) {
   if (!all(i)) {
     loc[[which(!i)[[1]]]] <- ceiling(n / prod(dim))
   }
-  loc <- lapply(loc, seq_len)
+  loc <- purrr::map(loc, seq_len)
 
-  slice(x, !!!loc)
+  slice_dibble(x, !!!loc)
 }
 
 #' @importFrom pillar obj_sum
 #' @export
 obj_sum.tbl_dim <- function(x) {
-  paste(obj_sum(x[[1]]), paste0("col", pillar::size_sum(as.list(x))),
+  paste(obj_sum(x[[1]]), big_mark(length(as.list(x))),
         sep = " x ")
+}
+
+#' @importFrom vctrs vec_ptype_abbr
+#' @export
+vec_ptype_abbr.tbl_dim <- function(x, ...) {
+  "dibble"
 }
 
 #' @importFrom pillar tbl_format_setup
