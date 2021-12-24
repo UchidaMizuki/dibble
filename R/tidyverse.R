@@ -37,6 +37,7 @@ slice_dibble <- function(.data, ...) {
   names(dots)[nms == ""] <- axes[!axes %in% nms]
   dots <- dots[axes]
   dim_names <- purrr::modify2(dim_names, dots, `[`)
+  names(dim_names) <- axes
 
   if (is_tbl_dim(.data)) {
     new_tbl_dim(purrr::modify(.data, function(x) rlang::exec(`[`, x, !!!dots)),

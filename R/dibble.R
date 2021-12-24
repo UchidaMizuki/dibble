@@ -41,6 +41,7 @@ as_dibble.data.frame <- function(x, dim_names, cols = NULL, ...) {
                               function(dim, axis) {
                                 dim %||% unique(x[[axis]])
                               })
+  names(dim_names) <- axes
   x[axes] <- purrr::modify2(x[axes], dim_names, vctrs::vec_match)
 
   ids <- expand.grid(purrr::modify(dim_names, seq_along),
@@ -48,6 +49,7 @@ as_dibble.data.frame <- function(x, dim_names, cols = NULL, ...) {
                      stringsAsFactors = FALSE)
   x <- dplyr::left_join(ids, x,
                         by = axes)
+
   new_tbl_dim(x[cols],
               dim_names = dim_names)
 }
