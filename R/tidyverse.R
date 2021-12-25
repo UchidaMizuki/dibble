@@ -40,10 +40,20 @@ slice_dibble <- function(.data, ...) {
   names(dim_names) <- axes
 
   if (is_tbl_dim(.data)) {
-    new_tbl_dim(purrr::modify(.data, function(x) rlang::exec(`[`, x, !!!dots)),
+    new_tbl_dim(purrr::modify(as.list(.data),
+                              function(x) {
+                                rlang::exec(`[`, x, !!!dots)
+                              }),
                 dim_names = dim_names)
   } else if (is_dim_col(.data)) {
     new_dim_col(rlang::exec(`[`, .data, !!!dots),
                 dim_names = dim_names)
+  } else if (is_grouped_dim(.data)) {
+    loc <- seq_along(dim(as.array(.data)))
+    .data <- rlang::exec(`[`, .data, !!!dots[loc])
+    purrr::modify(.data,
+                  function(x) {
+                    rlang::exec(slice, x, !!!dots[-loc])
+                  })
   }
 }

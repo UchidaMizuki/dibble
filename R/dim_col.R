@@ -1,9 +1,5 @@
 new_dim_col <- function(x, dim_names) {
-  dim <- lengths(dim_names,
-                 use.names = FALSE)
-  size <- prod(dim)
-  structure(array(vctrs::vec_recycle(as.vector(x), size),
-                  dim = dim),
+  structure(x,
             class = "dim_col",
             dim_names = dim_names)
 }
@@ -47,22 +43,23 @@ dim.dim_col <- function(x) {
   stop()
 }
 
+#' @export
+nrow.dim_col <- function(x) {
+  nrow_dibble(x)
+}
+
+#' @export
+ncol.dim_col <- function(x) {
+  1L
+}
+
 
 
 # Printing ----------------------------------------------------------------
 
 #' @export
 print.dim_col <- function(x, n = NULL, ...) {
-  x_head <- head_dibble(x, n)
-  df <- as_tibble_dibble(x_head,
-                         pack = TRUE)
-  df <- vctrs::new_data_frame(df,
-                              class = c("tbl_dim_impl", "tbl"))
-  attr(df, "tbl_sum") <- c(`A dimensional column` = obj_sum(x))
-  attr(df, "rows_total") <- prod(dim(x))
-  print(df)
-
-  invisible(x)
+  print_dibble(x, n)
 }
 
 #' @importFrom pillar obj_sum
