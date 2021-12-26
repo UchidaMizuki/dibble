@@ -35,16 +35,14 @@ as_dibble.data.frame <- function(x, dim_names, cols = NULL, ...) {
   names(dim_names) <- axes
   x[axes] <- purrr::modify2(x[axes], dim_names, vctrs::vec_match)
 
-  ids <- expand.grid(purrr::modify(dim_names, seq_along),
-                     KEEP.OUT.ATTRS = FALSE,
-                     stringsAsFactors = FALSE)
+  ids <- tidyr::expand_grid(!!!purrr::modify(dim_names, seq_along))
   x <- dplyr::left_join(ids, x,
                         by = axes)
 
-  dim <- lengths(dim_names)
+  dim <- rev(lengths(dim_names))
   new_tbl_dim(purrr::modify(as.list(x[cols]),
                             function(x) {
-                              array(as.double(x),
+                              array(x,
                                     dim = dim)
                             }),
               dim_names = dim_names)
@@ -80,12 +78,6 @@ dimnames.tbl_dim <- function(x) {
 #' @export
 dim.tbl_dim <- function(x) {
   lengths(dimnames(x))
-}
-
-#' @export
-`dim<-.tbl_dim` <- function(x, value) {
-  # TODO: add an error message
-  stop()
 }
 
 #' @export
@@ -239,9 +231,9 @@ print_dibble <- function(x, n,
 }
 
 head_dibble <- function(x, n) {
-  # n <- n %||% pillar:::get_pillar_option_print_max() + 1
+  # pillar:::get_pillar_option_print_max() + 1
   n <- n %||% 21
-  dim <- dim(x)
+  dim <- rev(dim(x))
 
   loc <- rep(1, length(dim))
   i <- cumprod(dim) < n
@@ -252,7 +244,7 @@ head_dibble <- function(x, n) {
   if (!all(i)) {
     loc[[which(!i)[[1]]]] <- ceiling(n / prod(dim))
   }
-  loc <- purrr::map(loc, seq_len)
+  loc <- rev(purrr::map(loc, seq_len))
 
   slice_dibble(x, !!!loc)
 }

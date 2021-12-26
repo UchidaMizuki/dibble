@@ -22,16 +22,3 @@ as_dim_names <- function(x) {
 
   x
 }
-
-bind_arrays <- function(x) {
-  if (is.array(x)) {
-    as.array(x)
-  } else {
-    x <- purrr::modify(as.list(x), bind_arrays)
-    x <- abind::abind(x,
-                      rev.along = 0)
-    perm <- length(dim(x))
-    aperm(x,
-          perm = c(perm, seq_len(perm - 1)))
-  }
-}

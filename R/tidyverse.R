@@ -1,8 +1,5 @@
 as_tibble_dibble <- function(x, ..., .pack = FALSE) {
-  dim <- expand.grid(dimnames(x),
-                     KEEP.OUT.ATTRS = FALSE,
-                     stringsAsFactors = FALSE)
-  dim <- as_tibble(dim)
+  dim <- tidyr::expand_grid(!!!dimnames(x))
 
   if (is_tbl_dim(x)) {
     col <- purrr::map_dfc(as.list(x), as.vector)
@@ -15,7 +12,7 @@ as_tibble_dibble <- function(x, ..., .pack = FALSE) {
     }
   } else if (is_dim_col(x)) {
     tibble::new_tibble(list(dim = dim,
-                            . = as.vector(as.array(x))))
+                            . = as.vector(x)))
   }
 }
 
@@ -39,18 +36,25 @@ slice_dibble <- function(.data, ...) {
   dim_names <- purrr::modify2(dim_names, dots, `[`)
   names(dim_names) <- axes
 
+  dots <- rev(dots)
+
   if (is_tbl_dim(.data)) {
     new_tbl_dim(purrr::modify(as.list(.data),
                               function(x) {
-                                rlang::exec(`[`, x, !!!dots)
+                                rlang::exec(`[`, x, !!!dots,
+                                            drop = FALSE)
                               }),
                 dim_names = dim_names)
   } else if (is_dim_col(.data)) {
-    new_dim_col(rlang::exec(`[`, .data, !!!dots),
+    new_dim_col(rlang::exec(`[`, .data, !!!dots,
+                            drop = FALSE),
                 dim_names = dim_names)
   } else if (is_grouped_dim(.data)) {
     loc <- seq_along(dim(as.array(.data)))
-    .data <- rlang::exec(`[`, .data, !!!dots[loc])
+
+    .data <- rlang::exec(`[`, .data, !!!dots[loc],
+                         drop = FALSE)
+
     purrr::modify(.data,
                   function(x) {
                     rlang::exec(slice, x, !!!dots[-loc])

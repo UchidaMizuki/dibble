@@ -38,12 +38,6 @@ dim.dim_col <- function(x) {
 }
 
 #' @export
-`dim<-.dim_col` <- function(x, value) {
-  # TODO: add an error message
-  stop()
-}
-
-#' @export
 nrow.dim_col <- function(x) {
   nrow_dibble(x)
 }
