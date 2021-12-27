@@ -29,21 +29,23 @@ as_dibble.data.frame <- function(x, dim_names, cols = NULL, ...) {
   )
 
   dim_names <- purrr::modify2(dim_names, axes,
-                              function(dim, axis) {
-                                dim %||% unique(x[[axis]])
+                              function(dm, axis) {
+                                dm %||% unique(x[[axis]])
                               })
   names(dim_names) <- axes
   x[axes] <- purrr::modify2(x[axes], dim_names, vctrs::vec_match)
 
-  ids <- tidyr::expand_grid(!!!purrr::modify(dim_names, seq_along))
-  x <- dplyr::left_join(ids, x,
+  x <- dplyr::left_join(expand.grid(purrr::modify(dim_names, seq_along),
+                                    KEEP.OUT.ATTRS = FALSE,
+                                    stringsAsFactors = FALSE),
+                        x,
                         by = axes)
 
-  dim <- rev(lengths(dim_names))
+  dm <- lengths(dim_names)
   new_tbl_dim(purrr::modify(as.list(x[cols]),
                             function(x) {
                               array(x,
-                                    dim = dim)
+                                    dim = dm)
                             }),
               dim_names = dim_names)
 }
@@ -134,19 +136,19 @@ as_tibble.tbl_dim <- function(x, ...) {
   as_tibble_dibble(x, ...)
 }
 
-aperm_tbl_dim <- function(a, perm, ...) {
-  dim_names <- dimnames(a)
-
-  perm <- vctrs::vec_match(perm, names(dim_names))
-  dim_names <- dim_names[perm]
-
-  new_tbl_dim(purrr::modify(as.list(a),
-                            function(x) {
-                              aperm(as.array(x),
-                                    perm = perm)
-                            }),
-              dim_names = dim_names)
-}
+# aperm_tbl_dim <- function(a, perm, ...) {
+#   dim_names <- dimnames(a)
+#
+#   perm <- vctrs::vec_match(perm, names(dim_names))
+#   dim_names <- dim_names[perm]
+#
+#   new_tbl_dim(purrr::modify(as.list(a),
+#                             function(x) {
+#                               aperm(as.array(x),
+#                                     perm = perm)
+#                             }),
+#               dim_names = dim_names)
+# }
 
 
 
@@ -154,15 +156,14 @@ aperm_tbl_dim <- function(a, perm, ...) {
 
 #' @export
 `[.tbl_dim` <- function(x, ...) {
-  structure(NextMethod(),
-            class = "tbl_dim",
-            dim_names = dimnames(x))
+  new_tbl_dim(NextMethod(),
+              dim_names = dimnames(x))
 }
 
 #' @export
 `[<-.tbl_dim` <- function(x, ...) {
-  # TODO
-  stop()
+  new_tbl_dim(NextMethod(),
+              dim_names = dimnames(x))
 }
 
 #' @export
@@ -173,8 +174,10 @@ aperm_tbl_dim <- function(a, perm, ...) {
 
 #' @export
 `[[<-.tbl_dim` <- function(x, ...) {
-  # TODO
-  stop()
+  dim_names <- dimnames(x)
+  x <- as.list(x)
+  new_tbl_dim(NextMethod(),
+              dim_names = dim_names)
 }
 
 #' @export
@@ -184,9 +187,11 @@ aperm_tbl_dim <- function(a, perm, ...) {
 }
 
 #' @export
-`$<-.tbl_dim` <- function(x, i) {
-  # TODO
-  stop()
+`$<-.tbl_dim` <- function(x, ...) {
+  dim_names <- dimnames(x)
+  x <- as.list(x)
+  new_tbl_dim(NextMethod(),
+              dim_names = dim_names)
 }
 
 
@@ -197,6 +202,21 @@ aperm_tbl_dim <- function(a, perm, ...) {
 #' @export
 slice.tbl_dim <- function(.data, ...) {
   slice_dibble(.data, ...)
+}
+
+#' @importFrom dplyr mutate
+#' @export
+mutate.tbl_dim <- function(.data, ...) {
+  dim_names <- dimnames(.data)
+
+  dots <- rlang::enquos(..., .named = TRUE)
+  nms <- names(dots)
+
+  for (i in seq_along(nms)) {
+    .data[[nms[[i]]]] <- new_dim_col(rlang::eval_tidy(dots[[i]], as.list(.data)),
+                                     dim_names = dim_names)
+  }
+  .data
 }
 
 
@@ -215,14 +235,14 @@ print_dibble <- function(x, n,
   df <- vctrs::new_data_frame(df,
                               class = c("tbl_dim_impl", "tbl"))
   if (is_tbl_dim(x)) {
-    attr(df, "tbl_sum") <- c(`A dimensional tibble` = obj_sum(x))
+    attr(df, "tbl_sum") <- c(`A dibble` = obj_sum(x))
 
     if (!is.null(groups)) {
       attr(df, "tbl_sum") <- c(attr(df, "tbl_sum"),
                                Groups = commas(groups))
     }
   } else if (is_dim_col(x)) {
-    attr(df, "tbl_sum") <- c(`A dimensional column` = obj_sum(x))
+    attr(df, "tbl_sum") <- c(`A column` = obj_sum(x))
   }
   attr(df, "rows_total") <- prod(dim(x))
   print(df)
@@ -233,16 +253,16 @@ print_dibble <- function(x, n,
 head_dibble <- function(x, n) {
   # pillar:::get_pillar_option_print_max() + 1
   n <- n %||% 21
-  dim <- rev(dim(x))
+  dm <- rev(dim(x))
 
-  loc <- rep(1, length(dim))
-  i <- cumprod(dim) < n
-  dim <- dim[i]
+  loc <- rep(1, length(dm))
+  i <- cumprod(dm) < n
+  dm <- dm[i]
 
-  loc[i] <- dim
+  loc[i] <- dm
 
   if (!all(i)) {
-    loc[[which(!i)[[1]]]] <- ceiling(n / prod(dim))
+    loc[[which(!i)[[1]]]] <- ceiling(n / prod(dm))
   }
   loc <- rev(purrr::map(loc, seq_len))
 

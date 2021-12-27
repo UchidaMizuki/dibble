@@ -22,3 +22,11 @@ as_dim_names <- function(x) {
 
   x
 }
+
+bind_arrays <- function(x) {
+  perm <- length(dim(x[[1]]))
+  x <- abind::abind(x,
+                    rev.along = 0)
+  aperm(x,
+        perm = c(perm + 1, seq_len(perm)))
+}
