@@ -1,29 +1,16 @@
 test_that("dibble", {
-  x <- tidyr::expand_grid(from = 1:3,
-                          to = 1:4) %>%
-    dplyr::mutate(value = dplyr::row_number()) %>%
-    as_dibble(c("from", "to"))
-  y <- tidyr::expand_grid(to = 2:5,
-                          from = 2:4) %>%
-    dplyr::mutate(value = dplyr::row_number()) %>%
-    as_dibble(c("to", "from"))
+  x1 <- tidyr::expand_grid(from = 1:10,
+                          to = 1:11,
+                          mode = 1:12) %>%
+    dplyr::mutate(value = dplyr::row_number())
+  x2 <- x1 %>%
+    as_dibble(c("from", "to", "mode"))
 
-  # x <- tidyr::expand_grid(from = letters[1:10],
-  #                         to = letters[1:11],
-  #                         mode = letters[1:12]) %>%
-  #   dplyr::mutate(value = dplyr::row_number(),
-  #                 value2 = "a") %>%
-  #   as_dibble(dim_names = c("from", "to", "mode"))
-  #
-  # x2 <- tidyr::expand_grid(from = letters[1:10],
-  #                          to = letters[1:10]) %>%
-  #   dplyr::mutate(value = rnorm(dplyr::n())) %>%
-  #   as_dibble(dim_names = c("from", "to"))
-  #
-  # x3 <- list(a = array(1:4, c(2, 2)),
-  #            b = array(1:4, c(2, 2)))
-  # x4 <- abind::abind(x3, along = 3)
-  # apply(x4, 3,
-  #       function(x) x,
-  #       simplify = FALSE)
+  microbenchmark::microbenchmark(x1 = x1 %>%
+                                   group_by(from, to) %>%
+                                   summarise(value = sum(value),
+                                             .groups = "drop"),
+                                 x2 = x2 %>%
+                                   group_by(from, to) %>%
+                                   summarise(value = sum(value)))
 })

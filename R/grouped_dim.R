@@ -24,14 +24,20 @@ group_by.tbl_dim <- function(.data, ...) {
                                  simplify = FALSE)
                          })
 
-  size <- prod(dm)
-  out <- vector("list", size)
-
-  for (i in seq_len(size)) {
-    out[[i]] <- new_tbl_dim(purrr::modify(.data,
-                                          function(x) x[[i]]),
-                            dim_names = dim_names)
-  }
+  # size <- prod(dm)
+  out <- purrr::map(seq_len(prod(dm)),
+                    function(i) {
+                      new_tbl_dim(purrr::modify(.data,
+                                                function(x) x[[i]]),
+                                  dim_names = dim_names)
+                    })
+  # out <- vector("list", size)
+  #
+  # for (i in seq_len(size)) {
+  #   out[[i]] <- new_tbl_dim(purrr::modify(.data,
+  #                                         function(x) x[[i]]),
+  #                           dim_names = dim_names)
+  # }
 
   new_grouped_dim(array(out,
                         dim = dm),
