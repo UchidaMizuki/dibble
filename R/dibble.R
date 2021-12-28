@@ -9,6 +9,28 @@ dibble <- function() {
 }
 
 #' @export
+dibble_by <- function(x, ...) {
+  dots <- rlang::enquos(...)
+  nms <- rlang::names2(dots)
+  dots <- rlang::quos_auto_name(dots)
+
+  size <- length(dots)
+  dim_names <- vector("list", size)
+  names(dim_names) <- names(dots)
+
+  for (i in seq_len(size)) {
+    if (nms[[i]] == "") {
+      dim_names[i] <- list(NULL)
+    } else {
+      dim_names[[i]] <- rlang::eval_tidy(dots[[i]])
+    }
+  }
+
+  as_dibble(x,
+            dim_names = dim_names)
+}
+
+#' @export
 as_dibble <- function(x, ...) {
   UseMethod("as_dibble")
 }
@@ -17,36 +39,30 @@ as_dibble <- function(x, ...) {
 as_dibble.data.frame <- function(x, dim_names, cols = NULL, ...) {
   ellipsis::check_dots_empty()
 
-  dim_names <- as_dim_names(dim_names)
+  dim_names <- as_dim_names(dim_names,
+                            data = x)
 
-  nms <- names(x)
   axes <- names(dim_names)
-  cols <- cols %||% setdiff(nms, axes)
+  cols <- cols %||% setdiff(names(x), axes)
 
   stopifnot(
-    axes %in% nms,
     !vctrs::vec_duplicate_any(x[axes])
   )
 
-  dim_names <- purrr::modify2(dim_names, axes,
-                              function(dm, axis) {
-                                dm %||% unique(x[[axis]])
-                              })
-  names(dim_names) <- axes
   x[axes] <- purrr::modify2(x[axes], dim_names, vctrs::vec_match)
-
-  x <- dplyr::left_join(expand.grid(purrr::modify(dim_names, seq_along),
-                                    KEEP.OUT.ATTRS = FALSE,
-                                    stringsAsFactors = FALSE),
-                        x,
+  df_dim <- expand.grid(purrr::modify(dim_names, seq_along),
+                        KEEP.OUT.ATTRS = FALSE,
+                        stringsAsFactors = FALSE)
+  x <- dplyr::left_join(df_dim, x,
                         by = axes)
 
   dm <- lengths(dim_names)
-  new_tbl_dim(purrr::modify(as.list(x[cols]),
-                            function(x) {
-                              array(x,
-                                    dim = dm)
-                            }),
+  x <- purrr::modify(as.list(x[cols]),
+                     function(x) {
+                       array(x,
+                             dim = dm)
+                     })
+  new_tbl_dim(x,
               dim_names = dim_names)
 }
 
@@ -74,7 +90,8 @@ dimnames.tbl_dim <- function(x) {
 
 #' @export
 `dimnames<-.tbl_dim` <- function(x, value) {
-  attr(x, "dim_names") <- as_dim_names(value)
+  attr(x, "dim_names") <- as_dim_names(dim_names,
+                                       data = dimnames(x))
 }
 
 #' @export
@@ -213,7 +230,8 @@ mutate.tbl_dim <- function(.data, ...) {
   nms <- names(dots)
 
   for (i in seq_along(nms)) {
-    .data[[nms[[i]]]] <- new_dim_col(rlang::eval_tidy(dots[[i]], as.list(.data)),
+    .data[[nms[[i]]]] <- new_dim_col(rlang::eval_tidy(dots[[i]],
+                                                      data = as.list(.data)),
                                      dim_names = dim_names)
   }
   .data

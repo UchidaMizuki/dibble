@@ -8,18 +8,27 @@ big_mark <- function(x) {
   formatC(x, big.mark = mark)
 }
 
-as_dim_names <- function(x) {
-  x <- as.list(x)
-  nms <- rlang::names2(x)
-
-  names(x)[nms == ""] <- purrr::map_chr(x[nms == ""], identity)
-  x[nms == ""] <- list(NULL)
-
+as_dim_names <- function(x, data) {
   stopifnot(
-    purrr::map_lgl(x[nms != ""],
-                   function(x) !vctrs::vec_duplicate_any(x))
+    rlang::is_named(x),
+    purrr::map_lgl(x,
+                   function(x) {
+                     is.null(x) || !vctrs::vec_duplicate_any(x)
+                   })
   )
 
+  axes <- names(x)
+  x <- purrr::modify2(x, axes,
+                      function(x, axis) {
+                        x <- x %||% unique(data[[axis]])
+
+                        stopifnot(
+                          !is.null(x)
+                        )
+
+                        x
+                      })
+  names(x) <- axes
   x
 }
 

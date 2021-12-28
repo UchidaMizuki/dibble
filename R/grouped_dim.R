@@ -8,39 +8,40 @@ new_grouped_dim <- function(x, group_names) {
 #' @export
 group_by.tbl_dim <- function(.data, ...) {
   dim_names <- dimnames(.data)
+  dm <- lengths(dim_names)
+  col_names <- names(.data)
+
   loc <- tidyselect::eval_select(rlang::expr(c(...)), dim_names)
 
   stopifnot(
     length(loc) < length(dim_names)
   )
 
+  .data <- as.list(.data)
+  .data <- array(purrr::flatten(.data),
+                 dim = c(dm, length(col_names)))
+
+  margin <- c(loc, length(dm) + 1)
+
   group_names <- dim_names[loc]
   dim_names <- dim_names[-loc]
+  dm <- lengths(dim_names)
 
-  dm <- lengths(group_names)
-  .data <- purrr::modify(as.list(.data),
-                         function(x) {
-                           apply(x, loc, as.array,
-                                 simplify = FALSE)
-                         })
+  .data <- apply(.data, margin,
+                 function(x) {
+                   array(unlist(x),
+                         dim = dm)
+                 },
+                 simplify = FALSE)
+  .data <- apply(.data, loc,
+                 function(x) {
+                   names(x) <- col_names
+                   new_tbl_dim(x,
+                               dim_names = dim_names)
+                 },
+                 simplify = FALSE)
 
-  # size <- prod(dm)
-  out <- purrr::map(seq_len(prod(dm)),
-                    function(i) {
-                      new_tbl_dim(purrr::modify(.data,
-                                                function(x) x[[i]]),
-                                  dim_names = dim_names)
-                    })
-  # out <- vector("list", size)
-  #
-  # for (i in seq_len(size)) {
-  #   out[[i]] <- new_tbl_dim(purrr::modify(.data,
-  #                                         function(x) x[[i]]),
-  #                           dim_names = dim_names)
-  # }
-
-  new_grouped_dim(array(out,
-                        dim = dm),
+  new_grouped_dim(.data,
                   group_names = group_names)
 }
 
@@ -48,24 +49,39 @@ group_by.tbl_dim <- function(.data, ...) {
 #' @export
 ungroup.grouped_dim <- function(x, ...) {
   dim_names <- dimnames(x)
-  dm <- lengths(dim_names)
+  dm <- dim(x[[1]])
+  size <- length(dm)
 
+  group_names <- attr(x, "group_names")
   col_names <- names(x[[1]])
 
-  size <- length(col_names)
-  out <- vector("list", size)
-  names(out) <- col_names
+  x <- abind::abind(unname(purrr::flatten(x)),
+                    rev.along = 0)
+  dim(x) <- c(dm, length(col_names), lengths(group_names))
+  x <- apply(x, size + 1,
+             function(x) {
+               as.array(x)
+             },
+             simplify = FALSE)
+  names(x) <- col_names
+  x
 
-  for (i in seq_len(size)) {
-    out[[i]] <- bind_arrays(purrr::modify(as.array(x),
-                                          function(x) {
-                                            as.array(x[[i]])
-                                          }))
-    dim(out[[i]]) <- dm
-  }
-
-  new_tbl_dim(out,
-              dim_names = dim_names)
+#   col_names <- names(x[[1]])
+#
+#   size <- length(col_names)
+#   out <- vector("list", size)
+#   names(out) <- col_names
+#
+#   for (i in seq_len(size)) {
+#     out[[i]] <- bind_arrays(purrr::modify(as.array(x),
+#                                           function(x) {
+#                                             as.array(x[[i]])
+#                                           }))
+#     dim(out[[i]]) <- dm
+#   }
+#
+#   new_tbl_dim(out,
+#               dim_names = dim_names)
 }
 
 is_grouped_dim <- function(x) {
@@ -150,7 +166,8 @@ summarise.grouped_dim <- function(.data, ...) {
 
                            out <- list()
                            for (i in seq_along(nms)) {
-                             out[[nms[[i]]]] <- rlang::eval_tidy(dots[[i]], c(x, out))
+                             out[[nms[[i]]]] <- rlang::eval_tidy(dots[[i]],
+                                                                 data = c(x, out))
                            }
                            out
                          })

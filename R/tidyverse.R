@@ -1,23 +1,23 @@
 as_tibble_dibble <- function(x, ..., .pack = FALSE) {
-  dm <- tidyr::expand_grid(!!!dimnames(x))
+  df_dim <- tidyr::expand_grid(!!!dimnames(x))
 
   if (is_tbl_dim(x)) {
     col <- purrr::map_dfc(as.list(x), as_col)
 
     if (.pack) {
-      tibble::new_tibble(list(dim = dm,
+      tibble::new_tibble(list(dim = df_dim,
                               col = col))
     } else {
-      vctrs::vec_cbind(dm, col, ...)
+      vctrs::vec_cbind(df_dim, col, ...)
     }
   } else if (is_dim_col(x)) {
     col <- as_col(x)
 
     if (.pack) {
-      tibble::new_tibble(list(dim = dm,
+      tibble::new_tibble(list(dim = df_dim,
                               . = col))
     } else {
-      vctrs::vec_cbind(dm,
+      vctrs::vec_cbind(df_dim,
                        . = col, ...)
     }
   }
