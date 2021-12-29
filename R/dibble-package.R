@@ -1,2 +1,3 @@
-#' @importFrom rlang %||%
+#' @import rlang
+#' @import vctrs
 NULL

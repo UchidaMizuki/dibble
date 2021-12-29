@@ -1,23 +1,18 @@
 test_that("dibble", {
-  x1 <- tidyr::expand_grid(from = 1:10,
-                          to = 1:11,
-                          mode = 1:12) %>%
+  x1 <- tidyr::expand_grid(from = letters[1:24],
+                          to = letters[1:25],
+                          mode = letters[1:26],
+                          mode2 = 1:1e1) %>%
     dplyr::mutate(value = dplyr::row_number(),
                   value2 = value + 1,
                   value3 = "a")
   x2 <- x1 %>%
-    dibble_by(from, to, mode)
-  x3 <- x1 %>%
-    cubelyr::as.tbl_cube(dim_names = c("from", "to", "mode"))
+    dibble_by(from, to, mode, mode2)
+  # x3 <- x1 %>%
+  #   cubelyr::as.tbl_cube(dim_names = c("from", "to", "mode"))
 
   microbenchmark::microbenchmark(x1 = x1 %>%
-                                   group_by(from, to) %>%
-                                   summarise(value = sum(value),
-                                             .groups = "drop"),
+                                   group_by(from, to),
                                  x2 = x2 %>%
-                                   group_by(from, to) %>%
-                                   summarise(value = sum(value)),
-                                 x3 = x3 %>%
-                                   group_by(from, to) %>%
-                                   summarise(value = sum(value)))
+                                   group_by(from, to))
 })

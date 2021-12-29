@@ -1,7 +1,7 @@
-new_tbl_dim <- function(x, dim_names) {
+new_tbl_dim <- function(x, environment) {
   structure(x,
             class = "tbl_dim",
-            dim_names = dim_names)
+            environment = environment)
 }
 
 dibble <- function() {
@@ -26,8 +26,7 @@ dibble_by <- function(x, ...) {
     }
   }
 
-  as_dibble(x,
-            dim_names = dim_names)
+  as_dibble(x, dim_names)
 }
 
 #' @export
@@ -39,31 +38,28 @@ as_dibble <- function(x, ...) {
 as_dibble.data.frame <- function(x, dim_names, cols = NULL, ...) {
   ellipsis::check_dots_empty()
 
-  dim_names <- as_dim_names(dim_names,
-                            data = x)
+  dim_names <- as_dim_names(dim_names, x)
 
   axes <- names(dim_names)
   cols <- cols %||% setdiff(names(x), axes)
 
   stopifnot(
-    !vctrs::vec_duplicate_any(x[axes])
+    !any(cols %in% axes),
+    !vec_duplicate_any(x[axes])
   )
 
-  x[axes] <- purrr::modify2(x[axes], dim_names, vctrs::vec_match)
-  df_dim <- expand.grid(purrr::modify(dim_names, seq_along),
-                        KEEP.OUT.ATTRS = FALSE,
-                        stringsAsFactors = FALSE)
-  x <- dplyr::left_join(df_dim, x,
-                        by = axes)
+  dm <- expand.grid(dim_names,
+                    KEEP.OUT.ATTRS = FALSE,
+                    stringsAsFactors = FALSE)
+  x <- vec_slice(x[cols], vec_match(dm, x[axes]))
 
   dm <- lengths(dim_names)
-  x <- purrr::modify(as.list(x[cols]),
+  x <- purrr::modify(as.list(x),
                      function(x) {
-                       array(x,
-                             dim = dm)
+                       array(x, dm)
                      })
   new_tbl_dim(x,
-              dim_names = dim_names)
+              environment = environment_dibble(dim_names))
 }
 
 is_tbl_dim <- function(x) {
@@ -72,26 +68,34 @@ is_tbl_dim <- function(x) {
 
 #' @export
 as.list.tbl_dim <- function(x, ...) {
-  dim_names <- dimnames(x)
+  env_dibble <- environment_dibble(dimnames(x))
   x <- structure(x,
                  class = NULL,
-                 dim_names = NULL)
+                 environment = NULL)
   purrr::modify(x,
                 function(x) {
-                  new_dim_col(x,
-                              dim_names = dim_names)
+                  new_dim_col(x, env_dibble)
                 })
 }
 
 #' @export
 dimnames.tbl_dim <- function(x) {
-  attr(x, "dim_names")
+  dimnames_dibble(x)
+}
+
+dimnames_dibble <- function(x) {
+  attr(x, "environment")$dim_names
 }
 
 #' @export
 `dimnames<-.tbl_dim` <- function(x, value) {
-  attr(x, "dim_names") <- as_dim_names(dim_names,
-                                       data = dimnames(x))
+  assign_dimnames_dibble(x, value)
+}
+
+assign_dimnames_dibble <- function(x, value) {
+  dim_names <- as_dim_names(value, dimnames(x))
+  attr(x, "environment") <- environment_dibble(dim_names)
+  x
 }
 
 #' @export
@@ -156,7 +160,7 @@ as_tibble.tbl_dim <- function(x, ...) {
 # aperm_tbl_dim <- function(a, perm, ...) {
 #   dim_names <- dimnames(a)
 #
-#   perm <- vctrs::vec_match(perm, names(dim_names))
+#   perm <- vec_match(perm, names(dim_names))
 #   dim_names <- dim_names[perm]
 #
 #   new_tbl_dim(purrr::modify(as.list(a),
@@ -173,14 +177,17 @@ as_tibble.tbl_dim <- function(x, ...) {
 
 #' @export
 `[.tbl_dim` <- function(x, ...) {
-  new_tbl_dim(NextMethod(),
-              dim_names = dimnames(x))
+  # FIXME
+  NextMethod()
+  # new_tbl_dim(NextMethod(),
+  #             en = dimnames(x))
 }
 
 #' @export
 `[<-.tbl_dim` <- function(x, ...) {
-  new_tbl_dim(NextMethod(),
-              dim_names = dimnames(x))
+  # FIXME
+  # new_tbl_dim(NextMethod(),
+  #             dim_names = dimnames(x))
 }
 
 #' @export
@@ -191,10 +198,11 @@ as_tibble.tbl_dim <- function(x, ...) {
 
 #' @export
 `[[<-.tbl_dim` <- function(x, ...) {
-  dim_names <- dimnames(x)
-  x <- as.list(x)
-  new_tbl_dim(NextMethod(),
-              dim_names = dim_names)
+  # FIXME
+  # dim_names <- dimnames(x)
+  # x <- as.list(x)
+  # new_tbl_dim(NextMethod(),
+  #             dim_names = dim_names)
 }
 
 #' @export
@@ -205,10 +213,11 @@ as_tibble.tbl_dim <- function(x, ...) {
 
 #' @export
 `$<-.tbl_dim` <- function(x, ...) {
-  dim_names <- dimnames(x)
-  x <- as.list(x)
-  new_tbl_dim(NextMethod(),
-              dim_names = dim_names)
+  # FIXME
+  # dim_names <- dimnames(x)
+  # x <- as.list(x)
+  # new_tbl_dim(NextMethod(),
+  #             dim_names = dim_names)
 }
 
 
@@ -224,15 +233,17 @@ slice.tbl_dim <- function(.data, ...) {
 #' @importFrom dplyr mutate
 #' @export
 mutate.tbl_dim <- function(.data, ...) {
-  dim_names <- dimnames(.data)
+  # dim_names <- dimnames(.data)
 
   dots <- rlang::enquos(..., .named = TRUE)
   nms <- names(dots)
 
+  # FIXME
   for (i in seq_along(nms)) {
-    .data[[nms[[i]]]] <- new_dim_col(rlang::eval_tidy(dots[[i]],
-                                                      data = as.list(.data)),
-                                     dim_names = dim_names)
+    .data[[nms[[i]]]] <- rlang::eval_tidy(dots[[i]], as.list(.data))
+    # .data[[nms[[i]]]] <- new_dim_col(rlang::eval_tidy(dots[[i]],
+    #                                                   data = as.list(.data)),
+    #                                  dim_names = dim_names)
   }
   .data
 }
@@ -250,8 +261,8 @@ print_dibble <- function(x, n,
                          groups = NULL) {
   df <- as_tibble_dibble(head_dibble(x, n),
                          .pack = TRUE)
-  df <- vctrs::new_data_frame(df,
-                              class = c("tbl_dim_impl", "tbl"))
+  df <- new_data_frame(df,
+                       class = c("tbl_dim_impl", "tbl"))
   if (is_tbl_dim(x)) {
     attr(df, "tbl_sum") <- c(`A dibble` = obj_sum(x))
 

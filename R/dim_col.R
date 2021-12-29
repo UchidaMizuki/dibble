@@ -1,7 +1,7 @@
-new_dim_col <- function(x, dim_names) {
+new_dim_col <- function(x, environment) {
   structure(x,
             class = "dim_col",
-            dim_names = dim_names)
+            environment = environment)
 }
 
 is_dim_col <- function(x) {
@@ -12,7 +12,7 @@ is_dim_col <- function(x) {
 as.array.dim_col <- function(x, ...) {
   structure(x,
             class = NULL,
-            dim_names = NULL)
+            environment = NULL)
 }
 
 #' @export
@@ -24,13 +24,12 @@ as.table.dim_col <- function(x, ...) {
 
 #' @export
 dimnames.dim_col <- function(x) {
-  attr(x, "dim_names")
+  dimnames_dibble(x)
 }
 
 #' @export
 `dimnames<-.dim_col` <- function(x, value) {
-  attr(x, "dim_names") <- value
-  x
+  assign_dimnames_dibble(x, value)
 }
 
 #' @export
@@ -103,7 +102,7 @@ broadcast <- function(x, dim_names) {
     new_coords <- purrr::modify2(common_names, old_names, setdiff)
     names(new_coords) <- old_axes
 
-    x <- slice_dibble(x, !!!purrr::modify2(common_names, old_names, vctrs::vec_match))
+    x <- slice_dibble(x, !!!purrr::modify2(common_names, old_names, vec_match))
     dimnames(x) <- common_names
 
     # Broadcast axes
@@ -115,12 +114,12 @@ broadcast <- function(x, dim_names) {
                              length.out = prod(new_dim)))
     dim(x) <- c(new_dim, common_dim)
     x <- new_dim_col(aperm(x,
-                           perm = vctrs::vec_match(axes, c(new_axes, old_axes))),
-                     dim_names = dim_names)
+                           perm = vec_match(axes, c(new_axes, old_axes))),
+                     environment = environment_dibble(dim_names))
 
     withRestarts({
       # Warning
-      if (vctrs::vec_is_empty(new_axes)) {
+      if (vec_is_empty(new_axes)) {
         new_axes <- NULL
       } else {
         new_axes <- commas(new_axes)
@@ -128,7 +127,7 @@ broadcast <- function(x, dim_names) {
       }
 
       new_coords <- new_coords[lengths(new_coords) > 0]
-      if (vctrs::vec_is_empty(new_coords)) {
+      if (vec_is_empty(new_coords)) {
         new_coords <- NULL
       } else {
         new_coords <- purrr::map_chr(new_coords, commas)

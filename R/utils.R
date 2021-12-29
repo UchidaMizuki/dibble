@@ -39,3 +39,7 @@ bind_arrays <- function(x) {
   aperm(x,
         perm = c(perm + 1, seq_len(perm)))
 }
+
+environment_dibble <- function(dim_names) {
+  rlang::as_environment(list(dim_names = dim_names))
+}
