@@ -1,25 +1,30 @@
-new_dim_col <- function(x, environment) {
+#' @export
+new_dim_col <- function(x, dim_names, ...,
+                        class = character()) {
   structure(x,
-            class = "dim_col",
-            environment = environment)
+            dim_names = dim_names,
+            ...,
+            class = c(class, "dim_col"))
 }
 
+#' @export
 is_dim_col <- function(x) {
   inherits(x, "dim_col")
 }
 
 #' @export
 as.array.dim_col <- function(x, ...) {
-  structure(x,
-            class = NULL,
-            environment = NULL)
+  class(x) <- NULL
+  attr(x, "dim_names") <- NULL
+  x
 }
 
 #' @export
 as.table.dim_col <- function(x, ...) {
-  structure(as.array(x),
-            class = "table",
-            dimnames = dimnames(x))
+  dim_names <- dimnames(x)
+  x <- as.array(x)
+  dimnames(x) <- dim_names
+  as.table(x)
 }
 
 #' @export
@@ -102,7 +107,7 @@ broadcast <- function(x, dim_names) {
     new_coords <- purrr::modify2(common_names, old_names, setdiff)
     names(new_coords) <- old_axes
 
-    x <- slice_dibble(x, !!!purrr::modify2(common_names, old_names, vec_match))
+    x <- slice(x, !!!purrr::modify2(common_names, old_names, vec_match))
     dimnames(x) <- common_names
 
     # Broadcast axes
@@ -115,7 +120,7 @@ broadcast <- function(x, dim_names) {
     dim(x) <- c(new_dim, common_dim)
     x <- new_dim_col(aperm(x,
                            perm = vec_match(axes, c(new_axes, old_axes))),
-                     environment = environment_dibble(dim_names))
+                     dim_names = dim_names)
 
     withRestarts({
       # Warning

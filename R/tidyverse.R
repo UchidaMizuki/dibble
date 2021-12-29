@@ -1,23 +1,23 @@
 as_tibble_dibble <- function(x, ..., .pack = FALSE) {
-  dm <- tidyr::expand_grid(!!!dimnames(x))
+  df <- tidyr::expand_grid(!!!dimnames(x))
 
-  if (is_tbl_dim(x)) {
+  if (is_dibble(x)) {
     col <- purrr::map_dfc(as.list(x), as_col)
 
     if (.pack) {
-      tibble::new_tibble(list(dim = dm,
+      tibble::new_tibble(list(dim = df,
                               col = col))
     } else {
-      vctrs::vec_cbind(dm, col, ...)
+      vctrs::vec_cbind(df, col, ...)
     }
   } else if (is_dim_col(x)) {
     col <- as_col(x)
 
     if (.pack) {
-      tibble::new_tibble(list(dim = dm,
+      tibble::new_tibble(list(dim = df,
                               . = col))
     } else {
-      vctrs::vec_cbind(dm,
+      vctrs::vec_cbind(df,
                        . = col, ...)
     }
   }
@@ -48,17 +48,15 @@ slice_dibble <- function(.data, ...) {
   names(dim_names) <- axes
 
   if (is_dim_col(.data)) {
-    env_dibble <- environment_dibble(dim_names)
     new_dim_col(rlang::exec(`[`, .data, !!!loc,
                             drop = FALSE),
-                environment = env_dibble)
-  } else if (is_tbl_dim(.data)) {
-    env_dibble <- environment_dibble(dim_names)
-    new_tbl_dim(purrr::modify(as.list(.data),
-                              function(x) {
-                                slice(x, !!!loc)
-                              }),
-                environment = env_dibble)
+                dim_names = dim_names)
+  } else if (is_dibble(.data)) {
+    new_dibble(purrr::modify(as.list(.data),
+                             function(x) {
+                               slice(x, !!!loc)
+                             }),
+               dim_names = dim_names)
   } else if (is_grouped_dim(.data)) {
     groups <- seq_along(dim(as.array(.data)))
 
