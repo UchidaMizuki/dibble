@@ -1,8 +1,12 @@
 as_tibble_dibble <- function(x, ..., .pack = FALSE) {
   df <- tidyr::expand_grid(!!!dimnames(x))
 
+  if (is_grouped_dim(x)) {
+    x <- ungroup(x)
+  }
+
   if (is_dibble(x)) {
-    col <- purrr::map_dfc(as.list(x), as_col)
+    col <- purrr::map_dfc(as_list_dibble(x), as_col)
 
     if (.pack) {
       tibble::new_tibble(list(dim = df,
@@ -54,17 +58,30 @@ slice_dibble <- function(.data, ...) {
   } else if (is_dibble(.data)) {
     new_dibble(purrr::modify(as.list(.data),
                              function(x) {
-                               slice(x, !!!loc)
+                               as.array(slice(x, !!!loc))
                              }),
                dim_names = dim_names)
   } else if (is_grouped_dim(.data)) {
-    groups <- seq_along(dim(as.array(.data)))
+    group_names <- attr(.data, "group_names")
+    group_axes <- names(group_names)
+    groups <- seq_along(group_names)
 
-    .data <- rlang::exec(`[`, .data, !!!loc[groups],
+    loc_groups <- loc[groups]
+    loc <- loc[-groups]
+
+    group_names <- purrr::modify2(group_names, loc_groups,
+                                  function(x, i) {
+                                    x[i]
+                                  })
+    names(group_names) <- group_axes
+
+
+    .data <- rlang::exec(`[`, .data, !!!loc_groups,
                          drop = FALSE)
-    purrr::modify(.data,
-                  function(x) {
-                    slice(x, !!!loc[-groups])
-                  })
+    .data <- purrr::modify(.data,
+                           function(x) {
+                             slice(x, !!!loc)
+                           })
+    new_grouped_dim(.data, group_names)
   }
 }

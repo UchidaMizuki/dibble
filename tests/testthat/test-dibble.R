@@ -1,4 +1,6 @@
 test_that("dibble", {
+  library(magrittr)
+
   x1 <- tidyr::expand_grid(from = letters[1:22],
                           to = letters[1:23],
                           mode = letters[1:24],

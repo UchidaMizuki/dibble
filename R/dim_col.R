@@ -163,6 +163,12 @@ slice.dim_col <- function(.data, ...) {
   slice_dibble(.data, ...)
 }
 
+#' @importFrom dplyr ungroup
+#' @export
+ungroup.dim_col <- function(x, ...) {
+  x
+}
+
 
 
 # Printing ----------------------------------------------------------------
@@ -175,5 +181,5 @@ print.dim_col <- function(x, n = NULL, ...) {
 #' @importFrom pillar obj_sum
 #' @export
 obj_sum.dim_col <- function(x) {
-  paste("dim", pillar::size_sum(x))
+  dim_sum(x)
 }

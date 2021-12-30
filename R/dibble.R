@@ -56,10 +56,10 @@ as_dibble.data.frame <- function(x, dim_names, cols = NULL, ...) {
                     stringsAsFactors = FALSE)
   x <- vec_slice(x[cols], vec_match(df, x[axes]))
 
-  dm <- lengths(dim_names)
+  dim <- lengths(dim_names)
   x <- purrr::modify(as.list(x),
                      function(x) {
-                       array(x, dm)
+                       array(x, dim)
                      })
   new_dibble(x, dim_names)
 }
@@ -81,6 +81,7 @@ as.list.tbl_dim <- function(x, ...) {
 as_list_dibble <- function(x) {
   class(x) <- NULL
   attr(x, "dim_names") <- NULL
+  attr(x, "group_names") <- NULL
   x
 }
 
@@ -90,7 +91,12 @@ dimnames.tbl_dim <- function(x) {
 }
 
 dimnames_dibble <- function(x) {
-  attr(x, "dim_names")
+  dim_names <- attr(x, "dim_names")
+
+  # if (is_environment(dim_names)) {
+  #   dim_names <- dim_names$dim_names
+  # }
+  dim_names
 }
 
 #' @export
@@ -253,6 +259,12 @@ mutate.tbl_dim <- function(.data, ...) {
   .data
 }
 
+#' @importFrom dplyr ungroup
+#' @export
+ungroup.tbl_dim <- function(x, ...) {
+  x
+}
+
 
 
 # Printing ----------------------------------------------------------------
@@ -262,13 +274,15 @@ print.tbl_dim <- function(x, n = NULL, ...) {
   print_dibble(x, n)
 }
 
-print_dibble <- function(x, n,
-                         groups = NULL) {
-  df <- as_tibble_dibble(head_dibble(x, n),
+print_dibble <- function(x, n) {
+  groups <- names(attr(x, "group_names"))
+
+  x_head <- ungroup(head_dibble(x, n))
+  df <- as_tibble_dibble(x_head,
                          .pack = TRUE)
   df <- new_data_frame(df,
                        class = c("tbl_dim_impl", "tbl"))
-  if (is_dibble(x)) {
+  if (is_dibble(x) || is_grouped_dim(x)) {
     attr(df, "tbl_sum") <- c(`A dibble` = obj_sum(x))
 
     if (!is.null(groups)) {
@@ -287,16 +301,16 @@ print_dibble <- function(x, n,
 head_dibble <- function(x, n) {
   # pillar:::get_pillar_option_print_max() + 1
   n <- n %||% 21
-  dm <- rev(dim(x))
+  dim <- rev(dim(x))
 
-  loc <- rep(1, length(dm))
-  i <- cumprod(dm) < n
-  dm <- dm[i]
+  loc <- rep(1, length(dim))
+  i <- cumprod(dim) < n
+  dim <- dim[i]
 
-  loc[i] <- dm
+  loc[i] <- dim
 
   if (!all(i)) {
-    loc[[which(!i)[[1]]]] <- ceiling(n / prod(dm))
+    loc[[which(!i)[[1]]]] <- ceiling(n / prod(dim))
   }
   loc <- rev(purrr::map(loc, seq_len))
 
@@ -306,7 +320,11 @@ head_dibble <- function(x, n) {
 #' @importFrom pillar obj_sum
 #' @export
 obj_sum.tbl_dim <- function(x) {
-  paste(obj_sum(x[[1]]), big_mark(ncol(x)),
+  obj_sum_dibble(x)
+}
+
+obj_sum_dibble <- function(x) {
+  paste(dim_sum(x), big_mark(ncol(x)),
         sep = " x ")
 }
 
