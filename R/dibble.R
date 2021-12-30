@@ -183,7 +183,10 @@ as_tibble.tbl_dim <- function(x, ...) {
 
 #' @export
 `[.tbl_dim` <- function(x, ...) {
-  new_dibble(NextMethod(), dimnames(x))
+  dim_names <- dimnames(x)
+
+  x <- as_list_dibble(x)
+  new_dibble(NextMethod(), dim_names)
 }
 
 #' @export
