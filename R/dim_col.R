@@ -5,6 +5,23 @@ new_dim_col <- function(x, dim_names) {
 }
 
 #' @export
+as_dim_col <- function(x, ...) {
+  UseMethod("as_dim_col")
+}
+
+#' @export
+as_dim_col.default <- function(x, dim_names, ...) {
+  dim <- lengths(dim_names)
+  x <- array(vec_recycle(x, prod(dim)), dim)
+  new_dim_col(x, dim_names)
+}
+
+#' @export
+as_dim_col.dim_col <- function(x, ...) {
+  x
+}
+
+#' @export
 is_dim_col <- function(x) {
   inherits(x, "dim_col")
 }

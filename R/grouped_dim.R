@@ -114,6 +114,37 @@ as_tibble.grouped_dim <- function(x, ...) {
 
 
 
+# Subsetting --------------------------------------------------------------
+
+#' @export
+`[.tbl_dim` <- function(x, ...) {
+  # FIXME
+  NextMethod()
+  # new_dibble(NextMethod(),
+  #             en = dimnames(x))
+}
+
+#' @export
+`[<-.tbl_dim` <- function(x, ...) {
+  # FIXME
+  # new_dibble(NextMethod(),
+  #             dim_names = dimnames(x))
+}
+
+#' @export
+`[[.tbl_dim` <- function(x, ...) {
+  x <- as.list(x)
+  NextMethod()
+}
+
+#' @export
+`$.tbl_dim` <- function(x, ...) {
+  x <- as.list(x)
+  NextMethod()
+}
+
+
+
 # Verbs -------------------------------------------------------------------
 
 #' @importFrom dplyr slice
@@ -125,11 +156,35 @@ slice.grouped_dim <- function(.data, ...) {
 #' @importFrom  dplyr mutate
 #' @export
 mutate.grouped_dim <- function(.data, ...) {
-  new_grouped_dim(purrr::modify(as.array(.data),
-                                function(x) {
-                                  mutate(x, ...)
-                                }),
-                  group_names = attr(.data, "group_names"))
+  dots <- rlang::enquos(..., .named = TRUE)
+  nms <- names(dots)
+  seq_nms <- seq_along(nms)
+
+  group_names <- attr(.data, "group_names")
+  group_dim <- lengths(group_names)
+  size <- prod(group_dim)
+
+  dim_names <- dimnames(.data[[1]][[1]])
+  dim <- lengths(dim_names)
+
+  out <- array(list(NULL), dim)
+  out <- rep_len(list(out), vec_unique_count(nms))
+  names(out) <- unique(nms)
+
+  .data <- as_list_dibble(.data)
+
+  for (i in seq_len(size)) {
+    data <- purrr::map(.data,
+                       function(x) {
+                         x[[i]]
+                       })
+
+    for (j in seq_nms) {
+      nm <- nms[[j]]
+      out[[nm]][[i]] <- data[[nm]] <- as_dim_col(eval_tidy(dots[[j]], data), dim_names)
+    }
+  }
+  c(.data[setdiff(names(.data), nms)], out)
 }
 
 #' @importFrom dplyr summarise
@@ -137,35 +192,28 @@ mutate.grouped_dim <- function(.data, ...) {
 summarise.grouped_dim <- function(.data, ...) {
   dim_names <- attr(.data, "group_names")
   dim <- lengths(dim_names)
+  size <- prod(dim)
 
   dots <- enquos(..., .named = TRUE)
   nms <- names(dots)
+  seq_nms <- seq_along(nms)
 
-  .data <- purrr::modify(as.array(.data),
-                         function(x) {
-                           x <- as_list_dibble(x)
+  out <- array(dim = dim)
+  out <- rep_len(list(out), vec_unique_count(nms))
+  names(out) <- unique(nms)
 
-                           out <- list()
-                           data <- x
-
-                           for (i in seq_along(nms)) {
-                             nm <- nms[i]
-                             out[[nm]] <- data[[nm]] <- eval_tidy(dots[[i]], data)
-                           }
-                           out
-                         })
-
-  size <- length(nms)
-  out <- vector("list", size)
-  names(out) <- nms
+  .data <- as_list_dibble(.data)
 
   for (i in seq_len(size)) {
-    out[[i]] <- unlist(purrr::modify(.data,
-                                     function(x) {
-                                       x[[i]]
-                                     }),
-                       recursive = FALSE)
-    dim(out[[i]]) <- dim
+    data <- purrr::map(.data,
+                       function(x) {
+                         x[[i]]
+                       })
+
+    for (j in seq_nms) {
+      nm <- nms[[j]]
+      out[[nm]][[i]] <- data[[nm]] <- eval_tidy(dots[[j]], data)
+    }
   }
   new_dibble(out, dim_names)
 }

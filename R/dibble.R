@@ -35,23 +35,21 @@ as_dibble <- function(x, ...) {
 }
 
 #' @export
-as_dibble.data.frame <- function(x, dim_names, cols = NULL, ...) {
-  ellipsis::check_dots_empty()
-
+as_dibble.data.frame <- function(x, dim_names, col_names = NULL, ...) {
   dim_names <- as_dim_names(dim_names, x)
 
   axes <- names(dim_names)
-  cols <- cols %||% setdiff(names(x), axes)
+  col_names <- col_names %||% setdiff(names(x), axes)
 
   stopifnot(
-    !any(cols %in% axes),
+    !any(col_names %in% axes),
     !vec_duplicate_any(x[axes])
   )
 
   id <- expand.grid(dim_names,
                     KEEP.OUT.ATTRS = FALSE,
                     stringsAsFactors = FALSE)
-  x <- vec_slice(x[cols], vec_match(id, x[axes]))
+  x <- vec_slice(x[col_names], vec_match(id, x[axes]))
 
   dim <- lengths(dim_names)
   x <- purrr::modify(as.list(x),
@@ -185,17 +183,7 @@ as_tibble.tbl_dim <- function(x, ...) {
 
 #' @export
 `[.tbl_dim` <- function(x, ...) {
-  # FIXME
-  NextMethod()
-  # new_dibble(NextMethod(),
-  #             en = dimnames(x))
-}
-
-#' @export
-`[<-.tbl_dim` <- function(x, ...) {
-  # FIXME
-  # new_dibble(NextMethod(),
-  #             dim_names = dimnames(x))
+  new_dibble(NextMethod(), dimnames(x))
 }
 
 #' @export
@@ -205,27 +193,9 @@ as_tibble.tbl_dim <- function(x, ...) {
 }
 
 #' @export
-`[[<-.tbl_dim` <- function(x, ...) {
-  # FIXME
-  # dim_names <- dimnames(x)
-  # x <- as.list(x)
-  # new_dibble(NextMethod(),
-  #             dim_names = dim_names)
-}
-
-#' @export
 `$.tbl_dim` <- function(x, ...) {
   x <- as.list(x)
   NextMethod()
-}
-
-#' @export
-`$<-.tbl_dim` <- function(x, ...) {
-  # FIXME
-  # dim_names <- dimnames(x)
-  # x <- as.list(x)
-  # new_dibble(NextMethod(),
-  #             dim_names = dim_names)
 }
 
 
@@ -241,17 +211,16 @@ slice.tbl_dim <- function(.data, ...) {
 #' @importFrom dplyr mutate
 #' @export
 mutate.tbl_dim <- function(.data, ...) {
-  # dim_names <- dimnames(.data)
-
   dots <- rlang::enquos(..., .named = TRUE)
   nms <- names(dots)
 
-  # FIXME
+  dim_names <- dimnames(.data)
+  data <- as.list(.data)
+
   for (i in seq_along(nms)) {
-    .data[[nms[[i]]]] <- rlang::eval_tidy(dots[[i]], as.list(.data))
-    # .data[[nms[[i]]]] <- new_dim_col(rlang::eval_tidy(dots[[i]],
-    #                                                   data = as.list(.data)),
-    #                                  dim_names = dim_names)
+    nm <- nms[[i]]
+    data[[nm]] <- as_dim_col(rlang::eval_tidy(dots[[i]], data), dim_names)
+    .data[[nm]] <- as.array(data[[nm]])
   }
   .data
 }
