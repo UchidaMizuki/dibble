@@ -1,10 +1,7 @@
-#' @export
-new_dim_col <- function(x, dim_names, ...,
-                        class = character()) {
-  structure(x,
-            dim_names = dim_names,
-            ...,
-            class = c(class, "dim_col"))
+new_dim_col <- function(x, dim_names) {
+  class(x) <- "dim_col"
+  attr(x, "dim_names") <- dim_names
+  x
 }
 
 #' @export
@@ -16,7 +13,7 @@ is_dim_col <- function(x) {
 as.array.dim_col <- function(x, ...) {
   class(x) <- NULL
   attr(x, "dim_names") <- NULL
-  x
+  NextMethod()
 }
 
 #' @export

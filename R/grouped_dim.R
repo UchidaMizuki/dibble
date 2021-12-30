@@ -1,50 +1,38 @@
-#' @export
-new_grouped_dim <- function(x, group_names, ..., class = character()) {
-  structure(x,
-            group_names = group_names,
-            ...,
-            class = c(class, "grouped_dim"))
+new_grouped_dim <- function(x, group_names) {
+  class(x) <- "grouped_dim"
+  attr(x, "group_names") <- group_names
+  x
 }
 
 #' @importFrom dplyr group_by
 #' @export
 group_by.tbl_dim <- function(.data, ...) {
   dim_names <- dimnames(.data)
+  axes <- names(dim_names)
+  dim <- lengths(dim_names)
+  size <- prod(dim)
+
   loc <- tidyselect::eval_select(expr(c(...)), dim_names)
 
   stopifnot(
-    length(loc) < length(dim_names)
+    length(loc) < length(dim)
   )
-
-  perm <- c(loc, setdiff(seq_along(dim_names), loc))
 
   group_names <- dim_names[loc]
   group_dim <- lengths(group_names)
-  size <- prod(group_dim)
 
   dim_names <- dim_names[-loc]
-  dim <- lengths(dim_names)
+  dim <- dim[-loc]
 
-  dim_data <- c(size, lengths(dim_names))
   .data <- purrr::modify(as_list_dibble(.data),
                          function(x) {
-                           x <- aperm(x, perm)
-                           dim(x) <- dim_data
-                           vec_chop(x)
+                           apply(x, loc,
+                                 function(x) {
+                                   new_dim_col(x, dim_names)
+                                 },
+                                 simplify = FALSE)
                          })
-
-  out <- vector("list", size)
-
-  for (i in seq_len(size)) {
-    out[[i]] <- new_dibble(purrr::modify(.data,
-                                         function(x) {
-                                           x <- x[[i]]
-                                           dim(x) <- dim
-                                           x
-                                         }),
-                           dim_names = dim_names)
-  }
-  new_grouped_dim(array(out, group_dim),
+  new_grouped_dim(.data,
                   group_names = group_names)
 }
 
@@ -52,25 +40,29 @@ group_by.tbl_dim <- function(.data, ...) {
 #' @export
 ungroup.grouped_dim <- function(x, ...) {
   dim_names <- dimnames(x)
+  axes <- names(dim_names)
   dim <- lengths(dim_names)
 
   group_names <- attr(x, "group_names")
+  group_axes <- names(group_names)
+
+  loc <- vec_match(group_axes, axes)
+  dim <- c(dim[-loc], dim[loc])
+
+  axes <- seq_along(axes)
+  perm <- c(setdiff(axes, loc), loc)
+  perm <- vec_match(axes, perm)
+
   x <- as_list_dibble(x)
-
-  col_names <- names(x[[1]])
-  size <- length(col_names)
-
-  out <- vector("list", size)
-  names(out) <- col_names
-
-  for (i in seq_len(size)) {
-    out[[i]] <- bind_arrays(purrr::modify(x,
-                                          function(x) {
-                                            as_list_dibble(x)[[i]]
-                                          }))
-    dim(out[[i]]) <- dim
-  }
-  new_dibble(out, dim_names)
+  col_names <- names(x)
+  x <- purrr::modify(x,
+                     function(x) {
+                       x <- array(exec(c, !!!x),
+                                  dim = dim)
+                       aperm(x, perm)
+                     })
+  names(x) <- col_names
+  new_dibble(x, dim_names)
 }
 
 is_grouped_dim <- function(x) {
@@ -101,7 +93,7 @@ nrow.grouped_dim <- function(x) {
 
 #' @export
 ncol.grouped_dim <- function(x) {
-  ncol(x[[1]])
+  length(colnames(x))
 }
 
 #' @export
@@ -111,7 +103,7 @@ rownames.grouped_dim <- function(x, ...) {
 
 #' @export
 colnames.grouped_dim <- function(x, ...) {
-  names(x[[1]])
+  names(x)
 }
 
 #' @importFrom tibble as_tibble

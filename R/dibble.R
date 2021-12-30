@@ -1,10 +1,7 @@
-#' @export
-new_dibble <- function(x, dim_names, ...,
-                       class = character()) {
-  structure(x,
-            dim_names = dim_names,
-            ...,
-            class = c(class, "tbl_dim"))
+new_dibble <- function(x, dim_names) {
+  class(x) <- "tbl_dim"
+  attr(x, "dim_names") <- dim_names
+  x
 }
 
 dibble <- function() {
@@ -51,10 +48,10 @@ as_dibble.data.frame <- function(x, dim_names, cols = NULL, ...) {
     !vec_duplicate_any(x[axes])
   )
 
-  df <- expand.grid(dim_names,
+  id <- expand.grid(dim_names,
                     KEEP.OUT.ATTRS = FALSE,
                     stringsAsFactors = FALSE)
-  x <- vec_slice(x[cols], vec_match(df, x[axes]))
+  x <- vec_slice(x[cols], vec_match(id, x[axes]))
 
   dim <- lengths(dim_names)
   x <- purrr::modify(as.list(x),
@@ -137,7 +134,7 @@ registerS3method("ncol", "default", base::ncol)
 
 #' @export
 ncol.tbl_dim <- function(x) {
-  length(as.list(x))
+  length(colnames(x))
 }
 
 #' @export
