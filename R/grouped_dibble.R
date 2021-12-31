@@ -1,5 +1,5 @@
-new_grouped_dim <- function(x, group_names) {
-  class(x) <- "grouped_dim"
+new_grouped_dibble <- function(x, group_names) {
+  class(x) <- "grouped_dibble"
   attr(x, "group_names") <- group_names
   x
 }
@@ -10,7 +10,7 @@ group_names <- function(x) {
 
 #' @importFrom dplyr group_by
 #' @export
-group_by.tbl_dim <- function(.data, ...) {
+group_by.dibble <- function(.data, ...) {
   dim_names <- dimnames(.data)
   axes <- names(dim_names)
   dim <- lengths(dim_names)
@@ -32,18 +32,18 @@ group_by.tbl_dim <- function(.data, ...) {
                          function(x) {
                            x <- apply(x, loc,
                                       function(x) {
-                                        new_dim_col(x, dim_names)
+                                        new_dibble_measure(x, dim_names)
                                       },
                                       simplify = FALSE)
                            array(x, group_dim)
                          })
-  new_grouped_dim(.data,
-                  group_names = group_names)
+  new_grouped_dibble(.data,
+                     group_names = group_names)
 }
 
 #' @importFrom dplyr ungroup
 #' @export
-ungroup.grouped_dim <- function(x, ...) {
+ungroup.grouped_dibble <- function(x, ...) {
   dim_names <- dimnames(x)
   axes <- names(dim_names)
   dim <- lengths(dim_names)
@@ -70,19 +70,19 @@ ungroup.grouped_dim <- function(x, ...) {
   new_dibble(x, dim_names)
 }
 
-is_grouped_dim <- function(x) {
-  inherits(x, "grouped_dim")
+is_grouped_dibble <- function(x) {
+  inherits(x, "grouped_dibble")
 }
 
 #' @export
-as.array.grouped_dim <- function(x, ...) {
+as.array.grouped_dibble <- function(x, ...) {
   structure(x,
             class = NULL,
             group_names = NULL)
 }
 
 #' @export
-dimnames.grouped_dim <- function(x) {
+dimnames.grouped_dibble <- function(x) {
   group_names <- group_names(x)
 
   x <- as_list_dibble(x)
@@ -92,33 +92,33 @@ dimnames.grouped_dim <- function(x) {
 }
 
 #' @export
-dim.grouped_dim <- function(x) {
+dim.grouped_dibble <- function(x) {
   lengths(dimnames(x))
 }
 
 #' @export
-nrow.grouped_dim <- function(x) {
+nrow.grouped_dibble <- function(x) {
   nrow_dibble(x)
 }
 
 #' @export
-ncol.grouped_dim <- function(x) {
+ncol.grouped_dibble <- function(x) {
   length(colnames(x))
 }
 
 #' @export
-rownames.grouped_dim <- function(x, ...) {
+rownames.grouped_dibble <- function(x, ...) {
   NULL
 }
 
 #' @export
-colnames.grouped_dim <- function(x, ...) {
+colnames.grouped_dibble <- function(x, ...) {
   names(x)
 }
 
 #' @importFrom tibble as_tibble
 #' @export
-as_tibble.grouped_dim <- function(x, ...) {
+as_tibble.grouped_dibble <- function(x, ...) {
   as_tibble_dibble(x, ...)
 }
 
@@ -127,18 +127,18 @@ as_tibble.grouped_dim <- function(x, ...) {
 # Subsetting --------------------------------------------------------------
 
 #' @export
-`[.grouped_dim` <- function(x, i) {
-  new_grouped_dim(NextMethod(), group_names(x))
+`[.grouped_dibble` <- function(x, i) {
+  new_grouped_dibble(NextMethod(), group_names(x))
 }
 
 #' @export
-`[[.grouped_dim` <- function(x, i) {
+`[[.grouped_dibble` <- function(x, i) {
   x <- ungroup(x)
   x[[i]]
 }
 
 #' @export
-`$.grouped_dim` <- function(x, i) {
+`$.grouped_dibble` <- function(x, i) {
   x <- ungroup(x)
   x[[i]]
 }
@@ -149,13 +149,13 @@ as_tibble.grouped_dim <- function(x, ...) {
 
 #' @importFrom dplyr slice
 #' @export
-slice.grouped_dim <- function(.data, ...) {
+slice.grouped_dibble <- function(.data, ...) {
   slice_dibble(.data, ...)
 }
 
 #' @importFrom  dplyr mutate
 #' @export
-mutate.grouped_dim <- function(.data, ...) {
+mutate.grouped_dibble <- function(.data, ...) {
   dots <- rlang::enquos(..., .named = TRUE)
   nms <- names(dots)
   seq_nms <- seq_along(nms)
@@ -178,15 +178,15 @@ mutate.grouped_dim <- function(.data, ...) {
 
     for (j in seq_nms) {
       nm <- nms[[j]]
-      out[[nm]][[i]] <- data[[nm]] <- dim_col(eval_tidy(dots[[j]], data), dim_names)
+      out[[nm]][[i]] <- data[[nm]] <- dibble_measure(eval_tidy(dots[[j]], data), dim_names)
     }
   }
-  new_grouped_dim(out, group_names)
+  new_grouped_dibble(out, group_names)
 }
 
 #' @importFrom dplyr summarise
 #' @export
-summarise.grouped_dim <- function(.data, ...) {
+summarise.grouped_dibble <- function(.data, ...) {
   dim_names <- group_names(.data)
   dim <- lengths(dim_names)
   size <- prod(dim)
@@ -215,17 +215,23 @@ summarise.grouped_dim <- function(.data, ...) {
   new_dibble(out, dim_names)
 }
 
+#' @importFrom dplyr select
+#' @export
+select.grouped_dibble <- function(.data, ...) {
+  select_dibble(.data, ...)
+}
+
+#' @importFrom dplyr rename
+#' @export
+rename.grouped_dibble <- function(.data, ...) {
+  rename_dibble(.data, ...)
+}
+
 
 
 # Printing ----------------------------------------------------------------
 
 #' @export
-print.grouped_dim <- function(x, n = NULL, ...) {
+print.grouped_dibble <- function(x, n = NULL, ...) {
   print_dibble(x, n)
-}
-
-#' @importFrom pillar obj_sum
-#' @export
-obj_sum.grouped_dim <- function(x) {
-  obj_sum_dibble(x)
 }

@@ -39,32 +39,6 @@ bind_arrays <- function(x) {
   aperm(x, c(perm + 1, seq_len(perm)))
 }
 
-# array_branch <- function(array, margin) {
-#   dm <- dim(array)
-#   dm_margin <- dm[margin]
-#
-#   perm <- seq_along(dm)
-#   perm <- c(margin, perm[!perm %in% margin])
-#   array <- aperm(array, perm)
-#
-#   dm <- dm[-margin]
-#   size <- prod(dm_margin)
-#   dim(array) <- c(size, dm)
-#
-#   array <- vec_chop(array)
-#   array <- purrr::modify(array,
-#                          function(x) {
-#                            dim(x) <- dm
-#                            x
-#                          })
-#   # array <- array(array, dm_margin)
-#   array
-# }
-
-# environment_dim_names <- function(dim_names) {
-#   rlang::as_environment(list(dim_names = dim_names))
-# }
-
 dim_sum <- function(x) {
   dim <- paste0(big_mark(dim(x)),
                 collapse = " x ")

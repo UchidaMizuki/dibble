@@ -1,10 +1,10 @@
 new_dibble <- function(x, dim_names) {
-  class(x) <- "tbl_dim"
+  class(x) <- "dibble"
   attr(x, "dim_names") <- dim_names
   x
 }
 
-dibble <- function() {
+dibble <- function(..., .dim_names = NULL) {
   # TODO
 }
 
@@ -35,21 +35,21 @@ as_dibble <- function(x, ...) {
 }
 
 #' @export
-as_dibble.data.frame <- function(x, dim_names, col_names = NULL, ...) {
+as_dibble.data.frame <- function(x, dim_names, ...) {
   dim_names <- as_dim_names(dim_names, x)
 
   axes <- names(dim_names)
-  col_names <- col_names %||% setdiff(names(x), axes)
+  meas_names <- meas_names %||% setdiff(names(x), axes)
 
   stopifnot(
-    !any(col_names %in% axes),
+    !any(meas_names %in% axes),
     !vec_duplicate_any(x[axes])
   )
 
   id <- expand.grid(dim_names,
                     KEEP.OUT.ATTRS = FALSE,
                     stringsAsFactors = FALSE)
-  x <- vec_slice(x[col_names], vec_match(id, x[axes]))
+  x <- vec_slice(x[meas_names], vec_match(id, x[axes]))
 
   dim <- lengths(dim_names)
   x <- purrr::modify(as.list(x),
@@ -60,16 +60,16 @@ as_dibble.data.frame <- function(x, dim_names, col_names = NULL, ...) {
 }
 
 is_dibble <- function(x) {
-  inherits(x, "tbl_dim")
+  inherits(x, "dibble")
 }
 
 #' @export
-as.list.tbl_dim <- function(x, ...) {
+as.list.dibble <- function(x, ...) {
   dim_names <- dimnames(x)
   x <- as_list_dibble(x)
   purrr::modify(x,
                 function(x) {
-                  new_dim_col(x, dim_names)
+                  new_dibble_measure(x, dim_names)
                 })
 }
 
@@ -81,7 +81,7 @@ as_list_dibble <- function(x) {
 }
 
 #' @export
-dimnames.tbl_dim <- function(x) {
+dimnames.dibble <- function(x) {
   dimnames_dibble(x)
 }
 
@@ -90,7 +90,7 @@ dimnames_dibble <- function(x) {
 }
 
 #' @export
-`dimnames<-.tbl_dim` <- function(x, value) {
+`dimnames<-.dibble` <- function(x, value) {
   assign_dimnames_dibble(x, value)
 }
 
@@ -100,7 +100,7 @@ assign_dimnames_dibble <- function(x, value) {
 }
 
 #' @export
-dim.tbl_dim <- function(x) {
+dim.dibble <- function(x) {
   lengths(dimnames(x))
 }
 
@@ -111,7 +111,7 @@ nrow <- function(x) {
 registerS3method("nrow", "default", base::nrow)
 
 #' @export
-nrow.tbl_dim <- function(x) {
+nrow.dibble <- function(x) {
   nrow_dibble(x)
 }
 
@@ -126,7 +126,7 @@ ncol <- function(x) {
 registerS3method("ncol", "default", base::ncol)
 
 #' @export
-ncol.tbl_dim <- function(x) {
+ncol.dibble <- function(x) {
   length(colnames(x))
 }
 
@@ -137,7 +137,7 @@ rownames <- function(x, ...) {
 registerS3method("rownames", "default", base::rownames)
 
 #' @export
-rownames.tbl_dim <- function(x, ...) {
+rownames.dibble <- function(x, ...) {
   NULL
 }
 
@@ -148,17 +148,17 @@ colnames <- function(x, ...) {
 registerS3method("colnames", "default", base::colnames)
 
 #' @export
-colnames.tbl_dim <- function(x, ...) {
+colnames.dibble <- function(x, ...) {
   names(x)
 }
 
 #' @importFrom tibble as_tibble
 #' @export
-as_tibble.tbl_dim <- function(x, ...) {
+as_tibble.dibble <- function(x, ...) {
   as_tibble_dibble(x, ...)
 }
 
-# aperm_tbl_dim <- function(a, perm, ...) {
+# aperm_dibble <- function(a, perm, ...) {
 #   dim_names <- dimnames(a)
 #
 #   perm <- vec_match(perm, names(dim_names))
@@ -177,18 +177,18 @@ as_tibble.tbl_dim <- function(x, ...) {
 # Subsetting --------------------------------------------------------------
 
 #' @export
-`[.tbl_dim` <- function(x, i) {
+`[.dibble` <- function(x, i) {
   new_dibble(NextMethod(), dimnames(x))
 }
 
 #' @export
-`[[.tbl_dim` <- function(x, i) {
+`[[.dibble` <- function(x, i) {
   x <- as.list(x)
   x[[i]]
 }
 
 #' @export
-`$.tbl_dim` <- function(x, i) {
+`$.dibble` <- function(x, i) {
   x <- as.list(x)
   x[[i]]
 }
@@ -199,13 +199,13 @@ as_tibble.tbl_dim <- function(x, ...) {
 
 #' @importFrom dplyr slice
 #' @export
-slice.tbl_dim <- function(.data, ...) {
+slice.dibble <- function(.data, ...) {
   slice_dibble(.data, ...)
 }
 
 #' @importFrom dplyr mutate
 #' @export
-mutate.tbl_dim <- function(.data, ...) {
+mutate.dibble <- function(.data, ...) {
   dots <- rlang::enquos(..., .named = TRUE)
   nms <- names(dots)
 
@@ -214,16 +214,32 @@ mutate.tbl_dim <- function(.data, ...) {
 
   for (i in seq_along(nms)) {
     nm <- nms[[i]]
-    data[[nm]] <- dim_col(rlang::eval_tidy(dots[[i]], data), dim_names)
-    .data[[nm]] <- as.array(data[[nm]])
+
+    data_nm <- rlang::eval_tidy(dots[[i]], data)
+    data_nm <- dibble_measure(data_nm, dim_names)
+
+    data[[nm]] <- data_nm
+    .data[[nm]] <- as.array(data_nm)
   }
   .data
 }
 
 #' @importFrom dplyr ungroup
 #' @export
-ungroup.tbl_dim <- function(x, ...) {
+ungroup.dibble <- function(x, ...) {
   x
+}
+
+#' @importFrom dplyr select
+#' @export
+select.dibble <- function(.data, ...) {
+  select_dibble(.data, ...)
+}
+
+#' @importFrom dplyr rename
+#' @export
+rename.dibble <- function(.data, ...) {
+  rename_dibble(.data, ...)
 }
 
 
@@ -231,29 +247,46 @@ ungroup.tbl_dim <- function(x, ...) {
 # Printing ----------------------------------------------------------------
 
 #' @export
-print.tbl_dim <- function(x, n = NULL, ...) {
+print.dibble <- function(x, n = NULL, ...) {
   print_dibble(x, n)
 }
 
 print_dibble <- function(x, n) {
+  dim_names <- dimnames(x)
+  axes <- names(dim_names)
+  dim <- lengths(dim_names)
+  size_dim <- as.integer(prod(dim))
+
+  meas_names <- colnames(x)
+  size_meas <- big_mark(length(meas_names))
+
   groups <- names(attr(x, "group_names"))
 
   x_head <- ungroup(head_dibble(x, n))
-  df <- as_tibble_dibble(x_head,
-                         .pack = TRUE)
+
+  df <- as_tibble_dibble(x_head)
   df <- new_data_frame(df,
-                       class = c("tbl_dim_impl", "tbl"))
-  if (is_dibble(x) || is_grouped_dim(x)) {
-    attr(df, "tbl_sum") <- c(`A dibble` = obj_sum(x))
+                       class = c("dibble_impl", "tbl"))
+
+  dim_sum <- c(Dimensions = commas(paste0(axes, " [", big_mark(dim), "]")))
+
+  if (is_dibble(x) || is_grouped_dibble(x)) {
+    tbl_sum <- c(`A dibble` = paste(big_mark(size_dim), size_meas,
+                                    sep = " x "),
+                 dim_sum,
+                 Measures = paste0(commas(meas_names), " [", size_meas, "]"))
 
     if (!is.null(groups)) {
-      attr(df, "tbl_sum") <- c(attr(df, "tbl_sum"),
-                               Groups = commas(groups))
+      tbl_sum <- c(tbl_sum,
+                   Groups = paste0(commas(groups), " [", big_mark(as.integer(prod(dim[groups]))), "]"))
     }
-  } else if (is_dim_col(x)) {
-    attr(df, "tbl_sum") <- c(`A column` = obj_sum(x))
+
+    attr(df, "tbl_sum") <- tbl_sum
+  } else if (is_dibble_measure(x)) {
+    attr(df, "tbl_sum") <- c(`A measure` = big_mark(size_dim),
+                             dim_sum)
   }
-  attr(df, "rows_total") <- prod(dim(x))
+  attr(df, "rows_total") <- size_dim
   print(df)
 
   invisible(x)
@@ -278,20 +311,9 @@ head_dibble <- function(x, n) {
   slice(x, !!!loc)
 }
 
-#' @importFrom pillar obj_sum
-#' @export
-obj_sum.tbl_dim <- function(x) {
-  obj_sum_dibble(x)
-}
-
-obj_sum_dibble <- function(x) {
-  paste(dim_sum(x), big_mark(ncol(x)),
-        sep = " x ")
-}
-
 #' @importFrom pillar tbl_format_setup
 #' @export
-tbl_format_setup.tbl_dim_impl <- function(x, width, ..., n, max_extra_cols, max_footer_lines) {
+tbl_format_setup.dibble_impl <- function(x, width, ..., n, max_extra_cols, max_footer_lines) {
   setup <- NextMethod()
 
   setup$tbl_sum <-  attr(x, "tbl_sum")

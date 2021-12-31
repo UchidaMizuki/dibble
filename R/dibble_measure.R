@@ -1,13 +1,13 @@
-new_dim_col <- function(x, dim_names) {
-  class(x) <- "dim_col"
+new_dibble_measure <- function(x, dim_names) {
+  class(x) <- "dibble_measure"
   attr(x, "dim_names") <- dim_names
   x
 }
 
 #' @export
-dim_col <- function(x, dim_names = NULL) {
+dibble_measure <- function(x, dim_names = NULL) {
   withCallingHandlers({
-    as_dim_col(x, dim_names)
+    as_dibble_measure(x, dim_names)
   },
   warning_broadcast = function(w) {
     invokeRestart("restart_broadcast")
@@ -15,20 +15,20 @@ dim_col <- function(x, dim_names = NULL) {
 }
 
 #' @export
-as_dim_col <- function(x, ...) {
-  UseMethod("as_dim_col")
+as_dibble_measure <- function(x, ...) {
+  UseMethod("as_dibble_measure")
 }
 
 #' @export
-as_dim_col.default <- function(x, dim_names, ...) {
+as_dibble_measure.default <- function(x, dim_names, ...) {
   dim <- lengths(dim_names)
   x <- array(vec_recycle(x, prod(dim)), dim)
 
-  new_dim_col(x, dim_names)
+  new_dibble_measure(x, dim_names)
 }
 
 #' @export
-as_dim_col.array <- function(x, dim_names = NULL, ...) {
+as_dibble_measure.array <- function(x, dim_names = NULL, ...) {
   if (is.null(dim_names)) {
     dim_names <- dimnames(x)
   } else {
@@ -38,11 +38,11 @@ as_dim_col.array <- function(x, dim_names = NULL, ...) {
   }
 
   dimnames(x) <- NULL
-  new_dim_col(x, dim_names)
+  new_dibble_measure(x, dim_names)
 }
 
 #' @export
-as_dim_col.dim_col <- function(x, dim_names = NULL, ...) {
+as_dibble_measure.dibble_measure <- function(x, dim_names = NULL, ...) {
   if (is.null(dim_names) || identical(dimnames(x), dim_names)) {
     x
   } else {
@@ -78,9 +78,9 @@ broadcast <- function(x, dim_names) {
   x <- bind_arrays(rep_len(list(as.array(x)),
                            length.out = prod(new_dim)))
   dim(x) <- c(new_dim, common_dim)
-  x <- new_dim_col(aperm(x,
-                         perm = vec_match(axes, c(new_axes, old_axes))),
-                   dim_names = dim_names)
+  x <- new_dibble_measure(aperm(x,
+                                perm = vec_match(axes, c(new_axes, old_axes))),
+                          dim_names = dim_names)
 
   withRestarts({
     # Warning
@@ -113,19 +113,19 @@ broadcast <- function(x, dim_names) {
 }
 
 #' @export
-is_dim_col <- function(x) {
-  inherits(x, "dim_col")
+is_dibble_measure <- function(x) {
+  inherits(x, "dibble_measure")
 }
 
 #' @export
-as.array.dim_col <- function(x, ...) {
+as.array.dibble_measure <- function(x, ...) {
   class(x) <- NULL
   attr(x, "dim_names") <- NULL
   NextMethod()
 }
 
 #' @export
-as.table.dim_col <- function(x, ...) {
+as.table.dibble_measure <- function(x, ...) {
   dim_names <- dimnames(x)
   x <- as.array(x)
   dimnames(x) <- dim_names
@@ -133,43 +133,43 @@ as.table.dim_col <- function(x, ...) {
 }
 
 #' @export
-dimnames.dim_col <- function(x) {
+dimnames.dibble_measure <- function(x) {
   dimnames_dibble(x)
 }
 
 #' @export
-`dimnames<-.dim_col` <- function(x, value) {
+`dimnames<-.dibble_measure` <- function(x, value) {
   assign_dimnames_dibble(x, value)
 }
 
 #' @export
-dim.dim_col <- function(x) {
+dim.dibble_measure <- function(x) {
   lengths(dimnames(x))
 }
 
 #' @export
-nrow.dim_col <- function(x) {
+nrow.dibble_measure <- function(x) {
   nrow_dibble(x)
 }
 
 #' @export
-ncol.dim_col <- function(x) {
+ncol.dibble_measure <- function(x) {
   1L
 }
 
 #' @export
-rownames.dim_col <- function(x, ...) {
+rownames.dibble_measure <- function(x, ...) {
   NULL
 }
 
 #' @export
-colnames.dim_col <- function(x, ...) {
+colnames.dibble_measure <- function(x, ...) {
   NULL
 }
 
 #' @importFrom tibble as_tibble
 #' @export
-as_tibble.dim_col <- function(x, ...) {
+as_tibble.dibble_measure <- function(x, ...) {
   as_tibble_dibble(x, ...)
 }
 
@@ -178,7 +178,7 @@ as_tibble.dim_col <- function(x, ...) {
 # Ops ---------------------------------------------------------------------
 
 #' @export
-Ops.dim_col <- function(e1, e2) {
+Ops.dibble_measure <- function(e1, e2) {
   if (length(e1) != 1 && length(e2) != 1) {
     dim_names_e1 <- dimnames(e1)
     dim_names_e2 <- dimnames(e2)
@@ -190,8 +190,8 @@ Ops.dim_col <- function(e1, e2) {
                             })
     names(dim_names) <- axes
 
-    e1 <- as_dim_col(e1, dim_names)
-    e2 <- as_dim_col(e2, dim_names)
+    e1 <- as_dibble_measure(e1, dim_names)
+    e2 <- as_dibble_measure(e2, dim_names)
   }
   NextMethod()
 }
@@ -202,10 +202,14 @@ Ops.dim_col <- function(e1, e2) {
 # Math --------------------------------------------------------------------
 
 #' @export
-solve.dim_col <- function(a, b, ...) {
-  dim_names <- dimnames(a)
-  a <- as.array(a)
-  new_dim_col(solve(a, b, ...), dim_names)
+solve.dibble_measure <- function(a, b, ...) {
+  if (is_missing(b)) {
+    dim_names <- dimnames(a)
+    a <- as.array(a)
+    new_dibble_measure(solve(a), dim_names)
+  } else {
+    NextMethod()
+  }
 }
 
 
@@ -214,13 +218,13 @@ solve.dim_col <- function(a, b, ...) {
 
 #' @importFrom dplyr slice
 #' @export
-slice.dim_col <- function(.data, ...) {
+slice.dibble_measure <- function(.data, ...) {
   slice_dibble(.data, ...)
 }
 
 #' @importFrom dplyr ungroup
 #' @export
-ungroup.dim_col <- function(x, ...) {
+ungroup.dibble_measure <- function(x, ...) {
   x
 }
 
@@ -229,12 +233,6 @@ ungroup.dim_col <- function(x, ...) {
 # Printing ----------------------------------------------------------------
 
 #' @export
-print.dim_col <- function(x, n = NULL, ...) {
+print.dibble_measure <- function(x, n = NULL, ...) {
   print_dibble(x, n)
-}
-
-#' @importFrom pillar obj_sum
-#' @export
-obj_sum.dim_col <- function(x) {
-  dim_sum(x)
 }
