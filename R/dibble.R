@@ -39,10 +39,9 @@ as_dibble.data.frame <- function(x, dim_names, ...) {
   dim_names <- as_dim_names(dim_names, x)
 
   axes <- names(dim_names)
-  meas_names <- meas_names %||% setdiff(names(x), axes)
+  meas_names <- setdiff(names(x), axes)
 
   stopifnot(
-    !any(meas_names %in% axes),
     !vec_duplicate_any(x[axes])
   )
 
@@ -158,19 +157,29 @@ as_tibble.dibble <- function(x, ...) {
   as_tibble_dibble(x, ...)
 }
 
-# aperm_dibble <- function(a, perm, ...) {
-#   dim_names <- dimnames(a)
-#
-#   perm <- vec_match(perm, names(dim_names))
-#   dim_names <- dim_names[perm]
-#
-#   new_dibble(purrr::modify(as.list(a),
-#                             function(x) {
-#                               aperm(as.array(x),
-#                                     perm = perm)
-#                             }),
-#               dim_names = dim_names)
-# }
+#' @export
+aperm.dibble <- function(a, perm = NULL, ...) {
+  aperm_dibble(a, perm, ...)
+}
+
+aperm_dibble <- function(a, perm, ...) {
+  if (is.null(perm)) {
+    dim_names <- rev(dimnames(a))
+  } else {
+    dim_names <- dimnames(a)[perm]
+  }
+
+  if (is_dibble(a)) {
+    a <- purrr::modify(as_list_dibble(a),
+                       function(x) {
+                         aperm(x, perm, ...)
+                       })
+    new_dibble(a, dim_names)
+  } else if (is_dibble_measure(a)) {
+    a <- aperm(as.array(a), perm, ...)
+    new_dibble_measure(a, dim_names)
+  }
+}
 
 
 

@@ -173,6 +173,11 @@ as_tibble.dibble_measure <- function(x, ...) {
   as_tibble_dibble(x, ...)
 }
 
+#' @export
+aperm.dibble_measure <- function(a, perm = NULL, ...) {
+  aperm_dibble(a, perm, ...)
+}
+
 
 
 # Ops ---------------------------------------------------------------------
@@ -226,6 +231,18 @@ slice.dibble_measure <- function(.data, ...) {
 #' @export
 ungroup.dibble_measure <- function(x, ...) {
   x
+}
+
+#' @importFrom dplyr select
+#' @export
+select.dibble_measure <- function(.data, ...) {
+  select_dibble(.data, ...)
+}
+
+#' @importFrom dplyr rename
+#' @export
+rename.dibble_measure <- function(.data, ...) {
+  rename_dibble(.data, ...)
 }
 
 
