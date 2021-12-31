@@ -5,7 +5,9 @@ commas <- function(...) {
 
 big_mark <- function(x) {
   mark <- if (identical(getOption("OutDec"), ",")) "." else ","
-  formatC(x, big.mark = mark)
+  formatC(x,
+          big.mark = mark,
+          format = "d")
 }
 
 as_dim_names <- function(x, data) {

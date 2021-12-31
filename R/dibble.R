@@ -255,7 +255,7 @@ print_dibble <- function(x, n) {
   dim_names <- dimnames(x)
   axes <- names(dim_names)
   dim <- lengths(dim_names)
-  size_dim <- as.integer(prod(dim))
+  size_dim <- prod(dim)
 
   meas_names <- colnames(x)
   size_meas <- big_mark(length(meas_names))
@@ -274,11 +274,12 @@ print_dibble <- function(x, n) {
     tbl_sum <- c(`A dibble` = paste(big_mark(size_dim), size_meas,
                                     sep = " x "),
                  dim_sum,
-                 Measures = paste0(commas(meas_names), " [", size_meas, "]"))
+                 Measures = commas(meas_names))
 
     if (!is.null(groups)) {
+      size_groups <- big_mark(prod(dim[groups]))
       tbl_sum <- c(tbl_sum,
-                   Groups = paste0(commas(groups), " [", big_mark(as.integer(prod(dim[groups]))), "]"))
+                   Groups = paste0(commas(groups), " [", size_groups, "]"))
     }
 
     attr(df, "tbl_sum") <- tbl_sum
