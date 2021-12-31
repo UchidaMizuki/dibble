@@ -86,12 +86,7 @@ dimnames.tbl_dim <- function(x) {
 }
 
 dimnames_dibble <- function(x) {
-  dim_names <- attr(x, "dim_names")
-
-  # if (is_environment(dim_names)) {
-  #   dim_names <- dim_names$dim_names
-  # }
-  dim_names
+  attr(x, "dim_names")
 }
 
 #' @export
@@ -182,23 +177,20 @@ as_tibble.tbl_dim <- function(x, ...) {
 # Subsetting --------------------------------------------------------------
 
 #' @export
-`[.tbl_dim` <- function(x, ...) {
-  dim_names <- dimnames(x)
-
-  x <- as_list_dibble(x)
-  new_dibble(NextMethod(), dim_names)
+`[.tbl_dim` <- function(x, i) {
+  new_dibble(NextMethod(), dimnames(x))
 }
 
 #' @export
-`[[.tbl_dim` <- function(x, ...) {
+`[[.tbl_dim` <- function(x, i) {
   x <- as.list(x)
-  NextMethod()
+  x[[i]]
 }
 
 #' @export
-`$.tbl_dim` <- function(x, ...) {
+`$.tbl_dim` <- function(x, i) {
   x <- as.list(x)
-  NextMethod()
+  x[[i]]
 }
 
 

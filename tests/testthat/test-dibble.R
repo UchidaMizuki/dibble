@@ -3,13 +3,19 @@ test_that("dibble", {
 
   x1 <- tidyr::expand_grid(from = letters[1:22],
                           to = letters[1:23],
-                          mode = letters[1:24]) %>%
+                          mode = letters[1:24],
+                          mode2 = letters[1:25]) %>%
     dplyr::mutate(value = dplyr::row_number(),
                   value2 = value + 1,
                   value3 = "a")
   x2 <- x1 %>%
-    dibble_by(from, to, mode)
+    dibble_by(from, to, mode, mode2)
   x3 <- x1 %>%
-    cubelyr::as.tbl_cube(dim_names = c("from", "to", "mode"))
+    cubelyr::as.tbl_cube(dim_names = c("from", "to", "mode", "mode2"))
+
+  x2 %>%
+    group_by(from, to, mode) %>%
+    summarise(value = sum(value)) %>%
+    as_tibble()
 
 })

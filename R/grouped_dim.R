@@ -4,6 +4,10 @@ new_grouped_dim <- function(x, group_names) {
   x
 }
 
+group_names <- function(x) {
+  attr(x, "group_names")
+}
+
 #' @importFrom dplyr group_by
 #' @export
 group_by.tbl_dim <- function(.data, ...) {
@@ -26,11 +30,12 @@ group_by.tbl_dim <- function(.data, ...) {
 
   .data <- purrr::modify(as_list_dibble(.data),
                          function(x) {
-                           apply(x, loc,
-                                 function(x) {
-                                   new_dim_col(x, dim_names)
-                                 },
-                                 simplify = FALSE)
+                           x <- apply(x, loc,
+                                      function(x) {
+                                        new_dim_col(x, dim_names)
+                                      },
+                                      simplify = FALSE)
+                           array(x, group_dim)
                          })
   new_grouped_dim(.data,
                   group_names = group_names)
@@ -43,7 +48,7 @@ ungroup.grouped_dim <- function(x, ...) {
   axes <- names(dim_names)
   dim <- lengths(dim_names)
 
-  group_names <- attr(x, "group_names")
+  group_names <- group_names(x)
   group_axes <- names(group_names)
 
   loc <- vec_match(group_axes, axes)
@@ -78,7 +83,12 @@ as.array.grouped_dim <- function(x, ...) {
 
 #' @export
 dimnames.grouped_dim <- function(x) {
-  c(attr(x, "group_names"), dimnames(x[[1]][[1]]))
+  group_names <- group_names(x)
+
+  x <- as_list_dibble(x)
+  dim_names <- dimnames(x[[1]][[1]])
+
+  c(group_names, dim_names)
 }
 
 #' @export
@@ -117,30 +127,20 @@ as_tibble.grouped_dim <- function(x, ...) {
 # Subsetting --------------------------------------------------------------
 
 #' @export
-`[.tbl_dim` <- function(x, ...) {
-  # FIXME
-  NextMethod()
-  # new_dibble(NextMethod(),
-  #             en = dimnames(x))
+`[.grouped_dim` <- function(x, i) {
+  new_grouped_dim(NextMethod(), group_names(x))
 }
 
 #' @export
-`[<-.tbl_dim` <- function(x, ...) {
-  # FIXME
-  # new_dibble(NextMethod(),
-  #             dim_names = dimnames(x))
+`[[.grouped_dim` <- function(x, i) {
+  x <- ungroup(x)
+  x[[i]]
 }
 
 #' @export
-`[[.tbl_dim` <- function(x, ...) {
-  x <- as.list(x)
-  NextMethod()
-}
-
-#' @export
-`$.tbl_dim` <- function(x, ...) {
-  x <- as.list(x)
-  NextMethod()
+`$.grouped_dim` <- function(x, i) {
+  x <- ungroup(x)
+  x[[i]]
 }
 
 
@@ -160,18 +160,15 @@ mutate.grouped_dim <- function(.data, ...) {
   nms <- names(dots)
   seq_nms <- seq_along(nms)
 
-  group_names <- attr(.data, "group_names")
+  group_names <- group_names(.data)
   group_dim <- lengths(group_names)
   size <- prod(group_dim)
 
-  dim_names <- dimnames(.data[[1]][[1]])
-  dim <- lengths(dim_names)
-
-  out <- array(list(NULL), dim)
-  out <- rep_len(list(out), vec_unique_count(nms))
-  names(out) <- unique(nms)
-
   .data <- as_list_dibble(.data)
+  dim_names <- dimnames(.data[[1]][[1]])
+
+  out <- .data
+  out[setdiff(nms, names(out))] <- list(array(list(), group_dim))
 
   for (i in seq_len(size)) {
     data <- purrr::map(.data,
@@ -184,13 +181,13 @@ mutate.grouped_dim <- function(.data, ...) {
       out[[nm]][[i]] <- data[[nm]] <- as_dim_col(eval_tidy(dots[[j]], data), dim_names)
     }
   }
-  c(.data[setdiff(names(.data), nms)], out)
+  new_grouped_dim(out, group_names)
 }
 
 #' @importFrom dplyr summarise
 #' @export
 summarise.grouped_dim <- function(.data, ...) {
-  dim_names <- attr(.data, "group_names")
+  dim_names <- group_names(.data)
   dim <- lengths(dim_names)
   size <- prod(dim)
 
