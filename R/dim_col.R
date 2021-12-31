@@ -198,6 +198,18 @@ Ops.dim_col <- function(e1, e2) {
 
 
 
+
+# Math --------------------------------------------------------------------
+
+#' @export
+solve.dim_col <- function(a, b, ...) {
+  dim_names <- dimnames(a)
+  a <- as.array(a)
+  new_dim_col(solve(a, b, ...), dim_names)
+}
+
+
+
 # Verbs -------------------------------------------------------------------
 
 #' @importFrom dplyr slice
