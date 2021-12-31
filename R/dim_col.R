@@ -5,6 +5,16 @@ new_dim_col <- function(x, dim_names) {
 }
 
 #' @export
+dim_col <- function(x, dim_names = NULL) {
+  withCallingHandlers({
+    as_dim_col(x, dim_names)
+  },
+  warning_broadcast = function(w) {
+    invokeRestart("restart_broadcast")
+  })
+}
+
+#' @export
 as_dim_col <- function(x, ...) {
   UseMethod("as_dim_col")
 }
@@ -13,12 +23,93 @@ as_dim_col <- function(x, ...) {
 as_dim_col.default <- function(x, dim_names, ...) {
   dim <- lengths(dim_names)
   x <- array(vec_recycle(x, prod(dim)), dim)
+
   new_dim_col(x, dim_names)
 }
 
 #' @export
-as_dim_col.dim_col <- function(x, ...) {
-  x
+as_dim_col.array <- function(x, dim_names = NULL, ...) {
+  if (is.null(dim_names)) {
+    dim_names <- dimnames(x)
+  } else {
+    stopifnot(
+      all(dim(x) == lengths(dim_names))
+    )
+  }
+
+  dimnames(x) <- NULL
+  new_dim_col(x, dim_names)
+}
+
+#' @export
+as_dim_col.dim_col <- function(x, dim_names = NULL, ...) {
+  if (is.null(dim_names) || identical(dimnames(x), dim_names)) {
+    x
+  } else {
+    broadcast(x, dim_names)
+  }
+}
+
+broadcast <- function(x, dim_names) {
+  old_names <- dimnames(x)
+  old_axes <- names(old_names)
+
+  axes <- names(dim_names)
+
+  stopifnot(
+    all(old_axes %in% axes)
+  )
+
+  # Broadcast coordinates
+  common_names <- dim_names[old_axes]
+  common_dim <- lengths(common_names)
+
+  new_coords <- purrr::modify2(common_names, old_names, setdiff)
+  names(new_coords) <- old_axes
+
+  x <- slice(x, !!!purrr::modify2(common_names, old_names, vec_match))
+  dimnames(x) <- common_names
+
+  # Broadcast axes
+  new_axes <- setdiff(axes, old_axes)
+  new_names <- dim_names[new_axes]
+  new_dim <- lengths(new_names)
+
+  x <- bind_arrays(rep_len(list(as.array(x)),
+                           length.out = prod(new_dim)))
+  dim(x) <- c(new_dim, common_dim)
+  x <- new_dim_col(aperm(x,
+                         perm = vec_match(axes, c(new_axes, old_axes))),
+                   dim_names = dim_names)
+
+  withRestarts({
+    # Warning
+    if (vec_is_empty(new_axes)) {
+      new_axes <- NULL
+    } else {
+      new_axes <- commas(new_axes)
+      new_axes <- paste("New axes:", new_axes)
+    }
+
+    new_coords <- new_coords[lengths(new_coords) > 0]
+    if (vec_is_empty(new_coords)) {
+      new_coords <- NULL
+    } else {
+      new_coords <- purrr::map_chr(new_coords, commas)
+      new_coords <- data.frame(axis = names(new_coords),
+                               coord = unname(new_coords))
+      new_coords <- paste(c("New coords:",
+                            capture.output(new_coords)),
+                          collapse = "\n")
+    }
+
+    warning(warningCondition(paste0(c("Broadcasting,", new_axes, new_coords),
+                                    collapse = "\n"),
+                             class = "warning_broadcast"))
+
+    x
+  },
+  restart_broadcast = function() x)
 }
 
 #' @export
@@ -99,72 +190,10 @@ Ops.dim_col <- function(e1, e2) {
                             })
     names(dim_names) <- axes
 
-    e1 <- broadcast(e1, dim_names)
-    e2 <- broadcast(e2, dim_names)
+    e1 <- as_dim_col(e1, dim_names)
+    e2 <- as_dim_col(e2, dim_names)
   }
   NextMethod()
-}
-
-broadcast <- function(x, dim_names) {
-  old_names <- dimnames(x)
-
-  if (identical(old_names, dim_names)) {
-    x
-  } else {
-    old_axes <- names(old_names)
-    axes <- names(dim_names)
-
-    # Broadcast coordinates
-    common_names <- dim_names[old_axes]
-    common_dim <- lengths(common_names)
-
-    new_coords <- purrr::modify2(common_names, old_names, setdiff)
-    names(new_coords) <- old_axes
-
-    x <- slice(x, !!!purrr::modify2(common_names, old_names, vec_match))
-    dimnames(x) <- common_names
-
-    # Broadcast axes
-    new_axes <- setdiff(axes, old_axes)
-    new_names <- dim_names[new_axes]
-    new_dim <- lengths(new_names)
-
-    x <- bind_arrays(rep_len(list(as.array(x)),
-                             length.out = prod(new_dim)))
-    dim(x) <- c(new_dim, common_dim)
-    x <- new_dim_col(aperm(x,
-                           perm = vec_match(axes, c(new_axes, old_axes))),
-                     dim_names = dim_names)
-
-    withRestarts({
-      # Warning
-      if (vec_is_empty(new_axes)) {
-        new_axes <- NULL
-      } else {
-        new_axes <- commas(new_axes)
-        new_axes <- paste("New axes:", new_axes)
-      }
-
-      new_coords <- new_coords[lengths(new_coords) > 0]
-      if (vec_is_empty(new_coords)) {
-        new_coords <- NULL
-      } else {
-        new_coords <- purrr::map_chr(new_coords, commas)
-        new_coords <- data.frame(axis = names(new_coords),
-                                 coord = unname(new_coords))
-        new_coords <- paste(c("New coords:",
-                              capture.output(new_coords)),
-                            collapse = "\n")
-      }
-
-      warning(warningCondition(paste0(c("Broadcasting,", new_axes, new_coords),
-                                      collapse = "\n"),
-                               class = "warning_broadcast"))
-
-      x
-    },
-    restart_broadcast = function() x)
-  }
 }
 
 

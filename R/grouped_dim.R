@@ -178,7 +178,7 @@ mutate.grouped_dim <- function(.data, ...) {
 
     for (j in seq_nms) {
       nm <- nms[[j]]
-      out[[nm]][[i]] <- data[[nm]] <- as_dim_col(eval_tidy(dots[[j]], data), dim_names)
+      out[[nm]][[i]] <- data[[nm]] <- dim_col(eval_tidy(dots[[j]], data), dim_names)
     }
   }
   new_grouped_dim(out, group_names)

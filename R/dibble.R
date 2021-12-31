@@ -214,7 +214,7 @@ mutate.tbl_dim <- function(.data, ...) {
 
   for (i in seq_along(nms)) {
     nm <- nms[[i]]
-    data[[nm]] <- as_dim_col(rlang::eval_tidy(dots[[i]], data), dim_names)
+    data[[nm]] <- dim_col(rlang::eval_tidy(dots[[i]], data), dim_names)
     .data[[nm]] <- as.array(data[[nm]])
   }
   .data
