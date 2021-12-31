@@ -12,14 +12,4 @@ test_that("dibble", {
   x3 <- x1 %>%
     cubelyr::as.tbl_cube(dim_names = c("from", "to", "mode"))
 
-  microbenchmark::microbenchmark(x1 = x1 %>%
-                                   group_by(from, to) %>%
-                                   summarise(value = sum(value),
-                                             .groups = "drop"),
-                                 x2 = x2 %>%
-                                   group_by(from, to) %>%
-                                   summarise(value = sum(value)),
-                                 x3 = x3 %>%
-                                   group_by(from, to) %>%
-                                   summarise(value = sum(value)))
 })
