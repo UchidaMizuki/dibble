@@ -152,7 +152,7 @@ dimnames.dibble_measure <- function(x) {
 
 #' @export
 `dimnames<-.dibble_measure` <- function(x, value) {
-  assign_dimnames_dibble(x, value)
+  `dimnames<-_dibble`(x, value)
 }
 
 #' @export

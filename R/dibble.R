@@ -122,10 +122,10 @@ dimnames_dibble <- function(x) {
 
 #' @export
 `dimnames<-.dibble` <- function(x, value) {
-  assign_dimnames_dibble(x, value)
+  `dimnames<-_dibble`(x, value)
 }
 
-assign_dimnames_dibble <- function(x, value) {
+`dimnames<-_dibble` <- function(x, value) {
   if (is_dibble(x) || is_dibble_measure(x)) {
     attr(x, "dim_names") <- as_dim_names(value, dimnames(x))
     x
@@ -241,13 +241,12 @@ aperm_dibble <- function(a, perm, ...) {
 
 #' @export
 `[<-.dibble` <- function(x, i, value) {
-  dim_names <- dimnames(x)
-  x <- undibble(x)
-  x[i] <- purrr::modify(value,
-                        function(x) {
-                          undibble(dibble_measure(x, dim_names))
-                        })
-  new_dibble(x, dim_names)
+  `[<-_dibble`(x, i, value)
+}
+
+`[<-_dibble` <- function(x, i, value) {
+  names(value) <- names(undibble(x)[i])
+  mutate(x, !!!value)
 }
 
 #' @export
@@ -258,10 +257,13 @@ aperm_dibble <- function(a, perm, ...) {
 
 #' @export
 `[[<-.dibble` <- function(x, i, value) {
-  dim_names <- dimnames(x)
-  x <- undibble(x)
-  x[[i]] <- undibble(dibble_measure(value, dim_names))
-  new_dibble(x, dim_names)
+  `[[<-_dibble`(x, i, value)
+}
+
+`[[<-_dibble` <- function(x, i, value) {
+  value <- list(value)
+  names(value) <- names(undibble(x)[i])
+  mutate(x, !!!value)
 }
 
 #' @export
@@ -272,6 +274,10 @@ aperm_dibble <- function(a, perm, ...) {
 
 #' @export
 `$<-.dibble` <- function(x, i, value) {
+  `$<-_dibble`(x, i, value)
+}
+
+`$<-_dibble` <- function(x, i, value) {
   x[[i]] <- value
   x
 }
@@ -293,6 +299,8 @@ mutate.dibble <- function(.data, ...) {
   nms <- names(dots)
 
   dim_names <- dimnames(.data)
+  .data <- undibble(.data)
+
   data <- as.list(.data)
 
   for (i in seq_along(nms)) {
@@ -304,7 +312,7 @@ mutate.dibble <- function(.data, ...) {
     data[[nm]] <- data_nm
     .data[[nm]] <- undibble(data_nm)
   }
-  .data
+  new_dibble(.data, dim_names)
 }
 
 #' @importFrom dplyr ungroup

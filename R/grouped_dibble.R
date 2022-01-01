@@ -91,7 +91,7 @@ dimnames.grouped_dibble <- function(x) {
 
 #' @export
 `dimnames<-.grouped_dibble` <- function(x, value) {
-  assign_dimnames_dibble(x, value)
+  `dimnames<-_dibble`(x, value)
 }
 
 #' @export
@@ -135,15 +135,30 @@ as_tibble.grouped_dibble <- function(x, ...) {
 }
 
 #' @export
+`[<-.grouped_dibble` <- function(x, i, value) {
+  `[<-_dibble`(x, i, value)
+}
+
+#' @export
 `[[.grouped_dibble` <- function(x, i) {
   x <- ungroup(x)
   x[[i]]
 }
 
 #' @export
+`[[<-.grouped_dibble` <- function(x, i, value) {
+  `[[<-_dibble`(x, i, value)
+}
+
+#' @export
 `$.grouped_dibble` <- function(x, i) {
   x <- ungroup(x)
   x[[i]]
+}
+
+#' @export
+`$<-.grouped_dibble` <- function(x, i, value) {
+  `$<-_dibble`(x, i, value)
 }
 
 
