@@ -1,12 +1,12 @@
 as_tibble_dibble <- function(x, ...) {
-  dim <- tidyr::expand_grid(!!!dimnames(x))
+  dim <- exec(tidyr::expand_grid, !!!dimnames(x))
 
   if (is_grouped_dibble(x)) {
     x <- ungroup(x)
   }
 
   if (is_dibble(x)) {
-    meas <- purrr::map_dfc(as_list_dibble(x), as_meas)
+    meas <- purrr::map_dfc(undibble(x), as_meas)
     vctrs::vec_cbind(dim, meas, ...)
   } else if (is_dibble_measure(x)) {
     vctrs::vec_cbind(dim,
@@ -19,11 +19,11 @@ as_meas <- function(x) {
 }
 
 slice_dibble <- function(.data, ...) {
-  loc <- purrr::modify(rlang::list2(...),
+  loc <- purrr::modify(list2(...),
                        function(x) {
-                         x %||% rlang::missing_arg()
+                         x %||% missing_arg()
                        })
-  nms <- rlang::names2(loc)
+  nms <- names2(loc)
 
   dim_names <- dimnames(.data)
   axes <- names(dim_names)
@@ -39,13 +39,14 @@ slice_dibble <- function(.data, ...) {
   names(dim_names) <- axes
 
   if (is_dibble_measure(.data)) {
-    new_dibble_measure(rlang::exec(`[`, .data, !!!loc,
-                                   drop = FALSE),
+    new_dibble_measure(exec(`[`, .data, !!!loc,
+                            drop = FALSE),
                        dim_names = dim_names)
   } else if (is_dibble(.data)) {
-    new_dibble(purrr::modify(as.list(.data),
+    new_dibble(purrr::modify(undibble(.data),
                              function(x) {
-                               as.array(slice(x, !!!loc))
+                               exec(`[`, x, !!!loc,
+                                    drop = FALSE)
                              }),
                dim_names = dim_names)
   } else if (is_grouped_dibble(.data)) {
@@ -62,10 +63,10 @@ slice_dibble <- function(.data, ...) {
                                   })
     names(group_names) <- group_axes
 
-    .data <- purrr::modify(as_list_dibble(.data),
+    .data <- purrr::modify(undibble(.data),
                            function(x) {
-                             x <- rlang::exec(`[`, x, !!!loc_groups,
-                                              drop = FALSE)
+                             x <- exec(`[`, x, !!!loc_groups,
+                                       drop = FALSE)
                              purrr::modify(x,
                                            function(x) {
                                              slice(x, !!!loc)
@@ -75,7 +76,7 @@ slice_dibble <- function(.data, ...) {
   }
 }
 
-select_dibble <- function(.data, ...) {
+select_dibble <- function(.data, ..., .relocate = FALSE) {
   dim_names <- dimnames(.data)
   axes <- names(dim_names)
 
@@ -83,7 +84,7 @@ select_dibble <- function(.data, ...) {
   group_axes <- names(group_names)
 
   if (is_dibble(.data) || is_grouped_dibble(.data)) {
-    data <- c(dim_names, as_list_dibble(.data))
+    data <- c(dim_names, .data)
   } else if (is_dibble_measure(.data)) {
     data <- dim_names
   }
@@ -91,52 +92,63 @@ select_dibble <- function(.data, ...) {
   nms <- names(tidyselect::eval_select(expr(c(...)), data))
 
   if (is_dibble(.data) || is_grouped_dibble(.data)) {
-    .data <- .data[setdiff(nms, axes)]
+    if (.relocate) {
+      meas_names <- colnames(.data)
+      .data <- .data[perm_match(nms, meas_names)]
+    } else {
+      .data <- .data[setdiff(nms, axes)]
+    }
   }
 
   if (is_grouped_dibble(.data)) {
-    perm <- vec_match(c(intersect(nms, group_axes), setdiff(group_axes, nms)), group_axes)
-
-    group_names <- group_names[perm]
-    .data <- purrr::modify(as_list_dibble(.data),
-                           function(x) {
-                             aperm(x, perm)
-                           })
-    .data <- new_grouped_dibble(.data, group_names)
-
+    perm_groups <- perm_match(nms, group_axes)
     axes <- setdiff(axes, group_axes)
-  }
+    perm <- perm_match(nms, axes)
 
-  perm <- vec_match(c(intersect(nms, axes), setdiff(axes, nms)), axes)
-
-  if (is_dibble(.data) || is_dibble_measure(.data)) {
-
-
-
-
-
-
-    # FIXME
-    aperm(.data, perm)
-  } else if (is_grouped_dibble(.data)) {
-
-
-
-
-
-
-    # FIXME
-    .data <- purrr::modify(as_list_dibble(.data),
+    group_names <- group_names[perm_groups]
+    .data <- purrr::modify(undibble(.data),
                            function(x) {
+                             x <- aperm(x, perm_groups)
                              purrr::modify(x,
                                            function(x) {
                                              aperm(x, perm)
                                            })
                            })
     new_grouped_dibble(.data, group_names)
+
+  } else if (is_dibble(.data) || is_dibble_measure(.data)) {
+    perm <- perm_match(nms, axes)
+    aperm(.data, perm)
   }
 }
 
-# rename_dibble <- function(.data, ...) {
-#   tidyselect::
-# }
+perm_match <- function(x, y) {
+  vec_match(c(intersect(x, y), setdiff(y, x)), y)
+}
+
+rename_dibble <- function(.data, ...) {
+  dim_names <- dimnames(.data)
+  axes <- names(dim_names)
+
+  group_names <- group_names(.data)
+  group_axes <- names(group_names)
+
+  if (is_dibble(.data) || is_grouped_dibble(.data)) {
+    data <- c(dim_names, .data)
+  } else if (is_dibble_measure(.data)) {
+    data <- dim_names
+  }
+
+  nms <- names(data)
+  names(nms) <- nms
+  loc <- tidyselect::eval_rename(expr(c(...)), data)
+  nms[loc] <- names(loc)
+
+  names(dimnames(.data)) <- nms[axes]
+
+  if (is_dibble(.data) || is_grouped_dibble(.data)) {
+    meas_names <- colnames(.data)
+    names(.data) <- nms[meas_names]
+  }
+  .data
+}

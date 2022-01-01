@@ -12,7 +12,7 @@ big_mark <- function(x) {
 
 as_dim_names <- function(x, data) {
   stopifnot(
-    rlang::is_named(x),
+    is_named(x),
     purrr::map_lgl(x,
                    function(x) {
                      is.null(x) || !vctrs::vec_duplicate_any(x)
@@ -32,6 +32,18 @@ as_dim_names <- function(x, data) {
                       })
   names(x) <- axes
   x
+}
+
+expand_dim_names <- function(x) {
+  x <- purrr::flatten(x)
+  nms <- names(x)
+  axes <- unique(nms)
+  x <- tapply(x, nms,
+              function(x) {
+                unique(unlist(x))
+              },
+              simplify = FALSE)
+  x[axes]
 }
 
 bind_arrays <- function(x) {

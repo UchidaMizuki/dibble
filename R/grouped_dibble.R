@@ -28,7 +28,7 @@ group_by.dibble <- function(.data, ...) {
   dim_names <- dim_names[-loc]
   dim <- dim[-loc]
 
-  .data <- purrr::modify(as_list_dibble(.data),
+  .data <- purrr::modify(undibble(.data),
                          function(x) {
                            x <- apply(x, loc,
                                       function(x) {
@@ -58,7 +58,7 @@ ungroup.grouped_dibble <- function(x, ...) {
   perm <- c(setdiff(axes, loc), loc)
   perm <- vec_match(axes, perm)
 
-  x <- as_list_dibble(x)
+  x <- undibble(x)
   col_names <- names(x)
   x <- purrr::modify(x,
                      function(x) {
@@ -76,19 +76,22 @@ is_grouped_dibble <- function(x) {
 
 #' @export
 as.array.grouped_dibble <- function(x, ...) {
-  structure(x,
-            class = NULL,
-            group_names = NULL)
+  undibble(x)
 }
 
 #' @export
 dimnames.grouped_dibble <- function(x) {
   group_names <- group_names(x)
 
-  x <- as_list_dibble(x)
+  x <- undibble(x)
   dim_names <- dimnames(x[[1]][[1]])
 
   c(group_names, dim_names)
+}
+
+#' @export
+`dimnames<-.grouped_dibble` <- function(x, value) {
+  assign_dimnames_dibble(x, value)
 }
 
 #' @export
@@ -156,7 +159,7 @@ slice.grouped_dibble <- function(.data, ...) {
 #' @importFrom  dplyr mutate
 #' @export
 mutate.grouped_dibble <- function(.data, ...) {
-  dots <- rlang::enquos(..., .named = TRUE)
+  dots <- enquos(..., .named = TRUE)
   nms <- names(dots)
   seq_nms <- seq_along(nms)
 
@@ -164,7 +167,7 @@ mutate.grouped_dibble <- function(.data, ...) {
   group_dim <- lengths(group_names)
   size <- prod(group_dim)
 
-  .data <- as_list_dibble(.data)
+  .data <- undibble(.data)
   dim_names <- dimnames(.data[[1]][[1]])
 
   out <- .data
@@ -199,7 +202,7 @@ summarise.grouped_dibble <- function(.data, ...) {
   out <- rep_len(list(out), vec_unique_count(nms))
   names(out) <- unique(nms)
 
-  .data <- as_list_dibble(.data)
+  .data <- undibble(.data)
 
   for (i in seq_len(size)) {
     data <- purrr::map(.data,
@@ -219,6 +222,13 @@ summarise.grouped_dibble <- function(.data, ...) {
 #' @export
 select.grouped_dibble <- function(.data, ...) {
   select_dibble(.data, ...)
+}
+
+#' @importFrom dplyr relocate
+#' @export
+relocate.grouped_dibble <- function(.data, ...) {
+  select_dibble(.data, ...,
+                .relocate = TRUE)
 }
 
 #' @importFrom dplyr rename
