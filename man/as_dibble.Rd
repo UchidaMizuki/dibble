@@ -3,11 +3,14 @@
 \name{as_dibble}
 \alias{as_dibble}
 \alias{as_dibble.data.frame}
+\alias{as_dibble.dibble}
 \title{Coerce a data frame to a dibble}
 \usage{
 as_dibble(x, ...)
 
 \method{as_dibble}{data.frame}(x, dim_names, ...)
+
+\method{as_dibble}{dibble}(x, dim_names, ...)
 }
 \arguments{
 \item{x}{A data frame or a dibble.}

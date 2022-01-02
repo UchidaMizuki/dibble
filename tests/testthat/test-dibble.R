@@ -1,3 +1,12 @@
+test_that("dibble", {
+  dibble(tidyr::table1,
+         .dim_names = list(country = NULL, year = NULL))
+
+  x <- array(1:6, 2:3,
+             dimnames = list(from = letters[1:2], to = letters[1:3]))
+  dibble(value = x)
+})
+
 test_that("as_dibble", {
   country <- c("Afghanistan", "Brazil", "China")
   year <- c(1999, 2000)

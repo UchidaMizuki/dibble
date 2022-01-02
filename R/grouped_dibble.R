@@ -70,6 +70,7 @@ ungroup.grouped_dibble <- function(x, ...) {
   new_dibble(x, dim_names)
 }
 
+#' @export
 is_grouped_dibble <- function(x) {
   inherits(x, "grouped_dibble")
 }

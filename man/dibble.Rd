@@ -15,5 +15,5 @@ dibble(..., .dim_names = NULL)
 A dibble.
 }
 \description{
-\code{dibble()} constructs the dimensional data frame called a dibble.
+\code{dibble()} constructs a dimensional data frame called a dibble.
 }

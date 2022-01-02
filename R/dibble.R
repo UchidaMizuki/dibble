@@ -6,7 +6,7 @@ new_dibble <- function(x, dim_names) {
 
 #' Build a dimensional data frame
 #'
-#' \code{dibble()} constructs the dimensional data frame called a dibble.
+#' \code{dibble()} constructs a dimensional data frame called a dibble.
 #'
 #' @param ... A set of name-metric pairs, tibbles, or dibbles.
 #' @param .dim_names A list of dimension names.
@@ -53,7 +53,12 @@ dibble <- function(...,
   new_dibble(dots, dim_names)
 }
 
+#' Constructs a dibble by one or more variables
 #'
+#' \code{dibble_by()} constructs a dibble by one or more variables.
+#'
+#' @param x A data frame or a dibble.
+#' @param ... Variables.
 #'
 #' @export
 dibble_by <- function(x, ...) {
@@ -115,6 +120,17 @@ as_dibble.dibble <- function(x, dim_names, ...) {
   dibble(x, .dim_names = dim_names)
 }
 
+#' Test if the object is a dibble
+#'
+#' @param x An object.
+#'
+#' @return A logical.
+#'
+#' @export
+is_dibble <- function(x) {
+  inherits(x, "dibble")
+}
+
 #' @export
 as.list.dibble <- function(x, ...) {
   dim_names <- dimnames(x)
@@ -173,14 +189,33 @@ dim.dibble <- function(x) {
   lengths(dimnames(x))
 }
 
+#' The number of rows/columns
+#'
+#' \code{nrow()} and \code{ncol()} return the number of rows or columns present in x.
+#'
+#' @param x An object.
+#' @param ... Other arguments passed on to methods.
+#'
+#' @return An integer or \code{NULL}.
+#'
+#' @name nrow-ncol
+NULL
+
+#' @rdname nrow-ncol
 #' @export
-nrow <- function(x) {
+nrow <- function(x, ...) {
   UseMethod("nrow")
 }
-registerS3method("nrow", "default", base::nrow)
 
+#' @rdname nrow-ncol
 #' @export
-nrow.dibble <- function(x) {
+nrow.default <- function(x, ...) {
+  base::nrow(x)
+}
+
+#' @rdname nrow-ncol
+#' @export
+nrow.dibble <- function(x, ...) {
   nrow_dibble(x)
 }
 
@@ -188,34 +223,67 @@ nrow_dibble <- function(x) {
   prod(dim(x))
 }
 
+#' @rdname nrow-ncol
 #' @export
-ncol <- function(x) {
+ncol <- function(x, ...) {
   UseMethod("ncol")
 }
-registerS3method("ncol", "default", base::ncol)
 
+#' @rdname nrow-ncol
 #' @export
-ncol.dibble <- function(x) {
+ncol.default <- function(x, ...) {
+  base::ncol(x)
+}
+
+#' @rdname nrow-ncol
+#' @export
+ncol.dibble <- function(x, ...) {
   length(colnames(x))
 }
 
+#' Row and column names
+#'
+#' Retrieve or set the row or column names of a matrix-like object.
+#'
+#' @param x A matrix-like object.
+#' @param ... Other arguments passed on to methods.
+#'
+#' @return A list of row/column names.
+#'
+#' @name row-colnames
+NULL
+
+#' @rdname row-colnames
 #' @export
 rownames <- function(x, ...) {
   UseMethod("rownames")
 }
-registerS3method("rownames", "default", base::rownames)
 
+#' @rdname row-colnames
+#' @export
+rownames.default <- function(x, ...) {
+  base::rownames(x, ...)
+}
+
+#' @rdname row-colnames
 #' @export
 rownames.dibble <- function(x, ...) {
   NULL
 }
 
+#' @rdname row-colnames
 #' @export
 colnames <- function(x, ...) {
   UseMethod("colnames")
 }
-registerS3method("colnames", "default", base::colnames)
 
+#' @rdname row-colnames
+#' @export
+colnames.default <- function(x, ...) {
+  base::colnames(x, ...)
+}
+
+#' @rdname row-colnames
 #' @export
 colnames.dibble <- function(x, ...) {
   names(x)
