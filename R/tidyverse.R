@@ -6,11 +6,13 @@ as_tibble_dibble <- function(x, ...) {
   }
 
   if (is_dibble(x)) {
-    meas <- purrr::map_dfc(undibble(x), as_meas)
-    vctrs::vec_cbind(dim, meas, ...)
-  } else if (is_dibble_measure(x)) {
+    meas <- purrr::modify(undibble(x), as_meas)
+    vctrs::vec_cbind(dim, !!!meas, ...,
+                     .name_repair = "check_unique")
+  } else if (is_dibble_metric(x)) {
     vctrs::vec_cbind(dim,
-                     . = as_meas(x), ...)
+                     . = as_meas(x), ...,
+                     .name_repair = "check_unique")
   }
 }
 
@@ -38,8 +40,8 @@ slice_dibble <- function(.data, ...) {
   dim_names <- purrr::modify2(dim_names, loc, `[`)
   names(dim_names) <- axes
 
-  if (is_dibble_measure(.data)) {
-    new_dibble_measure(exec(`[`, .data, !!!loc,
+  if (is_dibble_metric(.data)) {
+    new_dibble_metric(exec(`[`, .data, !!!loc,
                             drop = FALSE),
                        dim_names = dim_names)
   } else if (is_dibble(.data)) {
@@ -85,7 +87,7 @@ select_dibble <- function(.data, ..., .relocate = FALSE) {
 
   if (is_dibble(.data) || is_grouped_dibble(.data)) {
     data <- c(dim_names, .data)
-  } else if (is_dibble_measure(.data)) {
+  } else if (is_dibble_metric(.data)) {
     data <- dim_names
   }
 
@@ -116,7 +118,7 @@ select_dibble <- function(.data, ..., .relocate = FALSE) {
                            })
     new_grouped_dibble(.data, group_names)
 
-  } else if (is_dibble(.data) || is_dibble_measure(.data)) {
+  } else if (is_dibble(.data) || is_dibble_metric(.data)) {
     perm <- perm_match(nms, axes)
     aperm(.data, perm)
   }
@@ -135,7 +137,7 @@ rename_dibble <- function(.data, ...) {
 
   if (is_dibble(.data) || is_grouped_dibble(.data)) {
     data <- c(dim_names, .data)
-  } else if (is_dibble_measure(.data)) {
+  } else if (is_dibble_metric(.data)) {
     data <- dim_names
   }
 

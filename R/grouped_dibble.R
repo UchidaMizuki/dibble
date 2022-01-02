@@ -32,7 +32,7 @@ group_by.dibble <- function(.data, ...) {
                          function(x) {
                            x <- apply(x, loc,
                                       function(x) {
-                                        new_dibble_measure(x, dim_names)
+                                        new_dibble_metric(x, dim_names)
                                       },
                                       simplify = FALSE)
                            array(x, group_dim)
@@ -196,7 +196,7 @@ mutate.grouped_dibble <- function(.data, ...) {
 
     for (j in seq_nms) {
       nm <- nms[[j]]
-      out[[nm]][[i]] <- data[[nm]] <- dibble_measure(eval_tidy(dots[[j]], data), dim_names)
+      out[[nm]][[i]] <- data[[nm]] <- dibble_metric(eval_tidy(dots[[j]], data), dim_names)
     }
   }
   new_grouped_dibble(out, group_names)

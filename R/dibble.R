@@ -35,7 +35,7 @@ dibble <- function(...,
 
   dots <- purrr::modify(dots,
                         function(x) {
-                          undibble(dibble_measure(x, .dim_names))
+                          undibble(dibble_metric(x, .dim_names))
                         })
   new_dibble(dots, .dim_names)
 }
@@ -100,7 +100,7 @@ as.list.dibble <- function(x, ...) {
   x <- undibble(x)
   purrr::modify(x,
                 function(x) {
-                  new_dibble_measure(x, dim_names)
+                  new_dibble_metric(x, dim_names)
                 })
 }
 
@@ -126,7 +126,7 @@ dimnames_dibble <- function(x) {
 }
 
 `dimnames<-_dibble` <- function(x, value) {
-  if (is_dibble(x) || is_dibble_measure(x)) {
+  if (is_dibble(x) || is_dibble_metric(x)) {
     attr(x, "dim_names") <- as_dim_names(value, dimnames(x))
     x
   } else if (is_grouped_dibble(x)) {
@@ -224,9 +224,9 @@ aperm_dibble <- function(a, perm, ...) {
                          aperm(x, perm, ...)
                        })
     new_dibble(a, dim_names)
-  } else if (is_dibble_measure(a)) {
+  } else if (is_dibble_metric(a)) {
     a <- aperm(undibble(a), perm, ...)
-    new_dibble_measure(a, dim_names)
+    new_dibble_metric(a, dim_names)
   }
 }
 
@@ -307,7 +307,7 @@ mutate.dibble <- function(.data, ...) {
     nm <- nms[[i]]
 
     data_nm <- eval_tidy(dots[[i]], data)
-    data_nm <- dibble_measure(data_nm, dim_names)
+    data_nm <- dibble_metric(data_nm, dim_names)
 
     data[[nm]] <- data_nm
     .data[[nm]] <- undibble(data_nm)
@@ -372,7 +372,7 @@ print_dibble <- function(x, n) {
     tbl_sum <- c(`A dibble` = paste(big_mark(size_dim), size_meas,
                                     sep = " x "),
                  dim_sum,
-                 Measures = commas(meas_names))
+                 Metrics = commas(meas_names))
 
     if (!is.null(groups)) {
       size_groups <- big_mark(prod(dim[groups]))
@@ -381,8 +381,8 @@ print_dibble <- function(x, n) {
     }
 
     attr(df, "tbl_sum") <- tbl_sum
-  } else if (is_dibble_measure(x)) {
-    attr(df, "tbl_sum") <- c(`A measure` = big_mark(size_dim),
+  } else if (is_dibble_metric(x)) {
+    attr(df, "tbl_sum") <- c(`A metric` = big_mark(size_dim),
                              dim_sum)
   }
   attr(df, "rows_total") <- size_dim

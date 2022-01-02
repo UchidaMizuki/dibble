@@ -1,12 +1,12 @@
-new_dibble_measure <- function(x, dim_names) {
-  class(x) <- "dibble_measure"
+new_dibble_metric <- function(x, dim_names) {
+  class(x) <- "dibble_metric"
   attr(x, "dim_names") <- dim_names
   x
 }
 
 #' @export
-dibble_measure <- function(x, dim_names = NULL) {
-  supress_warning_broadcast(as_dibble_measure(x, dim_names))
+dibble_metric <- function(x, dim_names = NULL) {
+  supress_warning_broadcast(as_dibble_metric(x, dim_names))
 }
 
 supress_warning_broadcast <- function(x) {
@@ -19,20 +19,20 @@ supress_warning_broadcast <- function(x) {
 }
 
 #' @export
-as_dibble_measure <- function(x, ...) {
-  UseMethod("as_dibble_measure")
+as_dibble_metric <- function(x, ...) {
+  UseMethod("as_dibble_metric")
 }
 
 #' @export
-as_dibble_measure.default <- function(x, dim_names, ...) {
+as_dibble_metric.default <- function(x, dim_names, ...) {
   dim <- lengths(dim_names)
   x <- array(vec_recycle(x, prod(dim)), dim)
 
-  new_dibble_measure(x, dim_names)
+  new_dibble_metric(x, dim_names)
 }
 
 #' @export
-as_dibble_measure.array <- function(x, dim_names = NULL, ...) {
+as_dibble_metric.array <- function(x, dim_names = NULL, ...) {
   old_names <- dimnames(x)
 
   if (is.null(old_names)) {
@@ -40,19 +40,19 @@ as_dibble_measure.array <- function(x, dim_names = NULL, ...) {
       !is.null(dim_names)
     )
 
-    new_dibble_measure(x, dim_names)
+    new_dibble_metric(x, dim_names)
   } else {
-    x <- new_dibble_measure(x, old_names)
+    x <- new_dibble_metric(x, old_names)
 
     if (!is.null(dim_names)) {
-      x <- as_dibble_measure(x, dim_names)
+      x <- as_dibble_metric(x, dim_names)
     }
     x
   }
 }
 
 #' @export
-as_dibble_measure.dibble_measure <- function(x, dim_names = NULL, ...) {
+as_dibble_metric.dibble_metric <- function(x, dim_names = NULL, ...) {
   if (is.null(dim_names) || identical(dimnames(x), dim_names)) {
     x
   } else {
@@ -91,9 +91,9 @@ broadcast <- function(x, dim_names) {
 
   dim(x) <- c(new_dim, common_dim)
 
-  x <- new_dibble_measure(aperm(x,
-                                perm = vec_match(axes, c(new_axes, old_axes))),
-                          dim_names = dim_names)
+  x <- new_dibble_metric(aperm(x,
+                               perm = vec_match(axes, c(new_axes, old_axes))),
+                         dim_names = dim_names)
 
   withRestarts({
     # Warning
@@ -128,17 +128,17 @@ broadcast <- function(x, dim_names) {
 }
 
 #' @export
-is_dibble_measure <- function(x) {
-  inherits(x, "dibble_measure")
+is_dibble_metric <- function(x) {
+  inherits(x, "dibble_metric")
 }
 
 #' @export
-as.array.dibble_measure <- function(x, ...) {
+as.array.dibble_metric <- function(x, ...) {
   undibble(x)
 }
 
 #' @export
-as.table.dibble_measure <- function(x, ...) {
+as.table.dibble_metric <- function(x, ...) {
   dim_names <- dimnames(x)
   x <- undibble(x)
   dimnames(x) <- dim_names
@@ -146,48 +146,48 @@ as.table.dibble_measure <- function(x, ...) {
 }
 
 #' @export
-dimnames.dibble_measure <- function(x) {
+dimnames.dibble_metric <- function(x) {
   dimnames_dibble(x)
 }
 
 #' @export
-`dimnames<-.dibble_measure` <- function(x, value) {
+`dimnames<-.dibble_metric` <- function(x, value) {
   `dimnames<-_dibble`(x, value)
 }
 
 #' @export
-dim.dibble_measure <- function(x) {
+dim.dibble_metric <- function(x) {
   lengths(dimnames(x))
 }
 
 #' @export
-nrow.dibble_measure <- function(x) {
+nrow.dibble_metric <- function(x) {
   nrow_dibble(x)
 }
 
 #' @export
-ncol.dibble_measure <- function(x) {
+ncol.dibble_metric <- function(x) {
   1L
 }
 
 #' @export
-rownames.dibble_measure <- function(x, ...) {
+rownames.dibble_metric <- function(x, ...) {
   NULL
 }
 
 #' @export
-colnames.dibble_measure <- function(x, ...) {
+colnames.dibble_metric <- function(x, ...) {
   NULL
 }
 
 #' @importFrom tibble as_tibble
 #' @export
-as_tibble.dibble_measure <- function(x, ...) {
+as_tibble.dibble_metric <- function(x, ...) {
   as_tibble_dibble(x, ...)
 }
 
 #' @export
-aperm.dibble_measure <- function(a, perm = NULL, ...) {
+aperm.dibble_metric <- function(a, perm = NULL, ...) {
   aperm_dibble(a, perm, ...)
 }
 
@@ -196,15 +196,15 @@ aperm.dibble_measure <- function(a, perm = NULL, ...) {
 # Ops ---------------------------------------------------------------------
 
 #' @export
-Ops.dibble_measure <- function(e1, e2) {
+Ops.dibble_metric <- function(e1, e2) {
   if (length(e1) != 1 && length(e2) != 1) {
     dim_names_e1 <- dimnames(e1)
     dim_names_e2 <- dimnames(e2)
 
     dim_names <- expand_dim_names(list(dim_names_e1, dim_names_e2))
 
-    e1 <- as_dibble_measure(e1, dim_names)
-    e2 <- as_dibble_measure(e2, dim_names)
+    e1 <- as_dibble_metric(e1, dim_names)
+    e2 <- as_dibble_metric(e2, dim_names)
   }
   NextMethod()
 }
@@ -215,11 +215,11 @@ Ops.dibble_measure <- function(e1, e2) {
 # Math --------------------------------------------------------------------
 
 #' @export
-solve.dibble_measure <- function(a, b, ...) {
+solve.dibble_metric <- function(a, b, ...) {
   if (is_missing(b)) {
     dim_names <- dimnames(a)
     a <- undibble(a)
-    new_dibble_measure(solve(a), dim_names)
+    new_dibble_metric(solve(a), dim_names)
   } else {
     NextMethod()
   }
@@ -231,32 +231,32 @@ solve.dibble_measure <- function(a, b, ...) {
 
 #' @importFrom dplyr slice
 #' @export
-slice.dibble_measure <- function(.data, ...) {
+slice.dibble_metric <- function(.data, ...) {
   slice_dibble(.data, ...)
 }
 
 #' @importFrom dplyr ungroup
 #' @export
-ungroup.dibble_measure <- function(x, ...) {
+ungroup.dibble_metric <- function(x, ...) {
   x
 }
 
 #' @importFrom dplyr select
 #' @export
-select.dibble_measure <- function(.data, ...) {
+select.dibble_metric <- function(.data, ...) {
   select_dibble(.data, ...)
 }
 
 #' @importFrom dplyr relocate
 #' @export
-relocate.dibble_measure <- function(.data, ...) {
+relocate.dibble_metric <- function(.data, ...) {
   select_dibble(.data, ...,
                 .relocate = TRUE)
 }
 
 #' @importFrom dplyr rename
 #' @export
-rename.dibble_measure <- function(.data, ...) {
+rename.dibble_metric <- function(.data, ...) {
   rename_dibble(.data, ...)
 }
 
@@ -265,6 +265,6 @@ rename.dibble_measure <- function(.data, ...) {
 # Printing ----------------------------------------------------------------
 
 #' @export
-print.dibble_measure <- function(x, n = NULL, ...) {
+print.dibble_metric <- function(x, n = NULL, ...) {
   print_dibble(x, n)
 }
