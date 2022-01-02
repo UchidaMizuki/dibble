@@ -9,7 +9,7 @@
 coverage](https://codecov.io/gh/UchidaMizuki/dibble/branch/main/graph/badge.svg)](https://app.codecov.io/gh/UchidaMizuki/dibble?branch=main)
 <!-- badges: end -->
 
-The goal of dibble is to …
+<!-- The goal of dibble is to ... -->
 
 ## Installation
 
