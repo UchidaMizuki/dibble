@@ -4,19 +4,32 @@ new_dibble <- function(x, dim_names) {
   x
 }
 
+#' Build a dimensional data frame
+#'
+#' \code{dibble()} constructs the dimensional data frame called a dibble.
+#'
+#' @param ... A set of name-metric pairs, tibbles, or dibbles.
+#' @param .dim_names A list of dimension names.
+#'
+#' @return A dibble.
+#'
 #' @export
 dibble <- function(...,
                    .dim_names = NULL) {
   dots <- enquos(...)
   dots <- purrr::modify(as.list(dots),
                         function(x) {
-                          supress_warning_broadcast(eval_tidy(x))
+                          x <- supress_warning_broadcast(eval_tidy(x))
+
+                          if (is.data.frame(x)) {
+                            x <- as_dibble(x, .dim_names)
+                          }
+                          x
                         })
 
-  if (is.null(.dim_names)) {
-    .dim_names <- purrr::modify(dots, dimnames)
-    .dim_names <- expand_dim_names(.dim_names)
-  }
+  dim_names <- purrr::map(dots, dimnames)
+  dim_names <- expand_dim_names(dim_names)
+  dim_names <- as_dim_names(.dim_names, dim_names)
 
   dots <- purrr::modify(dots,
                         function(x) {
@@ -35,52 +48,58 @@ dibble <- function(...,
 
   dots <- purrr::modify(dots,
                         function(x) {
-                          undibble(dibble_metric(x, .dim_names))
+                          undibble(dibble_metric(x, dim_names))
                         })
-  new_dibble(dots, .dim_names)
+  new_dibble(dots, dim_names)
 }
 
+#'
+#'
 #' @export
 dibble_by <- function(x, ...) {
-  dots <- enquos(...)
-  nms <- names2(dots)
-  dots <- quos_auto_name(dots)
+  nms <- names(tidyselect::eval_select(expr(c(...)), x))
 
-  size <- length(dots)
-  dim_names <- vector("list", size)
-  names(dim_names) <- names(dots)
-
-  for (i in seq_len(size)) {
-    if (nms[[i]] == "") {
-      dim_names[i] <- list(NULL)
-    } else {
-      dim_names[[i]] <- eval_tidy(dots[[i]])
-    }
-  }
+  dim_names <- rep_along(nms, list(NULL))
+  names(dim_names) <- nms
 
   as_dibble(x, dim_names)
 }
 
+#' Coerce a data frame to a dibble
+#'
+#' \code{as_dibble()} turns a data frame into a dimensional data frame called a dibble.
+#'
+#' @param x A data frame or a dibble.
+#' @param ... Unused, for extensibility.
+#'
+#' @return A dibble.
+#'
 #' @export
 as_dibble <- function(x, ...) {
   UseMethod("as_dibble")
 }
 
+#' @rdname as_dibble
+#'
+#' @param dim_names A list of dimension names.
+#'
 #' @export
 as_dibble.data.frame <- function(x, dim_names, ...) {
   dim_names <- as_dim_names(dim_names, x)
 
+  nms <- names(x)
   axes <- names(dim_names)
-  meas_names <- setdiff(names(x), axes)
+  old_axes <- intersect(nms, axes)
+  meas_names <- setdiff(nms, axes)
 
   stopifnot(
-    !vec_duplicate_any(x[axes])
+    !vec_duplicate_any(x[old_axes])
   )
 
   id <- expand.grid(dim_names,
                     KEEP.OUT.ATTRS = FALSE,
                     stringsAsFactors = FALSE)
-  x <- vec_slice(x[meas_names], vec_match(id, x[axes]))
+  x <- vec_slice(x[meas_names], vec_match(id[old_axes], x[old_axes]))
 
   dim <- lengths(dim_names)
   x <- purrr::modify(as.list(x),
@@ -90,8 +109,10 @@ as_dibble.data.frame <- function(x, dim_names, ...) {
   new_dibble(x, dim_names)
 }
 
-is_dibble <- function(x) {
-  inherits(x, "dibble")
+#' @rdname as_dibble
+#' @export
+as_dibble.dibble <- function(x, dim_names, ...) {
+  dibble(x, .dim_names = dim_names)
 }
 
 #' @export

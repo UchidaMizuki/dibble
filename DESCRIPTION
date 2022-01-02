@@ -2,11 +2,16 @@ Package: dibble
 Type: Package
 Title: Dimensional Data Frames
 Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
+Authors@R: 
+    person(
+        given = "Mizuki", 
+        family = "Uchida", 
+        email = "uchidamizuki@vivaldi.net", 
+        role = c("aut", "cre")
+    )
 Description: More about what it does (maybe more than one line)
     Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Imports: 

@@ -85,8 +85,7 @@ broadcast <- function(x, dim_names) {
   new_names <- dim_names[new_axes]
   new_dim <- lengths(new_names)
 
-  x <- rep_len(list(undibble(x)),
-               length.out = prod(new_dim))
+  x <- rep_len(list(undibble(x)), prod(new_dim))
   x <- bind_arrays(x)
 
   dim(x) <- c(new_dim, common_dim)
@@ -112,7 +111,7 @@ broadcast <- function(x, dim_names) {
       new_coords <- data.frame(axis = names(new_coords),
                                coord = unname(new_coords))
       new_coords <- paste(c("New coords:",
-                            capture.output(new_coords)),
+                            utils::capture.output(new_coords)),
                           collapse = "\n")
     }
 

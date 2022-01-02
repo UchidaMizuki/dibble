@@ -11,13 +11,18 @@ big_mark <- function(x) {
 }
 
 as_dim_names <- function(x, data) {
-  stopifnot(
-    is_named(x),
-    purrr::map_lgl(x,
-                   function(x) {
-                     is.null(x) || !vctrs::vec_duplicate_any(x)
-                   })
-  )
+  if (is.null(x)) {
+    x <- rep_along(data, list(NULL))
+    names(x) <- names(data)
+  } else {
+    stopifnot(
+      is_named(x),
+      purrr::map_lgl(x,
+                     function(x) {
+                       is.null(x) || !vctrs::vec_duplicate_any(x)
+                     })
+    )
+  }
 
   axes <- names(x)
   x <- purrr::modify2(x, axes,

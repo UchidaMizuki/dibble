@@ -1,26 +1,22 @@
-test_that("dibble", {
-  library(magrittr)
+test_that("as_dibble", {
+  country <- c("Afghanistan", "Brazil", "China")
+  year <- c(1999, 2000)
 
-  x1 <- tidyr::expand_grid(from = letters[1:22],
-                          to = letters[1:23],
-                          mode = letters[1:24]) %>%
-    dplyr::mutate(value = dplyr::row_number(),
-                  value2 = value + 1,
-                  value3 = "a")
-  x2 <- x1 %>%
-    dibble_by(from, to, mode)
-  x3 <- x1 %>%
-    cubelyr::as.tbl_cube(dim_names = c("from", "to", "mode"))
+  expect_error({
+    as_dibble(tidyr::table1,
+              dim_names = list(country = country))
+  })
 
-  y2 <- tidyr::expand_grid(from = letters[1:10],
-                           to = letters[1:10],
-                           mode2 = letters[2:10]) %>%
-    dplyr::mutate(value = dplyr::row_number()) %>%
-    dibble_by(from, to, mode2)
+  x <- as_dibble(tidyr::table1,
+                 dim_names = list(country = country,
+                                  year = year))
+  x1 <- as_dibble(tidyr::table1,
+                  dim_names = list(country = NULL,
+                                   year = NULL))
+  x2 <- dibble_by(tidyr::table1, country, year)
+  x3 <- dibble_by(tidyr::table1, dplyr::all_of(c("country", "year")))
 
-  x2 %>%
-    group_by(from, to) %>%
-    summarise(value = sum(value)) %>%
-    as_tibble()
-
+  expect_equal(x, x1)
+  expect_equal(x, x2)
+  expect_equal(x, x3)
 })
