@@ -14,13 +14,13 @@ nrow(x, ...)
 
 \method{nrow}{default}(x, ...)
 
-\method{nrow}{dibble}(x)
+\method{nrow}{dibble}(x, ...)
 
-ncol(x)
+ncol(x, ...)
 
-\method{ncol}{default}(x)
+\method{ncol}{default}(x, ...)
 
-\method{ncol}{dibble}(x)
+\method{ncol}{dibble}(x, ...)
 }
 \arguments{
 \item{x}{An object.}

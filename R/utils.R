@@ -39,16 +39,16 @@ as_dim_names <- function(x, data) {
   x
 }
 
-expand_dim_names <- function(x) {
+union_dim_names <- function(x) {
   x <- purrr::flatten(x)
   nms <- names(x)
   axes <- unique(nms)
-  x <- tapply(x, nms,
-              function(x) {
-                unique(unlist(x))
-              },
-              simplify = FALSE)
-  x[axes]
+  x <- purrr::map(axes,
+                  function(axis) {
+                    unique(unlist(x[nms == axis]))
+                  })
+  names(x) <- axes
+  x
 }
 
 bind_arrays <- function(x) {

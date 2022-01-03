@@ -4,6 +4,15 @@ new_dibble_metric <- function(x, dim_names) {
   x
 }
 
+#' Build a metric
+#'
+#' `dibble_metric()` constructs a metric for a dibble.
+#'
+#' @param x An object.
+#' @param dim_names A list of dimension names.
+#'
+#' @return A metric for a dibble.
+#'
 #' @export
 dibble_metric <- function(x, dim_names = NULL) {
   supress_warning_broadcast(as_dibble_metric(x, dim_names))
@@ -18,11 +27,22 @@ supress_warning_broadcast <- function(x) {
   })
 }
 
+#' Coerce an object to a dibble metric
+#'
+#' `as_dibble_metric()` turns an object into a metric for a dibble.
+#'
+#' @param x An object.
+#' @param dim_names A list of dimension names.
+#' @param ... Unused, for extensibility.
+#'
+#' @return A metric for a dibble.
+#'
 #' @export
 as_dibble_metric <- function(x, ...) {
   UseMethod("as_dibble_metric")
 }
 
+#' @rdname as_dibble_metric
 #' @export
 as_dibble_metric.default <- function(x, dim_names, ...) {
   dim <- lengths(dim_names)
@@ -31,6 +51,7 @@ as_dibble_metric.default <- function(x, dim_names, ...) {
   new_dibble_metric(x, dim_names)
 }
 
+#' @rdname as_dibble_metric
 #' @export
 as_dibble_metric.array <- function(x, dim_names = NULL, ...) {
   old_names <- dimnames(x)
@@ -51,6 +72,7 @@ as_dibble_metric.array <- function(x, dim_names = NULL, ...) {
   }
 }
 
+#' @rdname as_dibble_metric
 #' @export
 as_dibble_metric.dibble_metric <- function(x, dim_names = NULL, ...) {
   if (is.null(dim_names) || identical(dimnames(x), dim_names)) {
@@ -107,11 +129,8 @@ broadcast <- function(x, dim_names) {
     if (vec_is_empty(new_coords)) {
       new_coords <- NULL
     } else {
-      new_coords <- purrr::map_chr(new_coords, commas)
-      new_coords <- data.frame(axis = names(new_coords),
-                               coord = unname(new_coords))
       new_coords <- paste(c("New coords:",
-                            utils::capture.output(new_coords)),
+                            utils::capture.output(utils::str(new_coords))[-1]),
                           collapse = "\n")
     }
 
@@ -126,6 +145,12 @@ broadcast <- function(x, dim_names) {
   })
 }
 
+#' Test if the object is a dibble metric
+#'
+#' @param x An object.
+#'
+#' @return A logical.
+#'
 #' @export
 is_dibble_metric <- function(x) {
   inherits(x, "dibble_metric")
@@ -160,12 +185,12 @@ dim.dibble_metric <- function(x) {
 }
 
 #' @export
-nrow.dibble_metric <- function(x) {
+nrow.dibble_metric <- function(x, ...) {
   nrow_dibble(x)
 }
 
 #' @export
-ncol.dibble_metric <- function(x) {
+ncol.dibble_metric <- function(x, ...) {
   1L
 }
 
@@ -200,7 +225,7 @@ Ops.dibble_metric <- function(e1, e2) {
     dim_names_e1 <- dimnames(e1)
     dim_names_e2 <- dimnames(e2)
 
-    dim_names <- expand_dim_names(list(dim_names_e1, dim_names_e2))
+    dim_names <- union_dim_names(list(dim_names_e1, dim_names_e2))
 
     e1 <- as_dibble_metric(e1, dim_names)
     e2 <- as_dibble_metric(e2, dim_names)

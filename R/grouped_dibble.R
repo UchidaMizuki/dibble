@@ -70,6 +70,12 @@ ungroup.grouped_dibble <- function(x, ...) {
   new_dibble(x, dim_names)
 }
 
+#' Test if the object is a grouped dibble
+#'
+#' @param x An object.
+#'
+#' @return A logical.
+#'
 #' @export
 is_grouped_dibble <- function(x) {
   inherits(x, "grouped_dibble")
@@ -101,12 +107,12 @@ dim.grouped_dibble <- function(x) {
 }
 
 #' @export
-nrow.grouped_dibble <- function(x) {
+nrow.grouped_dibble <- function(x, ...) {
   nrow_dibble(x)
 }
 
 #' @export
-ncol.grouped_dibble <- function(x) {
+ncol.grouped_dibble <- function(x, ...) {
   length(colnames(x))
 }
 

@@ -4,7 +4,7 @@
 \alias{as_dibble}
 \alias{as_dibble.data.frame}
 \alias{as_dibble.dibble}
-\title{Coerce a data frame to a dibble}
+\title{Coerce an object to a dibble}
 \usage{
 as_dibble(x, ...)
 
@@ -13,7 +13,7 @@ as_dibble(x, ...)
 \method{as_dibble}{dibble}(x, dim_names, ...)
 }
 \arguments{
-\item{x}{A data frame or a dibble.}
+\item{x}{An object.}
 
 \item{...}{Unused, for extensibility.}
 
@@ -23,5 +23,5 @@ as_dibble(x, ...)
 A dibble.
 }
 \description{
-\code{as_dibble()} turns a data frame into a dimensional data frame called a dibble.
+\code{as_dibble()} turns an object into a dimensional data frame called a dibble.
 }
