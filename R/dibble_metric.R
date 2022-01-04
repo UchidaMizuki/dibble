@@ -45,7 +45,8 @@ as_dibble_metric <- function(x, ...) {
 #' @rdname as_dibble_metric
 #' @export
 as_dibble_metric.default <- function(x, dim_names, ...) {
-  dim <- lengths(dim_names)
+  dim <- lengths(dim_names,
+                 use.names = FALSE)
   x <- array(vec_recycle(x, prod(dim)), dim)
 
   new_dibble_metric(x, dim_names)
@@ -74,10 +75,18 @@ as_dibble_metric.array <- function(x, dim_names = NULL, ...) {
 
 #' @rdname as_dibble_metric
 #' @export
+as_dibble_metric.table <- function(x, dim_names = NULL, ...) {
+  class(x) <- NULL
+  as_dibble_metric(x, dim_names)
+}
+
+#' @rdname as_dibble_metric
+#' @export
 as_dibble_metric.dibble_metric <- function(x, dim_names = NULL, ...) {
   if (is.null(dim_names) || identical(dimnames(x), dim_names)) {
     x
   } else {
+    dim_names <- as_dim_names(dim_names, dimnames(x))
     broadcast(x, dim_names)
   }
 }
@@ -110,7 +119,7 @@ broadcast <- function(x, dim_names) {
   x <- rep_len(list(undibble(x)), prod(new_dim))
   x <- bind_arrays(x)
 
-  dim(x) <- c(new_dim, common_dim)
+  dim(x) <- unname(c(new_dim, common_dim))
 
   x <- new_dibble_metric(aperm(x,
                                perm = vec_match(axes, c(new_axes, old_axes))),
@@ -158,7 +167,7 @@ is_dibble_metric <- function(x) {
 
 #' @export
 as.array.dibble_metric <- function(x, ...) {
-  undibble(x)
+  as.array(undibble(x))
 }
 
 #' @export
@@ -191,7 +200,7 @@ nrow.dibble_metric <- function(x, ...) {
 
 #' @export
 ncol.dibble_metric <- function(x, ...) {
-  1L
+  NULL
 }
 
 #' @export
@@ -243,7 +252,7 @@ solve.dibble_metric <- function(a, b, ...) {
   if (is_missing(b)) {
     dim_names <- dimnames(a)
     a <- undibble(a)
-    new_dibble_metric(solve(a), dim_names)
+    new_dibble_metric(unname(solve(a)), dim_names)
   } else {
     NextMethod()
   }

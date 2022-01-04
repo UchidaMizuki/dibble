@@ -57,9 +57,3 @@ bind_arrays <- function(x) {
                     rev.along = 0)
   aperm(x, c(perm + 1, seq_len(perm)))
 }
-
-dim_sum <- function(x) {
-  dim <- paste0(big_mark(dim(x)),
-                collapse = " x ")
-  paste0("dim [", dim, "]")
-}

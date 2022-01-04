@@ -163,13 +163,25 @@ dimnames_dibble <- function(x) {
 
 `dimnames<-_dibble` <- function(x, value) {
   if (is_dibble(x) || is_dibble_metric(x)) {
-    attr(x, "dim_names") <- as_dim_names(value, dimnames(x))
+    dim_names <- dimnames(x)
+    dim <- lengths(dim_names)
+
+    stopifnot(
+      all(lengths(value) == dim)
+    )
+
+    attr(x, "dim_names") <- as_dim_names(value, dim_names)
     x
   } else if (is_grouped_dibble(x)) {
     group_names <- group_names(x)
+    group_dim <- lengths(group_names)
     loc <- seq_along(group_names)
 
     group_names <- as_dim_names(value[loc], group_names)
+
+    stopifnot(
+      all(lengths(group_names), group_dim)
+    )
 
     x <- purrr::modify(undibble(x),
                        function(x) {
@@ -307,7 +319,7 @@ as_tibble_dibble <- function(x, ...) {
                      .name_repair = "check_unique")
   } else if (is_dibble_metric(x)) {
     vctrs::vec_cbind(dim,
-                     . = as_met(x), ...,
+                     . = as_met(undibble(x)), ...,
                      .name_repair = "check_unique")
   }
 }
@@ -335,7 +347,7 @@ aperm_dibble <- function(a, perm, ...) {
                        })
     new_dibble(a, dim_names)
   } else if (is_dibble_metric(a)) {
-    a <- aperm(undibble(a), perm, ...)
+    a <- aperm(as.array(a), perm, ...)
     new_dibble_metric(a, dim_names)
   }
 }

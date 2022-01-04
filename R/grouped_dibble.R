@@ -82,11 +82,6 @@ is_grouped_dibble <- function(x) {
 }
 
 #' @export
-as.array.grouped_dibble <- function(x, ...) {
-  undibble(x)
-}
-
-#' @export
 dimnames.grouped_dibble <- function(x) {
   group_names <- group_names(x)
 

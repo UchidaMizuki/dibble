@@ -130,6 +130,36 @@ test_that("mutate.dibble", {
   expect_equal(as.array(x$cases_population), as.array(table1_dibble$cases) * (as.array(table1_dibble$population) + 1))
 })
 
-# test_that("select.dibble", {
-#
-# })
+test_that("select.dibble", {
+  x <- select(table1_dibble,
+              cases)
+
+  expect_equal(colnames(table1_dibble), c("cases", "population"))
+  expect_equal(colnames(x), "cases")
+  expect_equal(x, table1_dibble["cases"])
+
+  x <- select(table1_dibble,
+              year, country, cases)
+  expect_equal(names(dimnames(x)), c("year", "country"))
+})
+
+test_that("relocate.dibble", {
+  x <- relocate(table1_dibble,
+                year, country, population, cases)
+  expect_equal(names(dimnames(x)), c("year", "country"))
+  expect_equal(colnames(x), c("population", "cases"))
+})
+
+test_that("rename.dibble", {
+  x <- rename(table1_dibble,
+              year1 = year,
+              country1 = country,
+              population1 = population,
+              cases1 = cases)
+  expect_true(setequal(names(dimnames(x)), c("year1", "country1")))
+  expect_true(setequal(colnames(x), c("population1", "cases1")))
+})
+
+test_that("print.dibble", {
+  expect_output(print(table1_dibble))
+})

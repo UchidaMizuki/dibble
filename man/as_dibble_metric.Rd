@@ -4,6 +4,7 @@
 \alias{as_dibble_metric}
 \alias{as_dibble_metric.default}
 \alias{as_dibble_metric.array}
+\alias{as_dibble_metric.table}
 \alias{as_dibble_metric.dibble_metric}
 \title{Coerce an object to a dibble metric}
 \usage{
@@ -12,6 +13,8 @@ as_dibble_metric(x, ...)
 \method{as_dibble_metric}{default}(x, dim_names, ...)
 
 \method{as_dibble_metric}{array}(x, dim_names = NULL, ...)
+
+\method{as_dibble_metric}{table}(x, dim_names = NULL, ...)
 
 \method{as_dibble_metric}{dibble_metric}(x, dim_names = NULL, ...)
 }
