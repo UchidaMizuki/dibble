@@ -4,7 +4,7 @@ new_dibble_metric <- function(x, dim_names) {
   x
 }
 
-#' Build a metric
+#' Build a dibble metric
 #'
 #' `dibble_metric()` constructs a metric for a dibble.
 #'

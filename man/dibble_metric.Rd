@@ -2,7 +2,7 @@
 % Please edit documentation in R/dibble_metric.R
 \name{dibble_metric}
 \alias{dibble_metric}
-\title{Build a metric}
+\title{Build a dibble metric}
 \usage{
 dibble_metric(x, dim_names = NULL)
 }

@@ -355,7 +355,7 @@ aperm_dibble <- function(a, perm, ...) {
 }
 
 `[<-_dibble` <- function(x, i, value) {
-  names(value) <- names(undibble(x)[i])
+  names(value) <- dplyr::coalesce(names(undibble(x)[i]), i)
   mutate(x, !!!value)
 }
 
@@ -372,7 +372,7 @@ aperm_dibble <- function(a, perm, ...) {
 
 `[[<-_dibble` <- function(x, i, value) {
   value <- list(value)
-  names(value) <- names(undibble(x)[i])
+  names(value) <- dplyr::coalesce(names(undibble(x)[i]), i)
   mutate(x, !!!value)
 }
 

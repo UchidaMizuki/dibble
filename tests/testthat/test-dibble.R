@@ -5,6 +5,8 @@ test_that("dibble", {
 
   expect_equal(population_dibble, dibble(population_dibble))
   expect_equal(population_dibble, dibble(population = population_dibble$population))
+
+  expect_equal(dibble(tidyr::table1, .dim_names = list(country = NULL, year = NULL)), table1_dibble)
 })
 
 test_that("as_dibble", {
@@ -53,6 +55,13 @@ test_that("dimnames.dibble", {
   expect_equal(unname(dim(x)), unname(dm))
 })
 
+test_that("nrow-ncol-row-colnames.default", {
+  expect_equal(nrow(tidyr::table1), base::nrow(tidyr::table1))
+  expect_equal(ncol(tidyr::table1), base::ncol(tidyr::table1))
+  expect_equal(rownames(tidyr::table1), base::rownames(tidyr::table1))
+  expect_equal(colnames(tidyr::table1), base::colnames(tidyr::table1))
+})
+
 test_that("nrow-ncol-row-colnames.dibble", {
   x <- tidyr::expand(tidyr::population, country, year)
 
@@ -84,3 +93,43 @@ test_that("aperm.dibble", {
   expect_equal(x, x1)
 })
 
+test_that("subsetting-dibble", {
+  expect_equal(population_dibble["population"], population_dibble)
+
+  x <- table1_dibble
+  x["cases1"] <- x["cases"]
+
+  expect_equal(x$cases, x$cases1)
+  expect_equal(table1_dibble$population, table1_dibble[["population"]])
+
+  x[["population1"]] <- x[["population"]]
+  expect_equal(x[["population1"]], x[["population"]])
+  expect_equal(x$population1, x$population)
+
+  x$population2 <- x$population
+  expect_equal(x$population2, x$population)
+})
+
+test_that("slice.dibble", {
+  x <- dplyr::filter(tidyr::table1,
+                     country == "Afghanistan",
+                     year == 1999)
+  x <- dibble_by(x, country, year)
+
+  x1 <- slice(table1_dibble, 1, 1)
+
+  expect_equal(x, x1)
+})
+
+test_that("mutate.dibble", {
+  x <- mutate(table1_dibble,
+              population = population + 1,
+              cases_population = cases * population)
+
+  expect_equal(as.array(x$population), as.array(table1_dibble$population) + 1)
+  expect_equal(as.array(x$cases_population), as.array(table1_dibble$cases) * (as.array(table1_dibble$population) + 1))
+})
+
+# test_that("select.dibble", {
+#
+# })
