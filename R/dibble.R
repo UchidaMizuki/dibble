@@ -479,15 +479,15 @@ mutate.dibble <- function(.data, ...) {
   nms <- names(dots)
 
   dim_names <- dimnames(.data)
-  .data <- undibble(.data)
-
   data <- as.list(.data)
+
+  .data <- undibble(.data)
 
   for (i in seq_along(nms)) {
     nm <- nms[[i]]
 
-    data_nm <- eval_tidy(dots[[i]], data)
-    data_nm <- dibble_metric(data_nm, dim_names)
+    data_nm <- dibble_metric(eval_tidy(dots[[i]], data),
+                             dim_names = dim_names)
 
     data[[nm]] <- data_nm
     .data[[nm]] <- undibble(data_nm)

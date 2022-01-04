@@ -128,6 +128,21 @@ test_that("mutate.dibble", {
 
   expect_equal(as.array(x$population), as.array(table1_dibble$population) + 1)
   expect_equal(as.array(x$cases_population), as.array(table1_dibble$cases) * (as.array(table1_dibble$population) + 1))
+
+  ddf1 <- tidyr::expand_grid(axis1 = 1,
+                             axis2 = 1:2)
+  ddf1 <- mutate(ddf1,
+                 value = dplyr::row_number())
+  ddf1 <- dibble_by(ddf1,
+                    axis1, axis2)
+
+  ddf2 <- tidyr::expand_grid(axis2 = 1:3)
+  ddf2 <- mutate(ddf2,
+                 value = dplyr::row_number())
+  ddf2 <- dibble_by(ddf2,
+                    axis2)
+
+  expect_true(is_dibble(mutate(ddf1, value = value + ddf2$value)))
 })
 
 test_that("select.dibble", {
