@@ -7,7 +7,7 @@
 dibble(..., .dim_names = NULL)
 }
 \arguments{
-\item{...}{A set of name-metric pairs.}
+\item{...}{A set of name-measure pairs.}
 
 \item{.dim_names}{A list of dimension names.}
 }

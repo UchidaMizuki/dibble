@@ -2,15 +2,21 @@
 % Please edit documentation in R/dibble.R
 \name{as_dibble}
 \alias{as_dibble}
-\alias{as_dibble.data.frame}
+\alias{as_dibble.rowwise_df}
+\alias{as_dibble.grouped_df}
 \alias{as_dibble.dibble}
+\alias{as_dibble.grouped_dibble}
 \title{Coerce an object to a dibble}
 \usage{
 as_dibble(x, ...)
 
-\method{as_dibble}{data.frame}(x, dim_names, ...)
+\method{as_dibble}{rowwise_df}(x, ...)
 
-\method{as_dibble}{dibble}(x, dim_names, ...)
+\method{as_dibble}{grouped_df}(x, ...)
+
+\method{as_dibble}{dibble}(x, ...)
+
+\method{as_dibble}{grouped_dibble}(x, ...)
 }
 \arguments{
 \item{x}{An object.}

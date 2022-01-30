@@ -22,7 +22,7 @@ knitr::opts_chunk$set(
 <!-- badges: end -->
 
 A 'dibble' is a data frame consisting of arrays with named dimensions (known as data cubes).
-The columns of the dibbles are classified into dimensions or metrics, and the operations on the metrics are broadcasted.
+The columns of the dibbles are classified into dimensions or measures, and the operations on the measures are broadcasted.
 
 ## Installation
 
@@ -55,7 +55,7 @@ ddf <- tidyr::expand_grid(axis1 = 1:2,
 ddf
 ```
 
-You can access the metrics from the dibble with `$`.
+You can access the measures from the dibble with `$`.
 
 ```{r}
 ddf$value
@@ -77,7 +77,7 @@ ddf1 %>%
   mutate(value = value + ddf2$value)
 ```
 
-`dibble()` allows broadcasting based on the union set of axes of multiple dibbles (or metrics).
+`dibble()` allows broadcasting based on the union set of axes of multiple dibbles (or measures).
 
 ```{r}
 ddf1 <- tidyr::expand_grid(axis1 = 1:2,
