@@ -357,6 +357,24 @@ aperm_dibble <- function(a, perm, ...) {
   }
 }
 
+#' @export
+apply <- function(x, margin, fun, ...) {
+  UseMethod("apply")
+}
+
+#' @export
+apply.default <- function(x, margin, fun, ...,
+                          simplify = TRUE) {
+  base::apply(x, margin, fun, ...,
+              simplify = simplify)
+}
+
+#' @export
+apply.dibble <- function(x, margin, fun, ...) {
+  x <- as_dibble_measure(x)
+  apply(x, margin, fun, ...)
+}
+
 
 
 # Subsetting --------------------------------------------------------------
@@ -408,20 +426,6 @@ aperm_dibble <- function(a, perm, ...) {
 #   x[[i]] <- value
 #   x
 # }
-
-
-
-# Ops ---------------------------------------------------------------------
-
-#' @export
-Ops.dibble <- function(e1, e2) {
-  e1 <- as_dibble_measure(e1)
-
-  if (is_dibble(e2) || is_grouped_dibble(e2)) {
-    e2 <- as_dibble_measure(e2)
-  }
-  NextMethod()
-}
 
 
 

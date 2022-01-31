@@ -68,46 +68,6 @@ as_dibble_measure.grouped_dibble <- function(x, ...) {
   x[[1L]]
 }
 
-# as_dibble_measure.default <- function(x, dim_names, ...) {
-#   dim <- list_sizes(dim_names)
-#   x <- array(vec_recycle(x, prod(dim)), dim)
-#
-#   new_dibble_measure(x, dim_names)
-# }
-
-# as_dibble_measure.array <- function(x, dim_names = NULL, ...) {
-#   old_names <- dimnames(x)
-#
-#   if (is.null(old_names)) {
-#     stopifnot(
-#       !is.null(dim_names)
-#     )
-#
-#     new_dibble_measure(x, dim_names)
-#   } else {
-#     x <- new_dibble_measure(x, old_names)
-#
-#     if (!is.null(dim_names)) {
-#       x <- as_dibble_measure(x, dim_names)
-#     }
-#     x
-#   }
-# }
-
-# as_dibble_measure.table <- function(x, dim_names = NULL, ...) {
-#   class(x) <- NULL
-#   as_dibble_measure(x, dim_names)
-# }
-
-# as_dibble_measure.dibble_measure <- function(x, dim_names = NULL, ...) {
-#   if (is.null(dim_names) || identical(dimnames(x), dim_names)) {
-#     x
-#   } else {
-#     dim_names <- as_dim_names(dim_names, dimnames(x))
-#     broadcast(x, dim_names)
-#   }
-# }
-
 #' @export
 broadcast <- function(x, dim_names) {
   old_dim_names <- dimnames(x)
@@ -156,36 +116,21 @@ broadcast <- function(x, dim_names) {
         }
       }
 
-      new_dibble_measure(rlang::exec(`[`, x, !!!loc),
-                         dim_names)
+      x <- new_dibble_measure(rlang::exec(`[`, x, !!!loc),
+                              dim_names)
 
-      # withRestarts({
-      #   # Warning
-      #   if (vec_is_empty(new_axes)) {
-      #     new_axes <- NULL
-      #   } else {
-      #     new_axes <- commas(new_axes)
-      #     new_axes <- paste("New axes:", new_axes)
-      #   }
-      #
-      #   new_coords <- new_coords[list_sizes(new_coords) > 0]
-      #   if (vec_is_empty(new_coords)) {
-      #     new_coords <- NULL
-      #   } else {
-      #     new_coords <- paste(c("New coords:",
-      #                           utils::capture.output(utils::str(new_coords))[-1]),
-      #                         collapse = "\n")
-      #   }
-      #
-      #   warning(warningCondition(paste0(c("Broadcasting,", new_axes, new_coords),
-      #                                   collapse = "\n"),
-      #                            class = "warning_broadcast"))
-      #
-      #   x
-      # },
-      # restart_broadcast = function() {
-      #   x
-      # })
+      withRestarts({
+        # Warning
+        warning(warningCondition(paste0(c("Broadcasting,",
+                                          utils::capture.output(utils::str(dim_names))[-1]),
+                                        collapse = "\n"),
+                                 class = "warning_broadcast"))
+
+        x
+      },
+      restart_broadcast = function() {
+        x
+      })
     }
   }
 }
@@ -260,20 +205,36 @@ aperm.dibble_measure <- function(a, perm = NULL, ...) {
   aperm_dibble(a, perm, ...)
 }
 
+#' @export
+apply.dibble_measure <- function(x, margin, fun, ...) {
+  dim_names <- dimnames(x)
+
+  if (is.character(margin)) {
+    margin <- vec_match(margin, names(dim_names))
+  }
+
+  x <- apply(as.array(x), margin, fun, ...)
+  new_dibble_measure(x, dim_names[margin])
+}
 
 
 # Ops ---------------------------------------------------------------------
 
 #' @export
-Ops.dibble_measure <- function(e1, e2) {
+Ops_dibble <- function(e1, e2) {
+  if (is_dibble(e1) || is_grouped_dibble(e1)) {
+    e1 <- as_dibble_measure(e1)
+  }
+
+  if (is_dibble(e2) || is_grouped_dibble(e2)) {
+    e2 <- as_dibble_measure(e2)
+  }
+
   if (!rlang::is_scalar_vector(e1) && !rlang::is_scalar_vector(e2)) {
-    dim_names_e1 <- dimnames(e1)
-    dim_names_e2 <- dimnames(e2)
+    dim_names <- union_dim_names(dimnames(e1), dimnames(e2))
 
-    dim_names <- union_dim_names(dim_names_e1, dim_names_e2)
-
-    e1 <- as_dibble_measure(e1, dim_names)
-    e2 <- as_dibble_measure(e2, dim_names)
+    e1 <- broadcast(e1, dim_names)
+    e2 <- broadcast(e2, dim_names)
   }
   NextMethod()
 }

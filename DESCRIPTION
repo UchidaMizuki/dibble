@@ -17,6 +17,7 @@ Imports:
     dplyr,
     pillar,
     rlang,
+    tibble,
     tidyselect,
     vctrs
 Roxygen: list(markdown = TRUE)

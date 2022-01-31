@@ -129,6 +129,12 @@ as_tibble.grouped_dibble <- function(x, ...) {
   as_tibble(ungroup(x), ...)
 }
 
+#' @export
+apply.grouped_dibble <- function(x, margin, fun, ...) {
+  x <- as_dibble_measure(x)
+  apply(x, margin, fun, ...)
+}
+
 
 
 # Subsetting --------------------------------------------------------------
@@ -163,20 +169,6 @@ as_tibble.grouped_dibble <- function(x, ...) {
 #' @export
 `$<-.grouped_dibble` <- function(x, i, value) {
   `$<-_dibble`(x, i, value)
-}
-
-
-
-# Ops ---------------------------------------------------------------------
-
-#' @export
-Ops.grouped_dibble <- function(e1, e2) {
-  e1 <- as_dibble_measure(e1)
-
-  if (is_dibble(e2) || is_grouped_dibble(e2)) {
-    e2 <- as_dibble_measure(e2)
-  }
-  NextMethod()
 }
 
 
