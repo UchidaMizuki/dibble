@@ -375,6 +375,25 @@ apply.dibble <- function(x, margin, fun, ...) {
   apply(x, margin, fun, ...)
 }
 
+#' @export
+broadcast <- function(x, dim_names, ...) {
+  UseMethod("broadcast")
+}
+
+#' @export
+broadcast.dibble <- function(x, dim_names, ...) {
+  old_dim_names <- dimnames(x)
+
+  if (identical(old_dim_names, dim_names)) {
+    x
+  }
+  x <- lapply(as.list(x),
+              function(x) {
+                undibble(broadcast(x, dim_names))
+              })
+  new_dibble(x, dim_names)
+}
+
 
 
 # Subsetting --------------------------------------------------------------

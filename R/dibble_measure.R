@@ -230,7 +230,7 @@ Ops_dibble <- function(e1, e2) {
     e2 <- as_dibble_measure(e2)
   }
 
-  if (!rlang::is_scalar_vector(e1) && !rlang::is_scalar_vector(e2)) {
+  if (is_dibble_measure(e1) && is_dibble_measure(e2)) {
     dim_names <- union_dim_names(dimnames(e1), dimnames(e2))
 
     e1 <- broadcast(e1, dim_names)

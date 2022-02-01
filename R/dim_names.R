@@ -1,8 +1,28 @@
-as_dim_names <- function(x, data) {
+as_dim_names <- function(x, dim_names) {
   if (is.null(x)) {
-    nms <- names(data)
+    nms <- names(dim_names)
     x <- vec_init_along(list(), nms)
     names(x) <- nms
+  } else if (is.character(x)) {
+    nms <- x
+    x <- vec_init_along(list(), x)
+    names(x) <- nms
+  } else {
+    stopifnot(
+      is.list(x)
+    )
+
+    loc <- rlang::names2(x) == ""
+    nms <- vapply(x[loc],
+                  function(x) {
+                    stopifnot(
+                      rlang::is_scalar_character(x)
+                    )
+                    x
+                  },
+                  character(1))
+    x[loc] <- list(NULL)
+    names(x)[loc] <- nms
   }
 
   stopifnot(
@@ -17,7 +37,7 @@ as_dim_names <- function(x, data) {
   axes <- names(x)
   x <- mapply(x, axes,
               FUN = function(x, axis) {
-                x <- x %||% vec_unique(data[[axis]])
+                x <- x %||% vec_unique(dim_names[[axis]])
                 stopifnot(
                   !is.null(x)
                 )
@@ -31,9 +51,11 @@ as_dim_names <- function(x, data) {
 union_dim_names <- function(...) {
   x <- vec_c(...)
   nms <- names(x)
-  tapply(x, factor(nms, vec_unique(nms)),
-         function(x) {
-           unique(vec_c(!!!unname(x)))
-         },
-         simplify = FALSE)
+  nms_unique <- unique(nms)
+  out <- lapply(nms_unique,
+                function(nm_unique) {
+                  unique(vec_c(!!!unname(x[nms == nm_unique])))
+                })
+  names(out) <- nms_unique
+  out
 }
