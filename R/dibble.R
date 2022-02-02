@@ -1,9 +1,7 @@
-#' @export
-new_dibble <- function(x, dim_names, ...,
-                       class = character()) {
+new_dibble <- function(x, dim_names) {
   structure(x,
-            dim_names = dim_names, ...,
-            class = c(class, "dibble"))
+            dim_names = dim_names,
+            class = "dibble")
 }
 
 #' Build a dimensional data frame
@@ -18,36 +16,41 @@ new_dibble <- function(x, dim_names, ...,
 #' @export
 dibble <- function(...,
                    .dim_names = NULL) {
-  dots <- rlang::enquos(...)
-  # dots <- lapply(rlang::enquos(...),
-  #                function(x) {
-  #                  supress_warning_broadcast(rlang::eval_tidy(x))
-  #                })
-  dim_names <- union_dim_names(!!!lapply(dots, dimnames))
-  # dim_names <- as_dim_names(.dim_names, union_dim_names(dots))
+  dots <- lapply(rlang::enquos(...),
+                 function(x) {
+                   supress_warning_broadcast(rlang::eval_tidy(x))
+                 })
+  dim_names <- as_dim_names(.dim_names,
+                            union_dim_names(!!!lapply(dots, dimnames)))
+  dots <- mapply(dots, rlang::names2(dots),
+                 FUN = function(dot, nm) {
+                   if (is_dibble(dot) || is_grouped_dibble(dot)) {
+                     stopifnot(
+                       nm == ""
+                     )
+                     dot <- ungroup(dot)
+                     lapply(as.list(dot),
+                            function(x) {
+                              undibble(dibble_measure(x, dim_names))
+                            })
+                   } else {
+                     dot <- list(undibble(dibble_measure(dot, dim_names)))
+                     names(dot) <- nm
+                     dot
+                   }
+                 },
+                 SIMPLIFY = FALSE,
+                 USE.NAMES = FALSE)
+  dots <- vec_c(!!!dots)
 
-  stop()
-  # FIXME
-  # dots <- lapply(dots,
-  #                function(x) {
-  #                  if (is_dibble(x) || is_grouped_dibble(x)) {
-  #                    x <- ungroup(x)
-  #                    as.list(x)
-  #                  } else {
-  #                    list(x)
-  #                  }
-  #                })
-  # dots <- exec(c, !!!dots)
-  #
-  # stopifnot(
-  #   is_named(dots)
-  # )
-  #
-  # dots <- purrr::modify(dots,
-  #                       function(x) {
-  #                         undibble(dibble_measure(x, dim_names))
-  #                       })
-  # new_dibble(dots, dim_names)
+  if (!rlang::is_named(dots)) {
+    stopifnot(
+      rlang::is_scalar_list(dots)
+    )
+    new_dibble_measure(dots[[1L]], dim_names)
+  } else {
+    new_dibble(dots, dim_names)
+  }
 }
 
 #' Constructs a dibble by one or more variables
@@ -156,44 +159,41 @@ dimnames_dibble <- function(x) {
   attr(x, "dim_names")
 }
 
-# #' @export
-# `dimnames<-.dibble` <- function(x, value) {
-#   `dimnames<-_dibble`(x, value)
-# }
-#
-# `dimnames<-_dibble` <- function(x, value) {
-#   if (is_dibble(x) || is_dibble_measure(x)) {
-#     dim_names <- dimnames(x)
-#     dim <- lengths(dim_names)
-#
-#     stopifnot(
-#       all(lengths(value) == dim)
-#     )
-#
-#     attr(x, "dim_names") <- as_dim_names(value, dim_names)
-#     x
-#   } else if (is_grouped_dibble(x)) {
-#     group_dim_names <- group_dim_names(x)
-#     group_dim <- lengths(group_dim_names)
-#     loc <- seq_along(group_dim_names)
-#
-#     group_dim_names <- as_dim_names(value[loc], group_dim_names)
-#
-#     stopifnot(
-#       all(lengths(group_dim_names), group_dim)
-#     )
-#
-#     x <- purrr::modify(undibble(x),
-#                        function(x) {
-#                          purrr::modify(x,
-#                                        function(x) {
-#                                          dimnames(x) <- value[-loc]
-#                                          x
-#                                        })
-#                        })
-#     new_grouped_dibble(x, group_dim_names)
-#   }
-# }
+#' @export
+`dimnames<-.dibble` <- function(x, value) {
+  `dimnames<-_dibble`(x, value)
+}
+
+`dimnames<-_dibble` <- function(x, value) {
+  if (is_dibble(x) || is_dibble_measure(x)) {
+    dim_names <- dimnames(x)
+    stopifnot(
+      list_sizes(value) == list_sizes(dim_names)
+    )
+
+    attr(x, "dim_names") <- value
+    x
+  } else if (is_grouped_dibble(x)) {
+    group_dim_names <- group_dim_names(x)
+
+    loc <- seq_along(group_dim_names)
+    new_group_dim_names <- value[loc]
+    new_dim_names <- value[-loc]
+    stopifnot(
+      list_sizes(new_group_dim_names) == list_sizes(group_dim_names)
+    )
+
+    x <- lapply(undibble(x),
+                function(x) {
+                  lapply(x,
+                         function(x) {
+                           dimnames(x) <- new_dim_names
+                           x
+                         })
+                })
+    new_grouped_dibble(x, new_group_dim_names)
+  }
+}
 
 #' @export
 dim.dibble <- function(x) {
@@ -357,43 +357,6 @@ aperm_dibble <- function(a, perm, ...) {
   }
 }
 
-#' @export
-apply <- function(x, margin, fun, ...) {
-  UseMethod("apply")
-}
-
-#' @export
-apply.default <- function(x, margin, fun, ...,
-                          simplify = TRUE) {
-  base::apply(x, margin, fun, ...,
-              simplify = simplify)
-}
-
-#' @export
-apply.dibble <- function(x, margin, fun, ...) {
-  x <- as_dibble_measure(x)
-  apply(x, margin, fun, ...)
-}
-
-#' @export
-broadcast <- function(x, dim_names, ...) {
-  UseMethod("broadcast")
-}
-
-#' @export
-broadcast.dibble <- function(x, dim_names, ...) {
-  old_dim_names <- dimnames(x)
-
-  if (identical(old_dim_names, dim_names)) {
-    x
-  }
-  x <- lapply(as.list(x),
-              function(x) {
-                undibble(broadcast(x, dim_names))
-              })
-  new_dibble(x, dim_names)
-}
-
 
 
 # Subsetting --------------------------------------------------------------
@@ -403,48 +366,17 @@ broadcast.dibble <- function(x, dim_names, ...) {
   new_dibble(NextMethod(), dimnames(x))
 }
 
-# #' @export
-# `[<-.dibble` <- function(x, i, value) {
-#   `[<-_dibble`(x, i, value)
-# }
-#
-# `[<-_dibble` <- function(x, i, value) {
-#   names(value) <- dplyr::coalesce(names(undibble(x)[i]), i)
-#   mutate(x, !!!value)
-# }
-
 #' @export
 `[[.dibble` <- function(x, i) {
   x <- as.list(x)
   x[[i]]
 }
 
-# #' @export
-# `[[<-.dibble` <- function(x, i, value) {
-#   `[[<-_dibble`(x, i, value)
-# }
-#
-# `[[<-_dibble` <- function(x, i, value) {
-#   value <- list(value)
-#   names(value) <- dplyr::coalesce(names(undibble(x)[i]), i)
-#   mutate(x, !!!value)
-# }
-
 #' @export
 `$.dibble` <- function(x, i) {
   x <- as.list(x)
   x[[i]]
 }
-
-# #' @export
-# `$<-.dibble` <- function(x, i, value) {
-#   `$<-_dibble`(x, i, value)
-# }
-#
-# `$<-_dibble` <- function(x, i, value) {
-#   x[[i]] <- value
-#   x
-# }
 
 
 
@@ -490,7 +422,7 @@ slice_dibble <- function(.data, ...) {
                       }),
                dim_names = dim_names)
   } else if (is_grouped_dibble(.data)) {
-    group_dim_names <- attr(.data, "group_dim_names")
+    group_dim_names <- group_dim_names(.data)
     group_axes <- names(group_dim_names)
     groups <- seq_along(group_dim_names)
 
@@ -661,7 +593,7 @@ print_dibble <- function(x, n) {
   meas_names <- colnames(x)
   size_meas <- big_mark(length(meas_names))
 
-  groups <- names(attr(x, "group_dim_names"))
+  group_dim_names <- group_dim_names(x)
 
   x_head <- ungroup(head_dibble(x, n))
 
@@ -677,10 +609,10 @@ print_dibble <- function(x, n) {
                  dim_sum,
                  `Measures` = commas(meas_names))
 
-    if (!is.null(groups)) {
-      size_groups <- big_mark(prod(dim[groups]))
+    if (!is.null(group_dim_names)) {
+      size_groups <- big_mark(prod(list_sizes(group_dim_names)))
       tbl_sum <- c(tbl_sum,
-                   Groups = paste0(commas(groups), " [", size_groups, "]"))
+                   Groups = paste0(commas(names(group_dim_names)), " [", size_groups, "]"))
     }
 
     attr(df, "tbl_sum") <- tbl_sum
@@ -706,7 +638,7 @@ head_dibble <- function(x, n) {
   loc[i] <- dim
 
   if (!all(i)) {
-    loc[[which(!i)[[1]]]] <- ceiling(n / prod(dim))
+    loc[[which(!i)[[1L]]]] <- ceiling(n / prod(dim))
   }
   loc <- rev(lapply(loc, seq_len))
 

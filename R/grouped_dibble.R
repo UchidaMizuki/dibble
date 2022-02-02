@@ -1,9 +1,7 @@
-#' @export
-new_grouped_dibble <- function(x, group_dim_names, ...,
-                               class = character()) {
+new_grouped_dibble <- function(x, group_dim_names) {
   structure(x,
-            group_dim_names = group_dim_names, ...,
-            class = c(class, "grouped_dibble"))
+            group_dim_names = group_dim_names,
+            class = "grouped_dibble")
 }
 
 group_dim_names <- function(x) {
@@ -88,7 +86,7 @@ dimnames.grouped_dibble <- function(x) {
   group_dim_names <- group_dim_names(x)
 
   x <- undibble(x)
-  dim_names <- dimnames(x[[1]][[1]])
+  dim_names <- dimnames(x[[1L]][[1L]])
 
   c(group_dim_names, dim_names)
 }
@@ -129,12 +127,6 @@ as_tibble.grouped_dibble <- function(x, ...) {
   as_tibble(ungroup(x), ...)
 }
 
-#' @export
-apply.grouped_dibble <- function(x, margin, fun, ...) {
-  x <- as_dibble_measure(x)
-  apply(x, margin, fun, ...)
-}
-
 
 
 # Subsetting --------------------------------------------------------------
@@ -145,30 +137,15 @@ apply.grouped_dibble <- function(x, margin, fun, ...) {
 }
 
 #' @export
-`[<-.grouped_dibble` <- function(x, i, value) {
-  `[<-_dibble`(x, i, value)
-}
-
-#' @export
 `[[.grouped_dibble` <- function(x, i) {
   x <- ungroup(x)
   x[[i]]
 }
 
 #' @export
-`[[<-.grouped_dibble` <- function(x, i, value) {
-  `[[<-_dibble`(x, i, value)
-}
-
-#' @export
 `$.grouped_dibble` <- function(x, i) {
   x <- ungroup(x)
   x[[i]]
-}
-
-#' @export
-`$<-.grouped_dibble` <- function(x, i, value) {
-  `$<-_dibble`(x, i, value)
 }
 
 
@@ -193,7 +170,7 @@ mutate.grouped_dibble <- function(.data, ...) {
   size <- prod(group_dim)
 
   .data <- undibble(.data)
-  dim_names <- dimnames(.data[[1]][[1]])
+  dim_names <- dimnames(.data[[1L]][[1L]])
 
   out <- .data
   out[setdiff(nms, names(out))] <- list(array(list(), group_dim))

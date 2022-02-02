@@ -15,6 +15,7 @@ Encoding: UTF-8
 LazyData: true
 Imports: 
     dplyr,
+    ellipsis,
     pillar,
     rlang,
     tibble,

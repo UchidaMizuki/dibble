@@ -65,7 +65,7 @@ test_that("subsetting-dibble", {
   expect_true(is_grouped_dibble(x["population"]))
   expect_true(is_grouped_dibble(x[1]))
   expect_true(is_dibble_measure(x[["population"]]))
-  expect_true(is_dibble_measure(x[[1]]))
+  expect_true(is_dibble_measure(x[[1L]]))
 
   expect_equal(table1_dibble[["population"]], relocate(x[["population"]], country))
   expect_equal(table1_dibble$population, relocate(x$population, country))

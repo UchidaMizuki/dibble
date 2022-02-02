@@ -1,9 +1,7 @@
-#' @export
-new_dibble_measure <- function(x, dim_names, ...,
-                               class = character()) {
+new_dibble_measure <- function(x, dim_names) {
   structure(x,
-            dim_names = dim_names, ...,
-            class = c(class, "dibble_measure"))
+            dim_names = dim_names,
+            class = "dibble_measure")
 }
 
 #' Build a dibble measure
@@ -17,17 +15,22 @@ new_dibble_measure <- function(x, dim_names, ...,
 #'
 #' @export
 dibble_measure <- function(x, dim_names = NULL) {
-  supress_warning_broadcast(as_dibble_measure(x, dim_names))
-}
+  if (is_dibble(x) || is_grouped_dibble(x)) {
+    x <- as_dibble_measure(x)
+    is_dibble_measure_x <- TRUE
+  } else {
+    is_dibble_measure_x <- is_dibble_measure(x)
+  }
 
-# supress_warning_broadcast <- function(x) {
-#   withCallingHandlers({
-#     x
-#   },
-#   warning_broadcast = function(w) {
-#     invokeRestart("restart_broadcast")
-#   })
-# }
+  if (is.null(dim_names)) {
+    stopifnot(
+      is_dibble_measure_x
+    )
+    x
+  } else {
+    broadcast(x, dim_names)
+  }
+}
 
 #' Coerce an object to a dibble measure
 #'
@@ -66,73 +69,6 @@ as_dibble_measure.grouped_dibble <- function(x, ...) {
     ncol(x) == 1L
   )
   x[[1L]]
-}
-
-#' @export
-broadcast <- function(x, dim_names) {
-  old_dim_names <- dimnames(x)
-
-  if (identical(old_dim_names, dim_names)) {
-    x
-  } else {
-    old_axes <- names(old_dim_names)
-    new_axes <- names(dim_names)
-
-    stopifnot(
-      old_axes %in% new_axes
-    )
-
-    old_axes <- intersect(new_axes, old_axes)
-    old_dim_names <- old_dim_names[old_axes]
-    old_dim <- list_sizes(old_dim_names)
-
-    # permutation
-    x <- aperm(x, old_axes)
-
-    if (identical(old_dim_names, dim_names)) {
-      x
-    } else {
-      x <- as.array(x)
-
-      # set dimensions
-      new_dim <- vec_rep(1, vec_size(new_axes))
-      names(new_dim) <- new_axes
-      new_dim[old_axes] <- old_dim
-
-      dim(x) <- new_dim
-
-      # subsetting
-      old_dim_names <- old_dim_names[new_axes]
-      loc <- vec_init_along(list(), new_axes)
-
-      for (axis in vec_seq_along(new_axes)) {
-        dim_name <- dim_names[[axis]]
-        old_dim_name <- old_dim_names[[axis]]
-
-        if (is.null(old_dim_name)) {
-          loc[[axis]] <- vec_rep(1, vec_size(dim_name))
-        } else {
-          loc[[axis]] <- vec_match(dim_name, old_dim_name)
-        }
-      }
-
-      x <- new_dibble_measure(rlang::exec(`[`, x, !!!loc),
-                              dim_names)
-
-      withRestarts({
-        # Warning
-        warning(warningCondition(paste0(c("Broadcasting,",
-                                          utils::capture.output(utils::str(dim_names))[-1]),
-                                        collapse = "\n"),
-                                 class = "warning_broadcast"))
-
-        x
-      },
-      restart_broadcast = function() {
-        x
-      })
-    }
-  }
 }
 
 #' Test if the object is a dibble measure
@@ -205,17 +141,6 @@ aperm.dibble_measure <- function(a, perm = NULL, ...) {
   aperm_dibble(a, perm, ...)
 }
 
-#' @export
-apply.dibble_measure <- function(x, margin, fun, ...) {
-  dim_names <- dimnames(x)
-
-  if (is.character(margin)) {
-    margin <- vec_match(margin, names(dim_names))
-  }
-
-  x <- apply(as.array(x), margin, fun, ...)
-  new_dibble_measure(x, dim_names[margin])
-}
 
 
 # Ops ---------------------------------------------------------------------
@@ -224,21 +149,38 @@ apply.dibble_measure <- function(x, margin, fun, ...) {
 Ops_dibble <- function(e1, e2) {
   if (is_dibble(e1) || is_grouped_dibble(e1)) {
     e1 <- as_dibble_measure(e1)
+    is_dibble_measure_e1 <- TRUE
+  } else {
+    is_dibble_measure_e1 <- is_dibble_measure(e1)
   }
 
   if (is_dibble(e2) || is_grouped_dibble(e2)) {
     e2 <- as_dibble_measure(e2)
+    is_dibble_measure_e2 <- TRUE
+  } else {
+    is_dibble_measure_e2 <- is_dibble_measure(e2)
   }
 
-  if (is_dibble_measure(e1) && is_dibble_measure(e2)) {
-    dim_names <- union_dim_names(dimnames(e1), dimnames(e2))
+  if (is_dibble_measure_e1 && is_dibble_measure_e2) {
+    old_dim_names_e1 <- dimnames(e1)
+    old_dim_names_e2 <- dimnames(e2)
+    new_dim_names <- union_dim_names(old_dim_names_e1, old_dim_names_e2)
 
-    e1 <- broadcast(e1, dim_names)
-    e2 <- broadcast(e2, dim_names)
+    brdcst_e1 <- broadcast_dim_names(old_dim_names_e1, new_dim_names)
+    brdcst_e2 <- broadcast_dim_names(old_dim_names_e2, new_dim_names)
+
+    e1 <- broadcast_array(as.array(e1), brdcst_e1)
+    e2 <- broadcast_array(as.array(e2), brdcst_e2)
+  } else if (is_dibble_measure_e1) {
+    new_dim_names <- dimnames(e1)
+    e1 <- as.array(e1)
+  } else {
+    new_dim_names <- dimnames(e2)
+    e2 <- as.array(e2)
   }
-  NextMethod()
+
+  new_dibble_measure(NextMethod(), new_dim_names)
 }
-
 
 
 
