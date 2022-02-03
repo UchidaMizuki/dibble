@@ -21,20 +21,36 @@ dibble <- function(...,
                    supress_warning_broadcast(rlang::eval_tidy(x))
                  })
   dim_names <- as_dim_names(.dim_names,
-                            union_dim_names(!!!lapply(dots, dimnames)))
+                            union_dim_names(!!!lapply(unname(dots), dimnames)))
   dots <- mapply(dots, rlang::names2(dots),
                  FUN = function(dot, nm) {
                    if (is_dibble(dot) || is_grouped_dibble(dot)) {
-                     stopifnot(
-                       nm == ""
-                     )
                      dot <- ungroup(dot)
-                     lapply(as.list(dot),
-                            function(x) {
-                              undibble(dibble_measure(x, dim_names))
-                            })
+                     dot <- lapply(as.list(dot),
+                                   function(x) {
+                                     # FIXME?: When should we do `supress_warning`?
+                                     if (!is.null(.dim_names)) {
+                                       x <- supress_warning_broadcast(dibble_measure(x, dim_names))
+                                     } else {
+                                       x <- dibble_measure(x, dim_names)
+                                     }
+                                     undibble(x)
+                                   })
+                     if (nm != "") {
+                       stopifnot(
+                         rlang::is_scalar_list(dot)
+                       )
+                       names(dot) <- nm
+                     }
+                     dot
                    } else {
-                     dot <- list(undibble(dibble_measure(dot, dim_names)))
+                     # FIXME?: When should we do `supress_warning`?
+                     if (!is.null(.dim_names)) {
+                       dot <- supress_warning_broadcast(dibble_measure(dot, dim_names))
+                     } else {
+                       dot <- dibble_measure(dot, dim_names)
+                     }
+                     dot <- list(undibble(dot))
                      names(dot) <- nm
                      dot
                    }
@@ -317,13 +333,14 @@ as_tibble_dibble <- function(x, ...) {
   }
 
   if (is_dibble(x)) {
-    vec_cbind(dim_names, !!!lapply(undibble(x), fun), ...,
-              .name_repair = "check_unique")
+    x <- vec_cbind(dim_names, !!!lapply(undibble(x), fun),
+                   .name_repair = "check_unique")
   } else if (is_dibble_measure(x)) {
-    vec_cbind(dim_names,
-              . = fun(undibble(x)), ...,
-              .name_repair = "check_unique")
+    x <- vec_cbind(dim_names,
+                   . = fun(undibble(x)),
+                   .name_repair = "check_unique")
   }
+  as_tibble(x, ...)
 }
 
 #' @export

@@ -12,6 +12,15 @@ apply.default <- function(X, MARGIN, FUN, ...,
 
 #' @export
 apply.dibble <- function(X, MARGIN, FUN, ...) {
+  apply_dibble(X, MARGIN, FUN, ...)
+}
+
+#' @export
+apply.grouped_dibble <- function(X, MARGIN, FUN, ...) {
+  apply_dibble(X, MARGIN, FUN, ...)
+}
+
+apply_dibble <- function(X, MARGIN, FUN, ...) {
   X <- as_dibble_measure(X)
   apply(X, MARGIN, FUN, ...)
 }
@@ -26,15 +35,6 @@ apply.dibble_measure <- function(X, MARGIN, FUN, ...) {
 
   X <- apply(as.array(X), MARGIN, FUN, ...)
 
-  if (identical(list_sizes(dim_names), dim(X))) {
-    new_dibble_measure(X, dim_names)
-  } else {
-    new_dibble_measure(X, dim_names[MARGIN])
-  }
-}
-
-#' @export
-apply.grouped_dibble <- function(X, MARGIN, FUN, ...) {
-  X <- as_dibble_measure(X)
-  apply(X, MARGIN, FUN, ...)
+  # FIXME?: Dealing with the case where FUN returns a vector.
+  new_dibble_measure(X, dim_names[MARGIN])
 }
