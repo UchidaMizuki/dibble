@@ -17,8 +17,6 @@ diag <- function(x, ...) {
 #' @export
 diag.default <- function(x = 1, nrow, ncol,
                          names = TRUE, ...) {
-  ellipsis::check_dots_empty()
-
   if (is.matrix(x)) {
     base::diag(x,
                names = names, ...)
@@ -43,8 +41,6 @@ diag_dibble <- function(x, axes, ...) {
 
 #' @export
 diag.dibble_measure <- function(x, axes, ...) {
-  ellipsis::check_dots_empty()
-
   old_dim_names <- dimnames(x)
   is_scalar_old_dim_names <- rlang::is_scalar_list(old_dim_names)
   stopifnot(

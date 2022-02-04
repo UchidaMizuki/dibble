@@ -7,8 +7,6 @@ broadcast <- function(x, dim_names, ...) {
 
 #' @export
 broadcast.default <- function(x, dim_names, ...) {
-  ellipsis::check_dots_empty()
-
   stopifnot(
     rlang::is_named(dim_names)
   )
@@ -20,8 +18,6 @@ broadcast.default <- function(x, dim_names, ...) {
 
 #' @export
 broadcast.dibble <- function(x, dim_names, ...) {
-  ellipsis::check_dots_empty()
-
   brdcst <- broadcast_dibble(x, dim_names)
   x <- lapply(undibble(x),
               function(x) {
@@ -33,8 +29,6 @@ broadcast.dibble <- function(x, dim_names, ...) {
 
 #' @export
 broadcast.dibble_measure <- function(x, dim_names, ...) {
-  ellipsis::check_dots_empty()
-
   brdcst <- broadcast_dibble(x, dim_names)
   x <- broadcast_array(as.array(x), brdcst$broadcast)
 
@@ -44,8 +38,6 @@ broadcast.dibble_measure <- function(x, dim_names, ...) {
 # FIXME?: Keep grouping or not? Now, grouping isn't kept.
 #' @export
 broadcast.grouped_dibble <- function(x, dim_names, ...) {
-  ellipsis::check_dots_empty()
-
   broadcast(ungroup(x), dim_names)
 }
 

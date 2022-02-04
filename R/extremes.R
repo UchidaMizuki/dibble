@@ -6,8 +6,19 @@ pmax <- function(..., na.rm = FALSE) {
 
 #' @export
 pmax.default <- function(..., na.rm = FALSE) {
-  base::pmax(...,
-             na.rm = na.rm)
+  dots <- rlang::list2(...)
+  are_dibble_dots <- vapply(dots,
+                            function(x) {
+                              is_dibble(x) || is_grouped_dibble(x) || is_dibble_measure(x)
+                            },
+                            logical(1))
+  if (any(are_dibble_dots)) {
+    rlang::exec(pmax_dibble, !!!dots,
+                na.rm = na.rm)
+  } else {
+    rlang::exec(base::pmax, !!!dots,
+                na.rm = na.rm)
+  }
 }
 
 #' @export
@@ -48,8 +59,19 @@ pmin <- function(..., na.rm = FALSE) {
 
 #' @export
 pmin.default <- function(..., na.rm = FALSE) {
-  base::pmin(...,
-             na.rm = na.rm)
+  dots <- rlang::list2(...)
+  are_dibble_dots <- vapply(dots,
+                            function(x) {
+                              is_dibble(x) || is_grouped_dibble(x) || is_dibble_measure(x)
+                            },
+                            logical(1))
+  if (any(are_dibble_dots)) {
+    rlang::exec(pmin_dibble, !!!dots,
+                na.rm = na.rm)
+  } else {
+    rlang::exec(base::pmin, !!!dots,
+                na.rm = na.rm)
+  }
 }
 
 #' @export
