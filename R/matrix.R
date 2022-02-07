@@ -44,12 +44,12 @@ diag.dibble_measure <- function(x, axes, ...) {
   old_dim_names <- dimnames(x)
   is_scalar_old_dim_names <- rlang::is_scalar_list(old_dim_names)
   stopifnot(
-    is_scalar_old_dim_names || vec_size(old_dim_names) == 2L
+    is_scalar_old_dim_names || rlang::is_list(old_dim_names, 2L)
   )
 
   if (is_scalar_old_dim_names) {
     stopifnot(
-      vec_size(axes) == 2L
+      rlang::is_character(axes, 2L)
     )
 
     new_dim_names <- vec_c(old_dim_names, old_dim_names)
@@ -65,4 +65,48 @@ diag.dibble_measure <- function(x, axes, ...) {
   }
   new_dibble_measure(diag(as.array(x), ...),
                      new_dim_names)
+}
+
+#' @export
+`diag<-` <- function(x, value, ...) {
+  UseMethod("diag<-")
+}
+
+#' @export
+`diag<-.default` <- function(x, value, ...) {
+  base::`diag<-`(x, value)
+}
+
+#' @export
+`diag<-.dibble` <- function(x, value, ...) {
+  `diag<-_dibble`(x, value)
+}
+
+#' @export
+`diag<-.grouped_dibble` <- function(x, value, ...) {
+  `diag<-_dibble`(x, value)
+}
+
+`diag<-_dibble` <- function(x, value) {
+  `diag<-`(as_dibble_measure(x), value)
+}
+
+#' @export
+`diag<-.dibble_measure` <- function(x, value, ...) {
+  dim_names <- dimnames(x)
+  dim_names_value <- dimnames(value)
+  stopifnot(
+    rlang::is_list(dim_names, 2L),
+    identical(dim_names[[1L]], dim_names[[2L]]),
+    is.null(dim_names_value) || rlang::is_scalar_list(dim_names_value)
+  )
+
+  x <- as.array(x)
+  if (is.null(dim_names_value)) {
+    diag(x) <- vec_recycle(value, vec_size(dim_names[[1L]]))
+  } else {
+    diag(x) <- vec_slice(as.vector(value),
+                         vec_match(dim_names[[1L]], dim_names_value[[1L]]))
+  }
+  new_dibble_measure(x, dim_names)
 }

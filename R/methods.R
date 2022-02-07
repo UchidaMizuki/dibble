@@ -34,7 +34,7 @@ Ops_dibble <- function(e1, e2) {
   new_dibble_measure(NextMethod(), new_dim_names)
 }
 
-Math_dibble <- function(x) {
+methods_dibble <- function(x, ...) {
   x <- as_dibble_measure(x)
   NextMethod()
 }

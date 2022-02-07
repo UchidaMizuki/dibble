@@ -18,7 +18,9 @@ dibble <- function(...,
                    .dim_names = NULL) {
   dots <- lapply(rlang::enquos(...),
                  function(x) {
-                   supress_warning_broadcast(rlang::eval_tidy(x))
+                   suppress_warning_broadcast(
+                     rlang::eval_tidy(x)
+                   )
                  })
   dim_names <- as_dim_names(.dim_names,
                             union_dim_names(!!!lapply(unname(dots), dimnames)))
@@ -30,7 +32,7 @@ dibble <- function(...,
                                    function(x) {
                                      # FIXME?: When should we do `supress_warning`?
                                      if (!is.null(.dim_names)) {
-                                       x <- supress_warning_broadcast(dibble_measure(x, dim_names))
+                                       x <- suprpess_warning_broadcast(dibble_measure(x, dim_names))
                                      } else {
                                        x <- dibble_measure(x, dim_names)
                                      }
@@ -46,7 +48,9 @@ dibble <- function(...,
                    } else {
                      # FIXME?: When should we do `supress_warning`?
                      if (!is.null(.dim_names)) {
-                       dot <- supress_warning_broadcast(dibble_measure(dot, dim_names))
+                       dot <- suppress_warning_broadcast(
+                         dibble_measure(dot, dim_names)
+                       )
                      } else {
                        dot <- dibble_measure(dot, dim_names)
                      }

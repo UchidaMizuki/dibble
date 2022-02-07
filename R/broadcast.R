@@ -1,7 +1,8 @@
 #' @export
 broadcast <- function(x, dim_names, ...) {
-  x <- supress_warning_broadcast(x)
-
+  x <- suppress_warning_broadcast(
+    x
+  )
   UseMethod("broadcast")
 }
 
@@ -95,7 +96,7 @@ broadcast_dim_names <- function(old_dim_names, new_dim_names) {
               new_dim = new_dim,
               loc = loc)
 
-  if (is.null(perm)) {
+  if (is.null(new_dim)) {
     out
   } else {
     withRestarts({
@@ -112,10 +113,8 @@ broadcast_dim_names <- function(old_dim_names, new_dim_names) {
   }
 }
 
-supress_warning_broadcast <- function(x) {
-  withCallingHandlers({
-    x
-  },
+suppress_warning_broadcast <- function(x) {
+  withCallingHandlers(x,
   warning_broadcast = function(w) {
     invokeRestart("restart_broadcast")
   })
