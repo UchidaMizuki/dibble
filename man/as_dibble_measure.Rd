@@ -5,6 +5,8 @@
 \alias{as_dibble_measure.dibble_measure}
 \alias{as_dibble_measure.dibble}
 \alias{as_dibble_measure.grouped_dibble}
+\alias{as_dibble_measure.array}
+\alias{as_dibble_measure.table}
 \title{Coerce an object to a dibble measure}
 \usage{
 as_dibble_measure(x, ...)
@@ -14,6 +16,10 @@ as_dibble_measure(x, ...)
 \method{as_dibble_measure}{dibble}(x, ...)
 
 \method{as_dibble_measure}{grouped_dibble}(x, ...)
+
+\method{as_dibble_measure}{array}(x, ...)
+
+\method{as_dibble_measure}{table}(x, ...)
 }
 \arguments{
 \item{x}{An object.}

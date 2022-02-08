@@ -15,6 +15,7 @@ Encoding: UTF-8
 LazyData: true
 Imports: 
     dplyr,
+    methods,
     pillar,
     rlang,
     tibble,
@@ -28,3 +29,17 @@ Suggests:
 Config/testthat/edition: 3
 Depends: 
     R (>= 2.10)
+Collate: 
+    'apply.R'
+    'broadcast.R'
+    'dibble-package.R'
+    'dibble.R'
+    'dibble_measure.R'
+    'dim_names.R'
+    'grouped_dibble.R'
+    'extremes.R'
+    'ifelse.R'
+    'matrix.R'
+    'methods.R'
+    'utils.R'
+    'zzz.R'

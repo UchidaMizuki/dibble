@@ -6,6 +6,8 @@
 \alias{as_dibble.grouped_df}
 \alias{as_dibble.dibble}
 \alias{as_dibble.grouped_dibble}
+\alias{as_dibble.array}
+\alias{as_dibble.table}
 \title{Coerce an object to a dibble}
 \usage{
 as_dibble(x, ...)
@@ -17,6 +19,10 @@ as_dibble(x, ...)
 \method{as_dibble}{dibble}(x, ...)
 
 \method{as_dibble}{grouped_dibble}(x, ...)
+
+\method{as_dibble}{array}(x, ...)
+
+\method{as_dibble}{table}(x, ...)
 }
 \arguments{
 \item{x}{An object.}

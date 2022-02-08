@@ -6,9 +6,11 @@
   registerS3method("Math", "dibble", methods_dibble)
   registerS3method("Math", "grouped_dibble", methods_dibble)
 
-  registerS3method("Math2", "dibble", methods_dibble)
-  registerS3method("Math2", "grouped_dibble", methods_dibble)
-
   registerS3method("Summary", "dibble", methods_dibble)
   registerS3method("Summary", "grouped_dibble", methods_dibble)
 }
+
+# .onAttach <- function(...) {
+#   setOldClass("dibble")
+#   setOldClass("grouped_dibble")
+# }

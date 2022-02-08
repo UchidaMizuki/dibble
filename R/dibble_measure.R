@@ -71,6 +71,23 @@ as_dibble_measure.grouped_dibble <- function(x, ...) {
   x[[1L]]
 }
 
+#' @rdname as_dibble_measure
+#' @export
+as_dibble_measure.array <- function(x, ...) {
+  dim_names <- dimnames(x)
+  stopifnot(
+    !is.null(dim_names)
+  )
+
+  new_dibble_measure(x, dim_names)
+}
+
+#' @rdname as_dibble_measure
+#' @export
+as_dibble_measure.table <- function(x, ...) {
+  as_dibble_measure.array(x, ...)
+}
+
 #' Test if the object is a dibble measure
 #'
 #' @param x An object.

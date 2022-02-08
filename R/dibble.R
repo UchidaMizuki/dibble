@@ -25,38 +25,38 @@ dibble <- function(...,
   dim_names <- as_dim_names(.dim_names,
                             union_dim_names(!!!lapply(unname(dots), dimnames)))
   dots <- mapply(dots, rlang::names2(dots),
-                 FUN = function(dot, nm) {
-                   if (is_dibble(dot) || is_grouped_dibble(dot)) {
-                     dot <- ungroup(dot)
-                     dot <- lapply(as.list(dot),
-                                   function(x) {
-                                     # FIXME?: When should we do `supress_warning`?
-                                     if (!is.null(.dim_names)) {
-                                       x <- suprpess_warning_broadcast(dibble_measure(x, dim_names))
-                                     } else {
-                                       x <- dibble_measure(x, dim_names)
-                                     }
-                                     undibble(x)
-                                   })
+                 FUN = function(x, nm) {
+                   if (is_dibble(x) || is_grouped_dibble(x)) {
+                     x <- ungroup(x)
+                     x <- lapply(as.list(x),
+                                 function(x) {
+                                   # FIXME?: When should we do `supress_warning`?
+                                   if (!is.null(.dim_names)) {
+                                     x <- suprpess_warning_broadcast(dibble_measure(x, dim_names))
+                                   } else {
+                                     x <- dibble_measure(x, dim_names)
+                                   }
+                                   undibble(x)
+                                 })
                      if (nm != "") {
                        stopifnot(
-                         rlang::is_scalar_list(dot)
+                         rlang::is_scalar_list(x)
                        )
-                       names(dot) <- nm
+                       names(x) <- nm
                      }
-                     dot
+                     x
                    } else {
                      # FIXME?: When should we do `supress_warning`?
                      if (!is.null(.dim_names)) {
-                       dot <- suppress_warning_broadcast(
-                         dibble_measure(dot, dim_names)
+                       x <- suppress_warning_broadcast(
+                         dibble_measure(x, dim_names)
                        )
                      } else {
-                       dot <- dibble_measure(dot, dim_names)
+                       x <- dibble_measure(x, dim_names)
                      }
-                     dot <- list(undibble(dot))
-                     names(dot) <- nm
-                     dot
+                     x <- list(undibble(x))
+                     names(x) <- nm
+                     x
                    }
                  },
                  SIMPLIFY = FALSE,
@@ -143,6 +143,18 @@ as_dibble.grouped_dibble <- function(x, ...) {
   ungroup(x)
 }
 
+#' @rdname as_dibble
+#' @export
+as_dibble.array <- function(x, ...) {
+  as_dibble_measure(x, ...)
+}
+
+#' @rdname as_dibble
+#' @export
+as_dibble.table <- function(x, ...) {
+  as_dibble_measure(x, ...)
+}
+
 #' Test if the object is a dibble
 #'
 #' @param x An object.
@@ -152,6 +164,14 @@ as_dibble.grouped_dibble <- function(x, ...) {
 #' @export
 is_dibble <- function(x) {
   inherits(x, "dibble")
+}
+
+are_dibble <- function(x) {
+  vapply(x,
+         function(x) {
+           is_dibble(x) || is_grouped_dibble(x) || is_dibble_measure(x)
+         },
+         logical(1))
 }
 
 #' @export
@@ -602,10 +622,10 @@ rename_dibble <- function(.data, ...) {
 
 #' @export
 print.dibble <- function(x, n = NULL, ...) {
-  print_dibble(x, n)
+  print_dibble(x, n, ...)
 }
 
-print_dibble <- function(x, n) {
+print_dibble <- function(x, n, ...) {
   dim_names <- dimnames(x)
   axes <- names(dim_names)
   dim <- list_sizes(dim_names)

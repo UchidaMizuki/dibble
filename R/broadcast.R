@@ -72,7 +72,6 @@ broadcast_dim_names <- function(old_dim_names, new_dim_names) {
     } else {
       # Set dimensions
       new_dim <- vec_rep(1, vec_size(new_axes))
-      # names(new_dim) <- new_axes
       new_dim[new_axes %in% old_axes] <- list_sizes(old_dim_names)
 
       # Subsetting
