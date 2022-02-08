@@ -1,14 +1,15 @@
-#' @include dibble.R grouped_dibble.R
+#' @include ddf_col.R tbl_ddf.R grouped_ddf.R
 NULL
 
-setOldClass("dibble")
-setOldClass("grouped_dibble")
-setOldClass("dibble_measure")
-setClassUnion("Dibble", c("dibble", "grouped_dibble", "dibble_measure", "numeric"))
+setOldClass("ddf_col")
+setOldClass("tbl_ddf")
+setOldClass("grouped_ddf")
+setClassUnion("dibble", c("ddf_col", "tbl_ddf", "grouped_ddf", "vector"))
 
 setGeneric("pmax",
            signature = "...")
-setMethod("pmax", "Dibble",
+setMethod("pmax", "vector", base::pmax)
+setMethod("pmax", "dibble",
           function(..., na.rm = FALSE) {
             dibble_extremes(pmax, ...,
                             na.rm = na.rm)
@@ -16,9 +17,10 @@ setMethod("pmax", "Dibble",
 
 setGeneric("pmin",
            signature = "...")
-setMethod("pmin", "Dibble",
+setMethod("pmin", "vector", base::pmin)
+setMethod("pmin", "dibble",
           function(..., na.rm = FALSE) {
-            dibble_extremes(pmin, ...,
+            dibble_extremes(pmax, ...,
                             na.rm = na.rm)
           })
 
@@ -27,10 +29,9 @@ dibble_extremes <- function(f, ..., na.rm) {
   dim_names <- union_dim_names(!!!lapply(dots, dimnames))
   dots <- lapply(rlang::list2(...),
                  function(x) {
-                   # FIXME?
-                   as.array(dibble_measure(x, dim_names))
+                   as.array(ddf_col(x, dim_names))
                  })
-  new_dibble_measure(rlang::exec(f, !!!dots,
-                                 na.rm = na.rm),
-                     dim_names)
+  new_ddf_col(rlang::exec(f, !!!dots,
+                          na.rm = na.rm),
+              dim_names)
 }

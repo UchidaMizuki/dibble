@@ -1,9 +1,9 @@
 #' @export
-solve.dibble_measure <- function(a, b, ...) {
+solve.ddf_col <- function(a, b, ...) {
   if (is_missing(b)) {
     dim_names <- dimnames(a)
     a <- undibble(a)
-    new_dibble_measure(unname(solve(a)), dim_names)
+    new_ddf_col(unname(solve(a)), dim_names)
   } else {
     NextMethod()
   }
@@ -26,21 +26,21 @@ diag.default <- function(x = 1, nrow, ncol,
 }
 
 #' @export
-diag.dibble <- function(x, axes, ...) {
+diag.tbl_ddf <- function(x, axes, ...) {
   diag_dibble(x, axes, ...)
 }
 
 #' @export
-diag.grouped_dibble <- function(x, axes, ...) {
+diag.grouped_ddf <- function(x, axes, ...) {
   diag_dibble(x, axes, ...)
 }
 
 diag_dibble <- function(x, axes, ...) {
-  diag(as_dibble_measure(x), axes, ...)
+  diag(as_ddf_col(x), axes, ...)
 }
 
 #' @export
-diag.dibble_measure <- function(x, axes, ...) {
+diag.ddf_col <- function(x, axes, ...) {
   old_dim_names <- dimnames(x)
   is_scalar_old_dim_names <- rlang::is_scalar_list(old_dim_names)
   stopifnot(
@@ -63,8 +63,8 @@ diag.dibble_measure <- function(x, axes, ...) {
     new_dim_names <- old_dim_names[1L]
     names(new_dim_names) <- axes
   }
-  new_dibble_measure(diag(as.array(x), ...),
-                     new_dim_names)
+  new_ddf_col(diag(as.array(x), ...),
+              new_dim_names)
 }
 
 #' @export
@@ -78,21 +78,21 @@ diag.dibble_measure <- function(x, axes, ...) {
 }
 
 #' @export
-`diag<-.dibble` <- function(x, value, ...) {
+`diag<-.tbl_ddf` <- function(x, value, ...) {
   `diag<-_dibble`(x, value)
 }
 
 #' @export
-`diag<-.grouped_dibble` <- function(x, value, ...) {
+`diag<-.grouped_ddf` <- function(x, value, ...) {
   `diag<-_dibble`(x, value)
 }
 
 `diag<-_dibble` <- function(x, value) {
-  `diag<-`(as_dibble_measure(x), value)
+  `diag<-`(as_ddf_col(x), value)
 }
 
 #' @export
-`diag<-.dibble_measure` <- function(x, value, ...) {
+`diag<-.ddf_col` <- function(x, value, ...) {
   dim_names <- dimnames(x)
   dim_names_value <- dimnames(value)
   stopifnot(
@@ -105,8 +105,7 @@ diag.dibble_measure <- function(x, axes, ...) {
   if (is.null(dim_names_value)) {
     diag(x) <- vec_recycle(value, vec_size(dim_names[[1L]]))
   } else {
-    diag(x) <- vec_slice(as.vector(value),
-                         vec_match(dim_names[[1L]], dim_names_value[[1L]]))
+    diag(x) <- as.vector(value)[vec_match(dim_names[[1L]], dim_names_value[[1L]])]
   }
-  new_dibble_measure(x, dim_names)
+  new_ddf_col(x, dim_names)
 }

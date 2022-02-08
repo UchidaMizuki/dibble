@@ -1,7 +1,7 @@
-new_grouped_dibble <- function(x, group_dim_names) {
+new_grouped_ddf <- function(x, group_dim_names) {
   structure(x,
             group_dim_names = group_dim_names,
-            class = "grouped_dibble")
+            class = "grouped_ddf")
 }
 
 group_dim_names <- function(x) {
@@ -32,18 +32,18 @@ group_by.dibble <- function(.data, ...) {
                   function(x) {
                     x <- apply(x, loc,
                                function(x) {
-                                 new_dibble_measure(x, dim_names)
+                                 new_ddf_col(x, dim_names)
                                },
                                simplify = FALSE)
                     array(x, group_dim)
                   })
-  new_grouped_dibble(.data,
-                     group_dim_names = group_dim_names)
+  new_grouped_ddf(.data,
+                  group_dim_names = group_dim_names)
 }
 
 #' @importFrom dplyr ungroup
 #' @export
-ungroup.grouped_dibble <- function(x, ...) {
+ungroup.grouped_ddf <- function(x, ...) {
   dim_names <- dimnames(x)
   axes <- names(dim_names)
   dim <- list_sizes(dim_names)
@@ -77,12 +77,12 @@ ungroup.grouped_dibble <- function(x, ...) {
 #' @return A logical.
 #'
 #' @export
-is_grouped_dibble <- function(x) {
-  inherits(x, "grouped_dibble")
+is_grouped_ddf <- function(x) {
+  inherits(x, "grouped_ddf")
 }
 
 #' @export
-dimnames.grouped_dibble <- function(x) {
+dimnames.grouped_ddf <- function(x) {
   group_dim_names <- group_dim_names(x)
 
   x <- undibble(x)
@@ -92,38 +92,38 @@ dimnames.grouped_dibble <- function(x) {
 }
 
 #' @export
-`dimnames<-.grouped_dibble` <- function(x, value) {
+`dimnames<-.grouped_ddf` <- function(x, value) {
   `dimnames<-_dibble`(x, value)
 }
 
 #' @export
-dim.grouped_dibble <- function(x) {
+dim.grouped_ddf <- function(x) {
   list_sizes(dimnames(x))
 }
 
 #' @export
-nrow.grouped_dibble <- function(x, ...) {
+nrow.grouped_ddf <- function(x, ...) {
   nrow_dibble(x)
 }
 
 #' @export
-ncol.grouped_dibble <- function(x, ...) {
+ncol.grouped_ddf <- function(x, ...) {
   length(colnames(x))
 }
 
 #' @export
-rownames.grouped_dibble <- function(x, ...) {
+rownames.grouped_ddf <- function(x, ...) {
   NULL
 }
 
 #' @export
-colnames.grouped_dibble <- function(x, ...) {
+colnames.grouped_ddf <- function(x, ...) {
   names(x)
 }
 
 #' @importFrom tibble as_tibble
 #' @export
-as_tibble.grouped_dibble <- function(x, ...) {
+as_tibble.grouped_ddf <- function(x, ...) {
   as_tibble(ungroup(x), ...)
 }
 
@@ -132,18 +132,18 @@ as_tibble.grouped_dibble <- function(x, ...) {
 # Subsetting --------------------------------------------------------------
 
 #' @export
-`[.grouped_dibble` <- function(x, i) {
-  new_grouped_dibble(NextMethod(), group_dim_names(x))
+`[.grouped_ddf` <- function(x, i) {
+  new_grouped_ddf(NextMethod(), group_dim_names(x))
 }
 
 #' @export
-`[[.grouped_dibble` <- function(x, i) {
+`[[.grouped_ddf` <- function(x, i) {
   x <- ungroup(x)
   x[[i]]
 }
 
 #' @export
-`$.grouped_dibble` <- function(x, i) {
+`$.grouped_ddf` <- function(x, i) {
   x <- ungroup(x)
   x[[i]]
 }
@@ -154,13 +154,13 @@ as_tibble.grouped_dibble <- function(x, ...) {
 
 #' @importFrom dplyr slice
 #' @export
-slice.grouped_dibble <- function(.data, ...) {
+slice.grouped_ddf <- function(.data, ...) {
   slice_dibble(.data, ...)
 }
 
 #' @importFrom  dplyr mutate
 #' @export
-mutate.grouped_dibble <- function(.data, ...) {
+mutate.grouped_ddf <- function(.data, ...) {
   dots <- enquos(..., .named = TRUE)
   nms <- names(dots)
   seq_nms <- seq_along(nms)
@@ -183,15 +183,15 @@ mutate.grouped_dibble <- function(.data, ...) {
 
     for (j in seq_nms) {
       nm <- nms[[j]]
-      out[[nm]][[i]] <- data[[nm]] <- dibble_measure(eval_tidy(dots[[j]], data), dim_names)
+      out[[nm]][[i]] <- data[[nm]] <- ddf_col(eval_tidy(dots[[j]], data), dim_names)
     }
   }
-  new_grouped_dibble(out, group_dim_names)
+  new_grouped_ddf(out, group_dim_names)
 }
 
 #' @importFrom dplyr summarise
 #' @export
-summarise.grouped_dibble <- function(.data, ...) {
+summarise.grouped_ddf <- function(.data, ...) {
   dim_names <- group_dim_names(.data)
   dim <- list_sizes(dim_names)
   size <- prod(dim)
@@ -222,20 +222,20 @@ summarise.grouped_dibble <- function(.data, ...) {
 
 #' @importFrom dplyr select
 #' @export
-select.grouped_dibble <- function(.data, ...) {
+select.grouped_ddf <- function(.data, ...) {
   select_dibble(.data, ...)
 }
 
 #' @importFrom dplyr relocate
 #' @export
-relocate.grouped_dibble <- function(.data, ...) {
+relocate.grouped_ddf <- function(.data, ...) {
   select_dibble(.data, ...,
                 .relocate = TRUE)
 }
 
 #' @importFrom dplyr rename
 #' @export
-rename.grouped_dibble <- function(.data, ...) {
+rename.grouped_ddf <- function(.data, ...) {
   rename_dibble(.data, ...)
 }
 
@@ -244,6 +244,6 @@ rename.grouped_dibble <- function(.data, ...) {
 # Printing ----------------------------------------------------------------
 
 #' @export
-print.grouped_dibble <- function(x, n = NULL, ...) {
+print.grouped_ddf <- function(x, n = NULL, ...) {
   print_dibble(x, n)
 }

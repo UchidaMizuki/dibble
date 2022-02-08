@@ -4,8 +4,8 @@
 \alias{as_dibble}
 \alias{as_dibble.rowwise_df}
 \alias{as_dibble.grouped_df}
-\alias{as_dibble.dibble}
-\alias{as_dibble.grouped_dibble}
+\alias{as_dibble.tbl_ddf}
+\alias{as_dibble.grouped_ddf}
 \alias{as_dibble.array}
 \alias{as_dibble.table}
 \title{Coerce an object to a dibble}
@@ -16,9 +16,9 @@ as_dibble(x, ...)
 
 \method{as_dibble}{grouped_df}(x, ...)
 
-\method{as_dibble}{dibble}(x, ...)
+\method{as_dibble}{tbl_ddf}(x, ...)
 
-\method{as_dibble}{grouped_dibble}(x, ...)
+\method{as_dibble}{grouped_ddf}(x, ...)
 
 \method{as_dibble}{array}(x, ...)
 

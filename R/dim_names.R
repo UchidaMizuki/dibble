@@ -34,17 +34,23 @@ as_dim_names <- function(x, dim_names) {
            logical(1L))
   )
 
-  axes <- names(x)
-  x <- mapply(x, axes,
-              FUN = function(x, axis) {
-                x <- x %||% vec_unique(dim_names[[axis]])
+  new_axes <- names(x)
+  old_axes <- names(dim_names)
+  stopifnot(
+    old_axes %in% new_axes
+  )
+  dim_names <- dim_names[vec_match(new_axes, old_axes)]
+
+  x <- mapply(x, dim_names,
+              FUN = function(x, dim_name) {
+                x <- x %||% vec_unique(dim_name)
                 stopifnot(
                   !is.null(x)
                 )
                 x
               },
               SIMPLIFY = FALSE)
-  names(x) <- axes
+  names(x) <- new_axes
   x
 }
 

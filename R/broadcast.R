@@ -3,6 +3,7 @@ broadcast <- function(x, dim_names, ...) {
   x <- suppress_warning_broadcast(
     x
   )
+
   UseMethod("broadcast")
 }
 
@@ -13,32 +14,33 @@ broadcast.default <- function(x, dim_names, ...) {
   )
   dim <- list_sizes(dim_names)
   x <- array(vec_recycle(x, prod(dim)),
-             dim)
-  new_dibble_measure(x, dim_names)
+             dim = dim)
+
+  new_ddf_col(x, dim_names)
 }
 
 #' @export
-broadcast.dibble <- function(x, dim_names, ...) {
+broadcast.tbl_ddf <- function(x, dim_names, ...) {
   brdcst <- broadcast_dibble(x, dim_names)
   x <- lapply(undibble(x),
               function(x) {
                 broadcast_array(x, brdcst$broadcast)
               })
 
-  new_dibble(x, brdcst$new_dim_names)
+  new_tbl_ddf(x, brdcst$new_dim_names)
 }
 
 #' @export
-broadcast.dibble_measure <- function(x, dim_names, ...) {
+broadcast.ddf_col <- function(x, dim_names, ...) {
   brdcst <- broadcast_dibble(x, dim_names)
   x <- broadcast_array(as.array(x), brdcst$broadcast)
 
-  new_dibble_measure(x, brdcst$new_dim_names)
+  new_ddf_col(x, brdcst$new_dim_names)
 }
 
 # FIXME?: Keep grouping or not? Now, grouping isn't kept.
 #' @export
-broadcast.grouped_dibble <- function(x, dim_names, ...) {
+broadcast.grouped_ddf <- function(x, dim_names, ...) {
   broadcast(ungroup(x), dim_names)
 }
 
