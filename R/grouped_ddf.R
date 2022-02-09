@@ -1,16 +1,24 @@
-new_grouped_ddf <- function(x, group_dim_names) {
+new_grouped_ddf <- function(x, dim_names) {
   structure(x,
-            group_dim_names = group_dim_names,
+            dim_names = dim_names,
             class = "grouped_ddf")
 }
 
-group_dim_names <- function(x) {
-  attr(x, "group_dim_names")
+#' @importFrom dplyr group_keys
+#' @export
+group_keys.grouped_ddf <- function(.tbl, ...) {
+  attr(x, "dim_names")
+}
+
+#' @importFrom dplyr group_vars
+#' @export
+group_vars.grouped_ddf <- function(x) {
+  names(group_keys(x))
 }
 
 #' @importFrom dplyr group_by
 #' @export
-group_by.dibble <- function(.data, ...) {
+group_by.tbl_ddf <- function(.data, ...) {
   dim_names <- dimnames(.data)
   axes <- names(dim_names)
   dim <- list_sizes(dim_names)
@@ -37,8 +45,7 @@ group_by.dibble <- function(.data, ...) {
                                simplify = FALSE)
                     array(x, group_dim)
                   })
-  new_grouped_ddf(.data,
-                  group_dim_names = group_dim_names)
+  new_grouped_ddf(.data, group_dim_names)
 }
 
 #' @importFrom dplyr ungroup
@@ -48,8 +55,7 @@ ungroup.grouped_ddf <- function(x, ...) {
   axes <- names(dim_names)
   dim <- list_sizes(dim_names)
 
-  group_dim_names <- group_dim_names(x)
-  group_axes <- names(group_dim_names)
+  group_axes <- group_vars(x)
 
   loc <- vec_match(group_axes, axes)
   dim <- c(dim[-loc], dim[loc])
@@ -67,7 +73,7 @@ ungroup.grouped_ddf <- function(x, ...) {
                 aperm(x, perm)
               })
   names(x) <- col_names
-  new_dibble(x, dim_names)
+  new_tbl_ddf(x, dim_names)
 }
 
 #' Test if the object is a grouped dibble
@@ -83,7 +89,7 @@ is_grouped_ddf <- function(x) {
 
 #' @export
 dimnames.grouped_ddf <- function(x) {
-  group_dim_names <- group_dim_names(x)
+  group_dim_names <- group_keys(x)
 
   x <- undibble(x)
   dim_names <- dimnames(x[[1L]][[1L]])
@@ -133,7 +139,7 @@ as_tibble.grouped_ddf <- function(x, ...) {
 
 #' @export
 `[.grouped_ddf` <- function(x, i) {
-  new_grouped_ddf(NextMethod(), group_dim_names(x))
+  new_grouped_ddf(NextMethod(), group_keys(x))
 }
 
 #' @export
@@ -165,7 +171,7 @@ mutate.grouped_ddf <- function(.data, ...) {
   nms <- names(dots)
   seq_nms <- seq_along(nms)
 
-  group_dim_names <- group_dim_names(.data)
+  group_dim_names <- group_keys(.data)
   group_dim <- list_sizes(group_dim_names)
   size <- prod(group_dim)
 
@@ -192,7 +198,7 @@ mutate.grouped_ddf <- function(.data, ...) {
 #' @importFrom dplyr summarise
 #' @export
 summarise.grouped_ddf <- function(.data, ...) {
-  dim_names <- group_dim_names(.data)
+  dim_names <- group_keys(.data)
   dim <- list_sizes(dim_names)
   size <- prod(dim)
 
@@ -217,7 +223,7 @@ summarise.grouped_ddf <- function(.data, ...) {
       out[[nm]][[i]] <- data[[nm]] <- eval_tidy(dots[[j]], data)
     }
   }
-  new_dibble(out, dim_names)
+  new_tbl_ddf(out, dim_names)
 }
 
 #' @importFrom dplyr select

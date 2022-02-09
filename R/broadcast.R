@@ -1,8 +1,6 @@
 #' @export
 broadcast <- function(x, dim_names, ...) {
-  x <- suppress_warning_broadcast(
-    x
-  )
+  x <- suppress_warning_broadcast(x)
 
   UseMethod("broadcast")
 }
@@ -12,6 +10,7 @@ broadcast.default <- function(x, dim_names, ...) {
   stopifnot(
     rlang::is_named(dim_names)
   )
+
   dim <- list_sizes(dim_names)
   x <- array(vec_recycle(x, prod(dim)),
              dim = dim)
@@ -20,28 +19,51 @@ broadcast.default <- function(x, dim_names, ...) {
 }
 
 #' @export
-broadcast.tbl_ddf <- function(x, dim_names, ...) {
-  brdcst <- broadcast_dibble(x, dim_names)
-  x <- lapply(undibble(x),
-              function(x) {
-                broadcast_array(x, brdcst$broadcast)
-              })
+broadcast.array <- function(x, dim_names, ...) {
+  broadcast(as_ddf_col(x), dim_names)
+}
 
-  new_tbl_ddf(x, brdcst$new_dim_names)
+#' @export
+broadcast.table <- function(x, dim_names, ...) {
+  broadcast.array(x, dim_names, ...)
 }
 
 #' @export
 broadcast.ddf_col <- function(x, dim_names, ...) {
-  brdcst <- broadcast_dibble(x, dim_names)
-  x <- broadcast_array(as.array(x), brdcst$broadcast)
+  if (is.null(dim_names)) {
+    x
+  } else {
+    brdcst <- broadcast_dibble(x, dim_names)
+    x <- broadcast_array(as.array(x), brdcst$broadcast)
 
-  new_ddf_col(x, brdcst$new_dim_names)
+    new_ddf_col(x, brdcst$new_dim_names)
+  }
 }
 
-# FIXME?: Keep grouping or not? Now, grouping isn't kept.
+#' @export
+broadcast.tbl_ddf <- function(x, dim_names, ...) {
+  if (is.null(dim_names)) {
+    x
+  } else {
+    brdcst <- broadcast_dibble(x, dim_names)
+    x <- lapply(undibble(x),
+                function(x) {
+                  broadcast_array(x, brdcst$broadcast)
+                })
+
+    new_tbl_ddf(x, brdcst$new_dim_names)
+  }
+}
+
 #' @export
 broadcast.grouped_ddf <- function(x, dim_names, ...) {
-  broadcast(ungroup(x), dim_names)
+  if (is.null(dim_names)) {
+    x
+  } else {
+    axes <- group_vars(x)
+    x <- broadcast(ungroup(x), dim_names, ...)
+    group_by(x, dplyr::all_of(axes))
+  }
 }
 
 broadcast_dibble <- function(x, dim_names) {
@@ -116,9 +138,9 @@ broadcast_dim_names <- function(old_dim_names, new_dim_names) {
 
 suppress_warning_broadcast <- function(x) {
   withCallingHandlers(x,
-  warning_broadcast = function(w) {
-    invokeRestart("restart_broadcast")
-  })
+                      warning_broadcast = function(w) {
+                        invokeRestart("restart_broadcast")
+                      })
 }
 
 # Broadcast an array based on the results of `broadcast_dim_names()`.

@@ -12,54 +12,38 @@ dibble <- function(...,
                    .dim_names = NULL) {
   dots <- lapply(rlang::enquos(...),
                  function(x) {
-                   suppress_warning_broadcast(
-                     rlang::eval_tidy(x)
-                   )
+                   x <- suppress_warning_broadcast(rlang::eval_tidy(x))
                  })
 
   dim_names <- union_dim_names(!!!lapply(unname(dots), dimnames))
-  new_dim_names <- as_dim_names(.dim_names, dim_names)
+  dim_names <- as_dim_names(.dim_names, dim_names)
+
+  fun <- function(x) {
+    if (!is.null(.dim_names)) {
+      x <- suppress_warning_broadcast(
+        broadcast(x, dim_names)
+      )
+    } else {
+      x <- broadcast(x, dim_names)
+    }
+    undibble(x)
+  }
 
   dots <- mapply(dots, rlang::names2(dots),
                  FUN = function(x, nm) {
-                   if (is_dibble(x) || is_grouped_ddf(x)) {
-                     x <- ungroup(x)
-                     x <- lapply(as.list(x),
-                                 function(x) {
-                                   # FIXME?: When should we do `supress_warning`?
-                                   if (!is.null(.dim_names)) {
-                                     x <- suprpess_warning_broadcast(dibble_measure(x, dim_names))
-                                   } else {
-                                     x <- dibble_measure(x, dim_names)
-                                   }
-                                   undibble(x)
-                                 })
+                   if (is_tbl_ddf(x) || is_grouped_ddf(x)) {
+                     x <- lapply(as.list(ungroup(x)), fun)
+
                      if (nm != "") {
                        stopifnot(
                          rlang::is_scalar_list(x)
                        )
+
                        names(x) <- nm
                      }
                      x
                    } else {
-                     old_dim_names <- dimnames(x)
-
-
-
-                     stop()
-
-
-
-
-                     # FIXME?: When should we do `supress_warning`?
-                     if (!is.null(.dim_names)) {
-                       x <- suppress_warning_broadcast(
-                         dibble_measure(x, dim_names)
-                       )
-                     } else {
-                       x <- dibble_measure(x, dim_names)
-                     }
-                     x <- list(undibble(x))
+                     x <- list(undibble(fun(x)))
                      names(x) <- nm
                      x
                    }
@@ -138,6 +122,12 @@ as_dibble.grouped_df <- function(x, ...) {
 
 #' @rdname as_dibble
 #' @export
+as_dibble.ddf_col <- function(x, ...) {
+  x
+}
+
+#' @rdname as_dibble
+#' @export
 as_dibble.tbl_ddf <- function(x, ...) {
   x
 }
@@ -151,13 +141,13 @@ as_dibble.grouped_ddf <- function(x, ...) {
 #' @rdname as_dibble
 #' @export
 as_dibble.array <- function(x, ...) {
-  as_dibble_measure(x, ...)
+  as_ddf_col(x, ...)
 }
 
 #' @rdname as_dibble
 #' @export
 as_dibble.table <- function(x, ...) {
-  as_dibble_measure(x, ...)
+  as_ddf_col(x, ...)
 }
 
 #' Test if the object is a dibble

@@ -4,6 +4,7 @@
 \alias{as_dibble}
 \alias{as_dibble.rowwise_df}
 \alias{as_dibble.grouped_df}
+\alias{as_dibble.ddf_col}
 \alias{as_dibble.tbl_ddf}
 \alias{as_dibble.grouped_ddf}
 \alias{as_dibble.array}
@@ -15,6 +16,8 @@ as_dibble(x, ...)
 \method{as_dibble}{rowwise_df}(x, ...)
 
 \method{as_dibble}{grouped_df}(x, ...)
+
+\method{as_dibble}{ddf_col}(x, ...)
 
 \method{as_dibble}{tbl_ddf}(x, ...)
 

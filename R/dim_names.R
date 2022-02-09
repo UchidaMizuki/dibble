@@ -39,6 +39,7 @@ as_dim_names <- function(x, dim_names) {
   stopifnot(
     old_axes %in% new_axes
   )
+
   dim_names <- dim_names[vec_match(new_axes, old_axes)]
 
   x <- mapply(x, dim_names,

@@ -21,8 +21,7 @@ apply.grouped_ddf <- function(X, MARGIN, FUN, ...) {
 }
 
 apply_dibble <- function(X, MARGIN, FUN, ...) {
-  X <- as_ddf_col(X)
-  apply(X, MARGIN, FUN, ...)
+  apply(as_ddf_col(X), MARGIN, FUN, ...)
 }
 
 #' @export
@@ -34,7 +33,5 @@ apply.ddf_col <- function(X, MARGIN, FUN, ...) {
   }
 
   X <- apply(as.array(X), MARGIN, FUN, ...)
-
-  # FIXME?: Dealing with the case where FUN returns a vector.
   new_ddf_col(X, dim_names[MARGIN])
 }

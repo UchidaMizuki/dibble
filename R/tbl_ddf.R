@@ -33,7 +33,7 @@ dimnames_dibble <- function(x) {
 
 `dimnames<-_dibble` <- function(x, value) {
   if (is_grouped_ddf(x)) {
-    group_dim_names <- group_dim_names(x)
+    group_dim_names <- group_keys(x)
 
     loc <- seq_along(group_dim_names)
     new_group_dim_names <- value[loc]
@@ -182,15 +182,22 @@ as_tibble_dibble <- function(x, ..., n) {
     as.vector(aperm(as.array(x)))
   }
 
-  if (is_dibble(x)) {
-    x <- vec_cbind(dim_names, !!!lapply(undibble(x), fun),
-                   .name_repair = "check_unique")
-  } else if (is_dibble_measure(x)) {
-    x <- vec_cbind(dim_names,
+  if (is_ddf_col(x)) {
+    out <- vec_cbind(dim_names,
                    !!n := fun(undibble(x)),
                    .name_repair = "check_unique")
+  } else {
+    out <- vec_cbind(dim_names, !!!lapply(undibble(x), fun),
+                   .name_repair = "check_unique")
+
   }
-  as_tibble(x, ...)
+
+  out <- as_tibble(out, ...)
+
+  if (is_grouped_ddf(x)) {
+    out <- group_by(out, dplyr::all_of(group_vars(x)))
+  }
+  out
 }
 
 #' @export
@@ -230,7 +237,7 @@ aperm_dibble <- function(a, perm, ...) {
 
 #' @export
 `[.tbl_ddf` <- function(x, i) {
-  new_dibble(NextMethod(), dimnames(x))
+  new_tbl_ddf(NextMethod(), dimnames(x))
 }
 
 #' @export
@@ -289,7 +296,7 @@ slice_dibble <- function(.data, ...) {
                        }),
                 dim_names = dim_names)
   } else if (is_grouped_ddf(.data)) {
-    group_dim_names <- group_dim_names(.data)
+    group_dim_names <- group_keys(.data)
     group_axes <- names(group_dim_names)
     groups <- seq_along(group_dim_names)
 
@@ -356,7 +363,7 @@ select_dibble <- function(.data, ..., .relocate = FALSE) {
   dim_names <- dimnames(.data)
   axes <- names(dim_names)
 
-  group_dim_names <- group_dim_names(.data)
+  group_dim_names <- group_keys(.data)
   group_axes <- names(group_dim_names)
 
   if (is_ddf_col(.data)) {
@@ -418,9 +425,6 @@ rename_dibble <- function(.data, ...) {
   dim_names <- dimnames(.data)
   axes <- names(dim_names)
 
-  group_dim_names <- group_dim_names(.data)
-  group_axes <- names(group_dim_names)
-
   if (is_ddf_col(.data)) {
     data <- dim_names
   } else {
@@ -458,32 +462,35 @@ print_dibble <- function(x, n, ...) {
   meas_names <- colnames(x)
   size_meas <- big_mark(length(meas_names))
 
-  group_dim_names <- group_dim_names(x)
-
-  x_head <- ungroup(head_dibble(x, n))
+  x_head <- head_dibble(x, n)
+  if (is_grouped_ddf(x_head)) {
+    x_head <- ungroup(x_head)
+  }
 
   df <- new_data_frame(as_tibble(x_head),
                        class = c("tbl_dibble", "tbl"))
 
   dim_sum <- c(`Dimensions` = commas(paste0(axes, " [", big_mark(dim), "]")))
 
-  if (is_dibble(x) || is_grouped_dibble(x)) {
+  if (is_ddf_col(x)) {
+    attr(df, "tbl_sum") <- c(`A dibble` = big_mark(size_dim),
+                             dim_sum)
+  } else {
     tbl_sum <- c(`A dibble` = paste(big_mark(size_dim), size_meas,
                                     sep = " x "),
                  dim_sum,
                  `Measures` = commas(meas_names))
 
-    if (!is.null(group_dim_names)) {
+    if (is_grouped_ddf(x)) {
+      group_dim_names <- group_keys(x)
       size_groups <- big_mark(prod(list_sizes(group_dim_names)))
       tbl_sum <- c(tbl_sum,
                    Groups = paste0(commas(names(group_dim_names)), " [", size_groups, "]"))
     }
 
     attr(df, "tbl_sum") <- tbl_sum
-  } else if (is_dibble_measure(x)) {
-    attr(df, "tbl_sum") <- c(`A dibble` = big_mark(size_dim),
-                             dim_sum)
   }
+
   attr(df, "rows_total") <- size_dim
   print(df)
 

@@ -5,21 +5,7 @@ new_ddf_col <- function(x, dim_names) {
 }
 
 ddf_col <- function(x, dim_names = NULL) {
-  if (is_tbl_ddf(x) || is_grouped_ddf(x)) {
-    x <- as_ddf_col(x)
-    is_ddf_col_x <- TRUE
-  } else {
-    is_ddf_col_x <- is_ddf_col(x)
-  }
-
-  if (is.null(dim_names)) {
-    stopifnot(
-      is_ddf_col_x
-    )
-    as_ddf_col(x)
-  } else {
-    broadcast(x, dim_names)
-  }
+  as_ddf_col(broadcast(x, dim_names))
 }
 
 as_ddf_col <- function(x, ...) {
@@ -34,6 +20,7 @@ as_ddf_col.tbl_ddf <- function(x, ...) {
   stopifnot(
     ncol(x) == 1L
   )
+
   x[[1L]]
 }
 
@@ -41,6 +28,7 @@ as_ddf_col.grouped_ddf <- function(x, ...) {
   stopifnot(
     ncol(x) == 1L
   )
+
   x[[1L]]
 }
 
