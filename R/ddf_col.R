@@ -34,7 +34,7 @@ as_ddf_col.array <- function(x, ...) {
     !is.null(dim_names)
   )
 
-  new_ddf_col(x, dim_names)
+  new_ddf_col(unname(x), dim_names)
 }
 
 as_ddf_col.table <- function(x, ...) {
