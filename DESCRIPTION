@@ -30,17 +30,18 @@ Config/testthat/edition: 3
 Depends: 
     R (>= 2.10)
 Collate: 
+    'S4.R'
     'apply.R'
     'broadcast.R'
     'ddf_col.R'
     'dibble-package.R'
     'dibble.R'
     'dim_names.R'
-    'grouped_ddf.R'
-    'tbl_ddf.R'
     'extremes.R'
+    'grouped_ddf.R'
     'ifelse.R'
     'matrix.R'
     'methods.R'
+    'tbl_ddf.R'
     'utils.R'
     'zzz.R'

@@ -30,40 +30,28 @@ broadcast.table <- function(x, dim_names, ...) {
 
 #' @export
 broadcast.ddf_col <- function(x, dim_names, ...) {
-  if (is.null(dim_names)) {
-    x
-  } else {
-    brdcst <- broadcast_dibble(x, dim_names)
-    x <- broadcast_array(as.array(x), brdcst$broadcast)
+  brdcst <- broadcast_dibble(x, dim_names)
+  x <- broadcast_array(as.array(x), brdcst$broadcast)
 
-    new_ddf_col(x, brdcst$new_dim_names)
-  }
+  new_ddf_col(x, brdcst$new_dim_names)
 }
 
 #' @export
 broadcast.tbl_ddf <- function(x, dim_names, ...) {
-  if (is.null(dim_names)) {
-    x
-  } else {
-    brdcst <- broadcast_dibble(x, dim_names)
-    x <- lapply(undibble(x),
-                function(x) {
-                  broadcast_array(x, brdcst$broadcast)
-                })
+  brdcst <- broadcast_dibble(x, dim_names)
+  x <- lapply(undibble(x),
+              function(x) {
+                broadcast_array(x, brdcst$broadcast)
+              })
 
-    new_tbl_ddf(x, brdcst$new_dim_names)
-  }
+  new_tbl_ddf(x, brdcst$new_dim_names)
 }
 
 #' @export
 broadcast.grouped_ddf <- function(x, dim_names, ...) {
-  if (is.null(dim_names)) {
-    x
-  } else {
-    axes <- group_vars(x)
-    x <- broadcast(ungroup(x), dim_names, ...)
-    group_by(x, dplyr::all_of(axes))
-  }
+  axes <- group_vars(x)
+  x <- broadcast(ungroup(x), dim_names, ...)
+  group_by(x, dplyr::all_of(axes))
 }
 
 broadcast_dibble <- function(x, dim_names) {
@@ -159,7 +147,8 @@ broadcast_array <- function(x, brdcst) {
       x
     } else {
       dim(x) <- new_dim
-      rlang::exec(`[`, x, !!!loc)
+      rlang::exec(`[`, x, !!!loc,
+                  drop = FALSE)
     }
   }
 }

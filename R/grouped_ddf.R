@@ -4,6 +4,10 @@ new_grouped_ddf <- function(x, dim_names) {
             class = "grouped_ddf")
 }
 
+is_grouped_ddf <- function(x) {
+  inherits(x, "grouped_ddf")
+}
+
 #' @importFrom dplyr group_keys
 #' @export
 group_keys.grouped_ddf <- function(.tbl, ...) {
@@ -76,15 +80,14 @@ ungroup.grouped_ddf <- function(x, ...) {
   new_tbl_ddf(x, dim_names)
 }
 
-#' Test if the object is a grouped dibble
-#'
-#' @param x An object.
-#'
-#' @return A logical.
-#'
 #' @export
-is_grouped_ddf <- function(x) {
-  inherits(x, "grouped_ddf")
+as.array.grouped_ddf <- function(x, ...) {
+  as.array(as_ddf_col(x), ...)
+}
+
+#' @export
+as.table.grouped_ddf <- function(x, ...) {
+  as.table(as_ddf_col(x), ...)
 }
 
 #' @export
@@ -104,7 +107,7 @@ dimnames.grouped_ddf <- function(x) {
 
 #' @export
 dim.grouped_ddf <- function(x) {
-  list_sizes(dimnames(x))
+  dim_dibble(x)
 }
 
 #' @export
@@ -119,12 +122,12 @@ ncol.grouped_ddf <- function(x, ...) {
 
 #' @export
 rownames.grouped_ddf <- function(x, ...) {
-  NULL
+  rownames_dibble(x, ...)
 }
 
 #' @export
 colnames.grouped_ddf <- function(x, ...) {
-  names(x)
+  colnames_dibble(x, ...)
 }
 
 #' @importFrom tibble as_tibble
@@ -189,7 +192,7 @@ mutate.grouped_ddf <- function(.data, ...) {
 
     for (j in seq_nms) {
       nm <- nms[[j]]
-      out[[nm]][[i]] <- data[[nm]] <- ddf_col(eval_tidy(dots[[j]], data), dim_names)
+      out[[nm]][[i]] <- data[[nm]] <- broadcast(eval_tidy(dots[[j]], data), dim_names)
     }
   }
   new_grouped_ddf(out, group_dim_names)

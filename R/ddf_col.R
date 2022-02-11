@@ -4,10 +4,6 @@ new_ddf_col <- function(x, dim_names) {
             class = "ddf_col")
 }
 
-ddf_col <- function(x, dim_names = NULL) {
-  as_ddf_col(broadcast(x, dim_names))
-}
-
 as_ddf_col <- function(x, ...) {
   UseMethod("as_ddf_col")
 }
@@ -74,7 +70,7 @@ dimnames.ddf_col <- function(x) {
 
 #' @export
 dim.ddf_col <- function(x) {
-  list_sizes(dimnames(x))
+  dim_dibble(x)
 }
 
 #' @export
@@ -89,12 +85,12 @@ ncol.ddf_col <- function(x, ...) {
 
 #' @export
 rownames.ddf_col <- function(x, ...) {
-  NULL
+  rownames_dibble(x, ...)
 }
 
 #' @export
 colnames.ddf_col <- function(x, ...) {
-  NULL
+  colnames_dibble(x, ...)
 }
 
 #' @importFrom tibble as_tibble
