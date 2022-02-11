@@ -42,21 +42,21 @@ diag_dibble <- function(x, axes, ...) {
 #' @export
 diag.ddf_col <- function(x, axes, ...) {
   old_dim_names <- dimnames(x)
-  is_scalar_old_dim_names <- rlang::is_scalar_list(old_dim_names)
+  is_scalar_old_dim_names <- is_scalar_list(old_dim_names)
   stopifnot(
-    is_scalar_old_dim_names || rlang::is_list(old_dim_names, 2L)
+    is_scalar_old_dim_names || is_list(old_dim_names, 2L)
   )
 
   if (is_scalar_old_dim_names) {
     stopifnot(
-      rlang::is_character(axes, 2L)
+      is_character(axes, 2L)
     )
 
     new_dim_names <- vec_c(old_dim_names, old_dim_names)
     names(new_dim_names) <- axes
   } else {
     stopifnot(
-      rlang::is_scalar_character(axes),
+      is_scalar_character(axes),
       identical(old_dim_names[[1L]], old_dim_names[[2L]])
     )
 
@@ -96,9 +96,9 @@ diag.ddf_col <- function(x, axes, ...) {
   dim_names <- dimnames(x)
   dim_names_value <- dimnames(value)
   stopifnot(
-    rlang::is_list(dim_names, 2L),
+    is_list(dim_names, 2L),
     identical(dim_names[[1L]], dim_names[[2L]]),
-    is.null(dim_names_value) || rlang::is_scalar_list(dim_names_value)
+    is.null(dim_names_value) || is_scalar_list(dim_names_value)
   )
 
   x <- as.array(x)

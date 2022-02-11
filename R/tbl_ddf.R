@@ -183,8 +183,8 @@ slice.tbl_ddf <- function(.data, ...) {
 #' @importFrom dplyr mutate
 #' @export
 mutate.tbl_ddf <- function(.data, ...) {
-  dots <- rlang::enquos(...,
-                        .named = TRUE)
+  dots <- enquos(...,
+                 .named = TRUE)
   nms <- names(dots)
 
   dim_names <- dimnames(.data)
@@ -195,7 +195,7 @@ mutate.tbl_ddf <- function(.data, ...) {
   for (i in vec_seq_along(nms)) {
     nm <- nms[[i]]
 
-    data_nm <- broadcast(rlang::eval_tidy(dots[[i]], data),
+    data_nm <- broadcast(eval_tidy(dots[[i]], data),
                          dim_names = dim_names)
 
     data[[nm]] <- data_nm

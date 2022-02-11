@@ -24,13 +24,13 @@ setMethod("pmin", "dibble",
           })
 
 dibble_extremes <- function(f, ..., na.rm) {
-  dots <- rlang::list2(...)
+  dots <- list2(...)
   dim_names <- union_dim_names(!!!lapply(dots, dimnames))
-  dots <- lapply(rlang::list2(...),
+  dots <- lapply(list2(...),
                  function(x) {
                    as.array(broadcast(x, dim_names))
                  })
-  new_ddf_col(rlang::exec(f, !!!dots,
-                          na.rm = na.rm),
+  new_ddf_col(exec(f, !!!dots,
+                   na.rm = na.rm),
               dim_names)
 }

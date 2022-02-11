@@ -72,7 +72,7 @@ ungroup.grouped_ddf <- function(x, ...) {
   col_names <- names(x)
   x <- lapply(x,
               function(x) {
-                x <- array(rlang::exec(c, !!!x),
+                x <- array(exec(c, !!!x),
                            dim = dim)
                 aperm(x, perm)
               })

@@ -12,11 +12,11 @@ as_dim_names <- function(x, dim_names) {
       is.list(x)
     )
 
-    loc <- rlang::names2(x) == ""
+    loc <- names2(x) == ""
     nms <- vapply(x[loc],
                   function(x) {
                     stopifnot(
-                      rlang::is_scalar_character(x)
+                      is_scalar_character(x)
                     )
                     x
                   },
@@ -26,7 +26,7 @@ as_dim_names <- function(x, dim_names) {
   }
 
   stopifnot(
-    rlang::is_named(x),
+    is_named(x),
     vapply(x,
            function(x) {
              is.null(x) || !vec_duplicate_any(x)
@@ -56,7 +56,7 @@ as_dim_names <- function(x, dim_names) {
 }
 
 is_dim_names <- function(x) {
-  rlang::is_named(x)
+  is_named(x)
 }
 
 union_dim_names <- function(...) {

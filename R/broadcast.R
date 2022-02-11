@@ -147,8 +147,8 @@ broadcast_array <- function(x, brdcst) {
       x
     } else {
       dim(x) <- new_dim
-      rlang::exec(`[`, x, !!!loc,
-                  drop = FALSE)
+      exec(`[`, x, !!!loc,
+           drop = FALSE)
     }
   }
 }

@@ -10,7 +10,7 @@
 #' @export
 dibble <- function(...,
                    .dim_names = NULL) {
-  dots <- rlang::list2(...)
+  dots <- list2(...)
 
   old_dim_names <- union_dim_names(!!!lapply(unname(dots), dimnames))
   new_dim_names <- as_dim_names(.dim_names, old_dim_names)
@@ -26,14 +26,14 @@ dibble <- function(...,
     undibble(broadcast(x, new_dim_names))
   }
 
-  dots <- mapply(dots, rlang::names2(dots),
+  dots <- mapply(dots, names2(dots),
                  FUN = function(x, nm) {
                    if (is_tbl_ddf(x) || is_grouped_ddf(x)) {
                      x <- lapply(as.list(ungroup(x)), fun)
 
                      if (nm != "") {
                        stopifnot(
-                         rlang::is_scalar_list(x)
+                         is_scalar_list(x)
                        )
 
                        names(x) <- nm
@@ -49,9 +49,9 @@ dibble <- function(...,
                  USE.NAMES = FALSE)
   dots <- vec_c(!!!dots)
 
-  if (!rlang::is_named(dots)) {
+  if (!is_named(dots)) {
     stopifnot(
-      rlang::is_scalar_list(dots)
+      is_scalar_list(dots)
     )
 
     new_ddf_col(dots[[1L]], new_dim_names)
@@ -235,9 +235,9 @@ colnames_dibble <- function(x, ...) {
 }
 
 as_tibble_dibble <- function(x, ..., n) {
-  dim_names <- rev(rlang::exec(expand.grid, !!!rev(dimnames(x)),
-                               KEEP.OUT.ATTRS = FALSE,
-                               stringsAsFactors = FALSE))
+  dim_names <- rev(exec(expand.grid, !!!rev(dimnames(x)),
+                        KEEP.OUT.ATTRS = FALSE,
+                        stringsAsFactors = FALSE))
 
   fun <- function(x) {
     as.vector(aperm(as.array(x)))
@@ -292,11 +292,11 @@ aperm_dibble <- function(a, perm, ...) {
 # Verbs -------------------------------------------------------------------
 
 slice_dibble <- function(.data, ...) {
-  loc <- lapply(rlang::list2(...),
+  loc <- lapply(list2(...),
                 function(x) {
                   x %||% missing_arg()
                 })
-  nms <- rlang::names2(loc)
+  nms <- names2(loc)
 
   dim_names <- dimnames(.data)
   axes <- names(dim_names)
@@ -314,14 +314,14 @@ slice_dibble <- function(.data, ...) {
   names(dim_names) <- axes
 
   if (is_ddf_col(.data)) {
-    new_ddf_col(rlang::exec(`[`, .data, !!!loc,
-                            drop = FALSE),
+    new_ddf_col(exec(`[`, .data, !!!loc,
+                     drop = FALSE),
                 dim_names = dim_names)
   } else if (is_tbl_ddf(.data)) {
     new_tbl_ddf(lapply(undibble(.data),
                        function(x) {
-                         rlang::exec(`[`, x, !!!loc,
-                                     drop = FALSE)
+                         exec(`[`, x, !!!loc,
+                              drop = FALSE)
                        }),
                 dim_names = dim_names)
   } else if (is_grouped_ddf(.data)) {
@@ -341,8 +341,8 @@ slice_dibble <- function(.data, ...) {
 
     .data <- lapply(undibble(.data),
                     function(x) {
-                      x <- rlang::exec(`[`, x, !!!loc_groups,
-                                       drop = FALSE)
+                      x <- exec(`[`, x, !!!loc_groups,
+                                drop = FALSE)
                       lapply(x,
                              function(x) {
                                slice(x, !!!loc)
