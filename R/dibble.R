@@ -275,15 +275,15 @@ aperm_dibble <- function(a, perm, ...) {
     }
   }
 
-  if (is_dibble(a)) {
+  if (is_ddf_col(a)) {
+    a <- aperm(as.array(a), perm, ...)
+    new_ddf_col(a, dim_names)
+  } else {
     a <- lapply(undibble(a),
                 function(x) {
                   aperm(x, perm, ...)
                 })
     new_tbl_ddf(a, dim_names)
-  } else if (is_dibble_measure(a)) {
-    a <- aperm(as.array(a), perm, ...)
-    new_ddf_col(a, dim_names)
   }
 }
 
