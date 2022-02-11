@@ -13,18 +13,18 @@ dibble <- function(...,
   dots <- rlang::list2(...)
 
   old_dim_names <- union_dim_names(!!!lapply(unname(dots), dimnames))
-  dim_names <- as_dim_names(.dim_names, old_dim_names)
+  new_dim_names <- as_dim_names(.dim_names, old_dim_names)
 
-  fun <-
-    if (is.null(.dim_names) || !identical(dim_names, old_dim_names)) {
-      function(x) {
-        undibble(broadcast(x, dim_names))
-      }
-    } else {
-      function(x) {
-        undibble(suppress_warning_broadcast(broadcast(x, dim_names)))
+  fun <- function(x) {
+    if (is_dim_names(old_dim_names)) {
+      if (is.null(.dim_names)) {
+        x <- broadcast(x, old_dim_names)
+      } else {
+        x <- suppress_warning_broadcast(broadcast(x, old_dim_names))
       }
     }
+    undibble(broadcast(x, new_dim_names))
+  }
 
   dots <- mapply(dots, rlang::names2(dots),
                  FUN = function(x, nm) {
@@ -54,9 +54,9 @@ dibble <- function(...,
       rlang::is_scalar_list(dots)
     )
 
-    new_ddf_col(dots[[1L]], dim_names)
+    new_ddf_col(dots[[1L]], new_dim_names)
   } else {
-    new_tbl_ddf(dots, dim_names)
+    new_tbl_ddf(dots, new_dim_names)
   }
 }
 

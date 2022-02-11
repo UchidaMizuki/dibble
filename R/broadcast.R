@@ -8,7 +8,7 @@ broadcast <- function(x, dim_names, ...) {
 #' @export
 broadcast.default <- function(x, dim_names, ...) {
   stopifnot(
-    rlang::is_named(dim_names)
+    is_dim_names(dim_names)
   )
 
   dim <- list_sizes(dim_names)

@@ -55,14 +55,18 @@ as_dim_names <- function(x, dim_names) {
   x
 }
 
+is_dim_names <- function(x) {
+  rlang::is_named(x)
+}
+
 union_dim_names <- function(...) {
   x <- vec_c(...)
   nms <- names(x)
   nms_unique <- unique(nms)
-  out <- lapply(nms_unique,
-                function(nm_unique) {
-                  unique(vec_c(!!!unname(x[nms == nm_unique])))
-                })
-  names(out) <- nms_unique
-  out
+  x <- lapply(nms_unique,
+              function(nm_unique) {
+                unique(vec_c(!!!unname(x[nms == nm_unique])))
+              })
+  names(x) <- nms_unique
+  x
 }
