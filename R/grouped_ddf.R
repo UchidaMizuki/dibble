@@ -11,7 +11,7 @@ is_grouped_ddf <- function(x) {
 #' @importFrom dplyr group_keys
 #' @export
 group_keys.grouped_ddf <- function(.tbl, ...) {
-  attr(x, "dim_names")
+  attr(.tbl, "dim_names")
 }
 
 #' @importFrom dplyr group_vars
