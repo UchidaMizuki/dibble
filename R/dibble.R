@@ -89,6 +89,17 @@ as_dibble <- function(x, ...) {
 
 #' @rdname as_dibble
 #' @export
+as_dibble.default <- function(x, ...) {
+  dim_names <- dimnames(x)
+  stopifnot(
+    is_dim_names(dim_names)
+  )
+
+  new_ddf_col(unname(x), dim_names)
+}
+
+#' @rdname as_dibble
+#' @export
 as_dibble.rowwise_df <- function(x, ...) {
   axes <- dplyr::group_vars(x)
   x <- ungroup(x)
@@ -134,18 +145,6 @@ as_dibble.tbl_ddf <- function(x, ...) {
 #' @export
 as_dibble.grouped_ddf <- function(x, ...) {
   ungroup(x)
-}
-
-#' @rdname as_dibble
-#' @export
-as_dibble.array <- function(x, ...) {
-  as_ddf_col(x, ...)
-}
-
-#' @rdname as_dibble
-#' @export
-as_dibble.table <- function(x, ...) {
-  as_ddf_col(x, ...)
 }
 
 #' Test if the object is a dibble
