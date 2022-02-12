@@ -1,3 +1,10 @@
+#' Broadcast to a new dimension
+#'
+#' Broadcasts the dimension of the object to s new dimension.
+#'
+#' @param x An object.
+#' @param dim_names A named list of dimension names.
+#'
 #' @export
 broadcast <- function(x, dim_names, ...) {
   x <- suppress_warning_broadcast(x)
@@ -5,29 +12,25 @@ broadcast <- function(x, dim_names, ...) {
   UseMethod("broadcast")
 }
 
+#' @rdname broadcast
 #' @export
 broadcast.default <- function(x, dim_names, ...) {
-  stopifnot(
-    is_dim_names(dim_names)
-  )
+  if (is.null(dimnames(x))) {
+    stopifnot(
+      is_dim_names(dim_names)
+    )
 
-  dim <- list_sizes(dim_names)
-  x <- array(vec_recycle(x, prod(dim)),
-             dim = dim)
+    dim <- list_sizes(dim_names)
+    x <- array(vec_recycle(x, prod(dim)),
+               dim = dim)
 
-  new_ddf_col(x, dim_names)
+    new_ddf_col(x, dim_names)
+  } else {
+    broadcast(dibble(x), dim_names)
+  }
 }
 
-#' @export
-broadcast.array <- function(x, dim_names, ...) {
-  broadcast(as_ddf_col(x), dim_names)
-}
-
-#' @export
-broadcast.table <- function(x, dim_names, ...) {
-  broadcast.array(x, dim_names, ...)
-}
-
+#' @rdname broadcast
 #' @export
 broadcast.ddf_col <- function(x, dim_names, ...) {
   brdcst <- broadcast_dibble(x, dim_names)
@@ -36,6 +39,7 @@ broadcast.ddf_col <- function(x, dim_names, ...) {
   new_ddf_col(x, brdcst$new_dim_names)
 }
 
+#' @rdname broadcast
 #' @export
 broadcast.tbl_ddf <- function(x, dim_names, ...) {
   brdcst <- broadcast_dibble(x, dim_names)
@@ -47,6 +51,7 @@ broadcast.tbl_ddf <- function(x, dim_names, ...) {
   new_tbl_ddf(x, brdcst$new_dim_names)
 }
 
+#' @rdname broadcast
 #' @export
 broadcast.grouped_ddf <- function(x, dim_names, ...) {
   axes <- group_vars(x)
