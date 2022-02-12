@@ -68,31 +68,31 @@ diag.ddf_col <- function(x, axes, ...) {
 }
 
 #' @export
-`diag<-` <- function(x, value, ...) {
+`diag<-` <- function(x, ..., value) {
   UseMethod("diag<-")
 }
 
 #' @export
-`diag<-.default` <- function(x, value, ...) {
+`diag<-.default` <- function(x, ..., value) {
   base::`diag<-`(x, value)
 }
 
 #' @export
-`diag<-.tbl_ddf` <- function(x, value, ...) {
-  `diag<-_dibble`(x, value)
+`diag<-.tbl_ddf` <- function(x, ..., value) {
+  `diag<-_dibble`(x, ..., value)
 }
 
 #' @export
-`diag<-.grouped_ddf` <- function(x, value, ...) {
-  `diag<-_dibble`(x, value)
+`diag<-.grouped_ddf` <- function(x, ..., value) {
+  `diag<-_dibble`(x, ..., value)
 }
 
-`diag<-_dibble` <- function(x, value) {
-  `diag<-`(as_ddf_col(x), value)
+`diag<-_dibble` <- function(x, ..., value) {
+  `diag<-`(as_ddf_col(x), ..., value)
 }
 
 #' @export
-`diag<-.ddf_col` <- function(x, value, ...) {
+`diag<-.ddf_col` <- function(x, ..., value) {
   dim_names <- dimnames(x)
   dim_names_value <- dimnames(value)
   stopifnot(
