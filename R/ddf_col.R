@@ -31,7 +31,7 @@ as_ddf_col.grouped_ddf <- function(x, ...) {
 as_ddf_col.array <- function(x, ...) {
   dim_names <- dimnames(x)
   stopifnot(
-    !is.null(dim_names)
+    is_dim_names(dim_names)
   )
 
   new_ddf_col(unname(x), dim_names)
