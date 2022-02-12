@@ -5,40 +5,14 @@ new_ddf_col <- function(x, dim_names) {
 }
 
 as_ddf_col <- function(x, ...) {
-  UseMethod("as_ddf_col")
-}
+  if (is_tbl_ddf(x) || is_grouped_ddf(x)) {
+    stopifnot(
+      ncol(x) == 1L
+    )
 
-as_ddf_col.ddf_col <- function(x, ...) {
+    x <- x[[1L]]
+  }
   x
-}
-
-as_ddf_col.tbl_ddf <- function(x, ...) {
-  stopifnot(
-    ncol(x) == 1L
-  )
-
-  x[[1L]]
-}
-
-as_ddf_col.grouped_ddf <- function(x, ...) {
-  stopifnot(
-    ncol(x) == 1L
-  )
-
-  x[[1L]]
-}
-
-as_ddf_col.array <- function(x, ...) {
-  dim_names <- dimnames(x)
-  stopifnot(
-    is_dim_names(dim_names)
-  )
-
-  new_ddf_col(unname(x), dim_names)
-}
-
-as_ddf_col.table <- function(x, ...) {
-  as_ddf_col.array(x, ...)
 }
 
 is_ddf_col <- function(x) {
