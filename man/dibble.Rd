@@ -17,3 +17,12 @@ A dibble.
 \description{
 \code{dibble()} constructs a dimensional data frame called a dibble.
 }
+\details{
+Manipulation functions:
+\itemize{
+\item mutate()
+\item rename()
+\item select() & relocate()
+\item slice()
+}
+}

@@ -2,6 +2,13 @@
 #'
 #' `dibble()` constructs a dimensional data frame called a dibble.
 #'
+#' Manipulation functions:
+#'
+#' * mutate()
+#' * rename()
+#' * select() & relocate()
+#' * slice()
+#'
 #' @param ... A set of name-measure pairs.
 #' @param .dim_names A list of dimension names.
 #'
