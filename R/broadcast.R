@@ -1,10 +1,14 @@
 #' Broadcast to a new dimension
 #'
 #' Broadcasts the dimension of the object to a new dimension.
-#' This function is generic.
+#'
+#' Operations between dibbles are automatically broadcasted, but for safety
+#' reasons, warnings are issued.
+#' `broadcast()` can suppress the warnings if `dim_names` matches the dimension
+#' of `x`.
 #'
 #' @param x A dibble, vector, or array.
-#' @param dim_names A named list of dimension names.
+#' @param dim_names A character vector or list of dimension names.
 #' @param ... Unused, for extensibility.
 #'
 #' @return A dibble.
