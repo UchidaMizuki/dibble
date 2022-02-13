@@ -9,11 +9,36 @@ solve.ddf_col <- function(a, b, ...) {
   }
 }
 
+#' Matrix diagonals
+#'
+#' Extract or replace the diagonal of a matrix, or construct a diagonal matrix.
+#'
+#' These functions override base functions to make them generic. The default
+#' methods call the base versions.
+#'
+#' @param x A dibble, matrix, vector or 1D array, or missing.
+#' @param ... Unused, for extensibility.
+#'
+#' @param nrow,ncol Optional dimensions for the result when x is not a matrix.
+#' @param names (When x is a matrix) logical indicating if the resulting vector,
+#' the diagonal of x, should inherit names from dimnames(x) if available.
+#'
+#' @param axes A character vector of axes.
+#'
+#' @param value Replacement values.
+#'
+#' @return A dibble if x is a dibble. See [base::diag()] for the return values
+#' of the default methods.
+#'
+#' @name diag
+
+#' @rdname diag
 #' @export
 diag <- function(x, ...) {
   UseMethod("diag")
 }
 
+#' @rdname diag
 #' @export
 diag.default <- function(x = 1, nrow, ncol,
                          names = TRUE, ...) {
@@ -25,11 +50,13 @@ diag.default <- function(x = 1, nrow, ncol,
   }
 }
 
+#' @rdname diag
 #' @export
 diag.tbl_ddf <- function(x, axes, ...) {
   diag_dibble(x, axes, ...)
 }
 
+#' @rdname diag
 #' @export
 diag.grouped_ddf <- function(x, axes, ...) {
   diag_dibble(x, axes, ...)
@@ -39,6 +66,7 @@ diag_dibble <- function(x, axes, ...) {
   diag(as_ddf_col(x), axes, ...)
 }
 
+#' @rdname diag
 #' @export
 diag.ddf_col <- function(x, axes, ...) {
   old_dim_names <- dimnames(x)
@@ -67,30 +95,41 @@ diag.ddf_col <- function(x, axes, ...) {
               new_dim_names)
 }
 
+#' @rdname diag
 #' @export
 `diag<-` <- function(x, ..., value) {
   UseMethod("diag<-")
 }
 
+#' @rdname diag
 #' @export
 `diag<-.default` <- function(x, ..., value) {
   base::`diag<-`(x, value)
 }
 
+#' @rdname diag
 #' @export
 `diag<-.tbl_ddf` <- function(x, ..., value) {
-  `diag<-_dibble`(x, ..., value)
+  nm <- colnames(x)
+  out <- `diag<-_dibble`(x, ..., value)
+  dibble(!!nm := out)
 }
 
+#' @rdname diag
 #' @export
 `diag<-.grouped_ddf` <- function(x, ..., value) {
-  `diag<-_dibble`(x, ..., value)
+  axes <- group_vars(x)
+  nm <- colnames(x)
+  out <- `diag<-_dibble`(x, ..., value)
+  out <- dibble(!!nm := out)
+  group_by(out, dplyr::all_of(axes))
 }
 
 `diag<-_dibble` <- function(x, ..., value) {
   `diag<-`(as_ddf_col(x), ..., value)
 }
 
+#' @rdname diag
 #' @export
 `diag<-.ddf_col` <- function(x, ..., value) {
   dim_names <- dimnames(x)
@@ -102,10 +141,6 @@ diag.ddf_col <- function(x, axes, ...) {
   )
 
   x <- as.array(x)
-  if (is.null(dim_names_value)) {
-    diag(x) <- vec_recycle(value, vec_size(dim_names[[1L]]))
-  } else {
-    diag(x) <- as.vector(value)[vec_match(dim_names[[1L]], dim_names_value[[1L]])]
-  }
+  diag(x) <- as.vector(broadcast(value, dim_names[1L]))
   new_ddf_col(x, dim_names)
 }

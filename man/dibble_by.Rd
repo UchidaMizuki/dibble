@@ -11,6 +11,9 @@ dibble_by(x, ...)
 
 \item{...}{Variables.}
 }
+\value{
+A dibble.
+}
 \description{
 \code{dibble_by()} constructs a dibble by one or more variables.
 }

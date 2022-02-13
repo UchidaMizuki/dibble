@@ -47,26 +47,6 @@ dim.ddf_col <- function(x) {
   dim_dibble(x)
 }
 
-#' @export
-nrow.ddf_col <- function(x, ...) {
-  nrow_dibble(x)
-}
-
-#' @export
-ncol.ddf_col <- function(x, ...) {
-  NULL
-}
-
-#' @export
-rownames.ddf_col <- function(x, ...) {
-  rownames_dibble(x, ...)
-}
-
-#' @export
-colnames.ddf_col <- function(x, ...) {
-  colnames_dibble(x, ...)
-}
-
 #' @importFrom tibble as_tibble
 #' @export
 as_tibble.ddf_col <- function(x, ...,

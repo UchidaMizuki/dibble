@@ -1,9 +1,20 @@
 #' Broadcast to a new dimension
 #'
-#' Broadcasts the dimension of the object to s new dimension.
+#' Broadcasts the dimension of the object to a new dimension.
+#' This function is generic.
 #'
-#' @param x An object.
+#' @param x A dibble, vector, or array.
 #' @param dim_names A named list of dimension names.
+#' @param ... Unused, for extensibility.
+#'
+#' @return A dibble.
+#'
+#' @examples
+#' x <- broadcast(1:2,
+#'                list(axis1 = letters[1:2]))
+#' y <- broadcast(1:3,
+#'                list(axis2 = letters[1:3]))
+#' broadcast(x * y, c("axis1", "axis2"))
 #'
 #' @export
 broadcast <- function(x, dim_names, ...) {
@@ -26,7 +37,7 @@ broadcast.default <- function(x, dim_names, ...) {
 
     new_ddf_col(x, dim_names)
   } else {
-    broadcast(dibble(x), dim_names)
+    broadcast(as_dibble(x), dim_names)
   }
 }
 

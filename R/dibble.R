@@ -67,6 +67,8 @@ dibble <- function(...,
 #' @param x A data frame or a dibble.
 #' @param ... Variables.
 #'
+#' @return A dibble.
+#'
 #' @export
 dibble_by <- function(x, ...) {
   as_dibble(dplyr::rowwise(x, ...))
@@ -77,7 +79,6 @@ dibble_by <- function(x, ...) {
 #' `as_dibble()` turns an object into a dimensional data frame called a dibble.
 #'
 #' @param x An object.
-#' @param dim_names A list of dimension names.
 #' @param ... Unused, for extensibility.
 #'
 #' @return A dibble.
@@ -193,7 +194,7 @@ dimnames_dibble <- function(x) {
                            x
                          })
                 })
-    new_grouped_dibble(x, new_group_dim_names)
+    new_grouped_ddf(x, new_group_dim_names)
   } else {
     dim_names <- dimnames(x)
     stopifnot(
@@ -207,30 +208,6 @@ dimnames_dibble <- function(x) {
 
 dim_dibble <- function(x) {
   list_sizes(dimnames(x))
-}
-
-nrow_dibble <- function(x, ...) {
-  prod(dim(x))
-}
-
-ncol_dibble <- function(x, ...) {
-  if (is_ddf_col(x)) {
-    NULL
-  } else {
-    vec_size(colnames(x))
-  }
-}
-
-rownames_dibble <- function(x, ...) {
-  NULL
-}
-
-colnames_dibble <- function(x, ...) {
-  if (is_ddf_col(x)) {
-    NULL
-  } else {
-    names(x)
-  }
 }
 
 as_tibble_dibble <- function(x, ..., n) {

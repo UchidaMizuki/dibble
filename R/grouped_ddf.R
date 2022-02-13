@@ -110,26 +110,6 @@ dim.grouped_ddf <- function(x) {
   dim_dibble(x)
 }
 
-#' @export
-nrow.grouped_ddf <- function(x, ...) {
-  nrow_dibble(x)
-}
-
-#' @export
-ncol.grouped_ddf <- function(x, ...) {
-  length(colnames(x))
-}
-
-#' @export
-rownames.grouped_ddf <- function(x, ...) {
-  rownames_dibble(x, ...)
-}
-
-#' @export
-colnames.grouped_ddf <- function(x, ...) {
-  colnames_dibble(x, ...)
-}
-
 #' @importFrom tibble as_tibble
 #' @export
 as_tibble.grouped_ddf <- function(x, ...) {

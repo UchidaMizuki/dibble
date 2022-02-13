@@ -2,16 +2,17 @@
 % Please edit documentation in R/dibble.R
 \name{as_dibble}
 \alias{as_dibble}
+\alias{as_dibble.default}
 \alias{as_dibble.rowwise_df}
 \alias{as_dibble.grouped_df}
 \alias{as_dibble.ddf_col}
 \alias{as_dibble.tbl_ddf}
 \alias{as_dibble.grouped_ddf}
-\alias{as_dibble.array}
-\alias{as_dibble.table}
 \title{Coerce an object to a dibble}
 \usage{
 as_dibble(x, ...)
+
+\method{as_dibble}{default}(x, ...)
 
 \method{as_dibble}{rowwise_df}(x, ...)
 
@@ -22,17 +23,11 @@ as_dibble(x, ...)
 \method{as_dibble}{tbl_ddf}(x, ...)
 
 \method{as_dibble}{grouped_ddf}(x, ...)
-
-\method{as_dibble}{array}(x, ...)
-
-\method{as_dibble}{table}(x, ...)
 }
 \arguments{
 \item{x}{An object.}
 
 \item{...}{Unused, for extensibility.}
-
-\item{dim_names}{A list of dimension names.}
 }
 \value{
 A dibble.
