@@ -14,8 +14,8 @@ coverage](https://codecov.io/gh/UchidaMizuki/dibble/branch/main/graph/badge.svg)
 
 A ‘dibble’ is a data frame consisting of arrays with named dimensions
 (known as data cubes). The columns of the dibbles are classified into
-dimensions or metrics, and the operations on the metrics are
-broadcasted.
+dimensions or measures, and the operations on the measures are
+broadcasted. The name “dibble” is derived from “dimensional tibble”.
 
 ## Installation
 
@@ -28,115 +28,198 @@ install.packages("dibble")
 devtools::install_github("UchidaMizuki/dibble")
 ```
 
-## Example
-
-This is a basic example which shows you how to solve a common problem:
+## Examples
 
 ``` r
 library(dibble)
 library(dplyr)
 ```
 
-A dibble can be created from a data frame using `dibble_by()` function.
+### Broadcasting
 
 ``` r
-ddf <- tidyr::expand_grid(axis1 = 1:2,
-                          axis2 = 1:3) %>% 
-  mutate(value = row_number()) %>% 
+arr1 <- array(1:6, c(2, 3),
+              list(axis1 = letters[1:2],
+                   axis2 = letters[1:3]))
+arr2 <- array(1:12, c(3, 4),
+              list(axis2 = letters[1:3],
+                   axis3 = letters[1:4]))
+
+try(arr1 * arr2)
+#> Error in arr1 * arr2 : non-conformable arrays
+
+ddf1 <- as_dibble(arr1)
+ddf2 <- as_dibble(arr2)
+
+ddf1 * ddf2
+#> Warning: Broadcasting,
+#>  $ axis1: chr [1:2] "a" "b"
+#>  $ axis2: chr [1:3] "a" "b" "c"
+#>  $ axis3: chr [1:4] "a" "b" "c" "d"
+
+#> Warning: Broadcasting,
+#>  $ axis1: chr [1:2] "a" "b"
+#>  $ axis2: chr [1:3] "a" "b" "c"
+#>  $ axis3: chr [1:4] "a" "b" "c" "d"
+#> # A dibble:   24
+#> # Dimensions: axis1 [2], axis2 [3], axis3 [4]
+#>    axis1 axis2 axis3     .
+#>    <chr> <chr> <chr> <int>
+#>  1 a     a     a         1
+#>  2 a     a     b         4
+#>  3 a     a     c         7
+#>  4 a     a     d        10
+#>  5 a     b     a         6
+#>  6 a     b     b        15
+#>  7 a     b     c        24
+#>  8 a     b     d        33
+#>  9 a     c     a        15
+#> 10 a     c     b        30
+#> # ... with 14 more rows
+
+# You can use broadcast() to suppress the warnings.
+broadcast(ddf1 * ddf2,
+          dim_names = c("axis1", "axis2", "axis3"))
+#> # A dibble:   24
+#> # Dimensions: axis1 [2], axis2 [3], axis3 [4]
+#>    axis1 axis2 axis3     .
+#>    <chr> <chr> <chr> <int>
+#>  1 a     a     a         1
+#>  2 a     a     b         4
+#>  3 a     a     c         7
+#>  4 a     a     d        10
+#>  5 a     b     a         6
+#>  6 a     b     b        15
+#>  7 a     b     c        24
+#>  8 a     b     d        33
+#>  9 a     c     a        15
+#> 10 a     c     b        30
+#> # ... with 14 more rows
+```
+
+### How to build a dibble
+
+#### From a data.frame
+
+``` r
+df <- expand.grid(axis1 = letters[1:2],
+                  axis2 = letters[1:3]) %>% 
+  as_tibble() %>% 
+  mutate(value1 = row_number(),
+         value2 = value1 * 2)
+
+ddf <- df %>% 
   dibble_by(axis1, axis2)
 
+df
+#> # A tibble: 6 x 4
+#>   axis1 axis2 value1 value2
+#>   <fct> <fct>  <int>  <dbl>
+#> 1 a     a          1      2
+#> 2 b     a          2      4
+#> 3 a     b          3      6
+#> 4 b     b          4      8
+#> 5 a     c          5     10
+#> 6 b     c          6     12
+ddf
+#> # A dibble:   6 x 2
+#> # Dimensions: axis1 [2], axis2 [3]
+#> # Measures:   value1, value2
+#>   axis1 axis2 value1 value2
+#>   <fct> <fct>  <int>  <dbl>
+#> 1 a     a          1      2
+#> 2 a     b          3      6
+#> 3 a     c          5     10
+#> 4 b     a          2      4
+#> 5 b     b          4      8
+#> 6 b     c          6     12
+
+# You can access the measures from the dibble with `$`.
+ddf$value1
+#> # A dibble:   6
+#> # Dimensions: axis1 [2], axis2 [3]
+#>   axis1 axis2     .
+#>   <fct> <fct> <int>
+#> 1 a     a         1
+#> 2 a     b         3
+#> 3 a     c         5
+#> 4 b     a         2
+#> 5 b     b         4
+#> 6 b     c         6
+```
+
+#### From an array with named dimensions
+
+``` r
+arr <- array(1:6, 2:3,
+             list(axis1 = letters[1:2],
+                  axis2 = letters[1:3]))
+
+ddf <- as_dibble(arr)
+
+arr
+#>      axis2
+#> axis1 a b c
+#>     a 1 3 5
+#>     b 2 4 6
+ddf
+#> # A dibble:   6
+#> # Dimensions: axis1 [2], axis2 [3]
+#>   axis1 axis2     .
+#>   <chr> <chr> <int>
+#> 1 a     a         1
+#> 2 a     b         3
+#> 3 a     c         5
+#> 4 b     a         2
+#> 5 b     b         4
+#> 6 b     c         6
+```
+
+#### From a vector
+
+``` r
+ddf <- dibble(value = 1:6,
+              .dim_names = list(axis1 = letters[1:2],
+                                axis2 = letters[1:3]))
 ddf
 #> # A dibble:   6 x 1
 #> # Dimensions: axis1 [2], axis2 [3]
-#> # Metrics:    value
+#> # Measures:   value
 #>   axis1 axis2 value
-#>   <int> <int> <int>
-#> 1     1     1     1
-#> 2     1     2     2
-#> 3     1     3     3
-#> 4     2     1     4
-#> 5     2     2     5
-#> 6     2     3     6
-```
-
-You can access the metrics from the dibble with `$`.
-
-``` r
+#>   <chr> <chr> <int>
+#> 1 a     a         1
+#> 2 a     b         3
+#> 3 a     c         5
+#> 4 b     a         2
+#> 5 b     b         4
+#> 6 b     c         6
 ddf$value
-#> # A metric:   6
+#> # A dibble:   6
 #> # Dimensions: axis1 [2], axis2 [3]
 #>   axis1 axis2     .
-#>   <int> <int> <int>
-#> 1     1     1     1
-#> 2     1     2     2
-#> 3     1     3     3
-#> 4     2     1     4
-#> 5     2     2     5
-#> 6     2     3     6
+#>   <chr> <chr> <int>
+#> 1 a     a         1
+#> 2 a     b         3
+#> 3 a     c         5
+#> 4 b     a         2
+#> 5 b     b         4
+#> 6 b     c         6
 ```
 
-If the axes of one dibble encompasses the axes of another, `mutate()`
-allows for dimension-preserving broadcasting.
-
 ``` r
-ddf1 <- tidyr::expand_grid(axis1 = 1:2,
-                           axis2 = 1:3) %>% 
-  mutate(value = row_number()) %>% 
-  dibble_by(axis1, axis2)
+ddf <- broadcast(1:6,
+                 list(axis1 = letters[1:2],
+                      axis2 = letters[1:3]))
 
-ddf2 <- tidyr::expand_grid(axis2 = 1:4) %>% 
-  mutate(value = row_number()) %>% 
-  dibble_by(axis2)
-
-ddf1 %>% 
-  mutate(value = value + ddf2$value)
-#> # A dibble:   6 x 1
+ddf
+#> # A dibble:   6
 #> # Dimensions: axis1 [2], axis2 [3]
-#> # Metrics:    value
-#>   axis1 axis2 value
-#>   <int> <int> <int>
-#> 1     1     1     2
-#> 2     1     2     4
-#> 3     1     3     6
-#> 4     2     1     5
-#> 5     2     2     7
-#> 6     2     3     9
-```
-
-`dibble()` allows broadcasting based on the union set of axes of
-multiple dibbles (or metrics).
-
-``` r
-ddf1 <- tidyr::expand_grid(axis1 = 1:2,
-                           axis2 = 1:3) %>% 
-  mutate(value = row_number()) %>% 
-  dibble_by(axis1, axis2)
-
-ddf2 <- tidyr::expand_grid(axis2 = 1:4,
-                           axis3 = 1:2) %>% 
-  mutate(value = row_number()) %>% 
-  dibble_by(axis2, axis3)
-
-dibble(value = ddf1$value * ddf2$value)
-#> # A dibble:   16 x 1
-#> # Dimensions: axis1 [2], axis2 [4], axis3 [2]
-#> # Metrics:    value
-#>    axis1 axis2 axis3 value
-#>    <int> <int> <int> <int>
-#>  1     1     1     1     1
-#>  2     1     1     2     2
-#>  3     1     2     1     6
-#>  4     1     2     2     8
-#>  5     1     3     1    15
-#>  6     1     3     2    18
-#>  7     1     4     1    NA
-#>  8     1     4     2    NA
-#>  9     2     1     1     4
-#> 10     2     1     2     8
-#> 11     2     2     1    15
-#> 12     2     2     2    20
-#> 13     2     3     1    30
-#> 14     2     3     2    36
-#> 15     2     4     1    NA
-#> 16     2     4     2    NA
+#>   axis1 axis2     .
+#>   <chr> <chr> <int>
+#> 1 a     a         1
+#> 2 a     b         3
+#> 3 a     c         5
+#> 4 b     a         2
+#> 5 b     b         4
+#> 6 b     c         6
 ```
