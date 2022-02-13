@@ -21,7 +21,7 @@ broadcast(x, dim_names, ...)
 \arguments{
 \item{x}{A dibble, vector, or array.}
 
-\item{dim_names}{A named list of dimension names.}
+\item{dim_names}{A character vector or list of dimension names.}
 
 \item{...}{Unused, for extensibility.}
 }
@@ -30,7 +30,12 @@ A dibble.
 }
 \description{
 Broadcasts the dimension of the object to a new dimension.
-This function is generic.
+}
+\details{
+Operations between dibbles are automatically broadcasted, but for safety
+reasons, warnings are issued.
+\code{broadcast()} can suppress the warnings if \code{dim_names} matches the dimension
+of \code{x}.
 }
 \examples{
 x <- broadcast(1:2,
