@@ -172,7 +172,9 @@ mutate.grouped_ddf <- function(.data, ...) {
 
     for (j in seq_nms) {
       nm <- nms[[j]]
-      out[[nm]][[i]] <- data[[nm]] <- broadcast(eval_tidy(dots[[j]], data), dim_names)
+      out[[nm]][[i]] <- data[[nm]] <- suppress_warning_broadcast(
+        broadcast(eval_tidy(dots[[j]], data), dim_names)
+      )
     }
   }
   new_grouped_ddf(out, group_dim_names)
@@ -203,7 +205,9 @@ summarise.grouped_ddf <- function(.data, ...) {
 
     for (j in seq_nms) {
       nm <- nms[[j]]
-      out[[nm]][[i]] <- data[[nm]] <- eval_tidy(dots[[j]], data)
+      out[[nm]][[i]] <- data[[nm]] <- suppress_warning_broadcast(
+        eval_tidy(dots[[j]], data)
+      )
     }
   }
   new_tbl_ddf(out, dim_names)

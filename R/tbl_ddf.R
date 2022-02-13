@@ -99,8 +99,10 @@ mutate.tbl_ddf <- function(.data, ...) {
   for (i in vec_seq_along(nms)) {
     nm <- nms[[i]]
 
-    data_nm <- broadcast(eval_tidy(dots[[i]], data),
-                         dim_names = dim_names)
+    data_nm <- suppress_warning_broadcast(
+      broadcast(eval_tidy(dots[[i]], data),
+                dim_names = dim_names)
+    )
 
     data[[nm]] <- data_nm
     .data[[nm]] <- undibble(data_nm)
