@@ -9,7 +9,9 @@ Authors@R:
         email = "uchidamizuki@vivaldi.net", 
         role = c("aut", "cre")
     )
-Description: Provides a 'dibble', a data frame consisting of arrays with named dimensions (known as data cubes), and allows for broadcasting.
+Description: Provides a 'dibble' (derived from 'dimensional tibble'), a data 
+    frame consisting of arrays with named dimensions (known as data cubes), and 
+    allows for broadcasting.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
