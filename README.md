@@ -12,10 +12,10 @@ coverage](https://codecov.io/gh/UchidaMizuki/dibble/branch/main/graph/badge.svg)
 [![R-CMD-check](https://github.com/UchidaMizuki/dibble/workflows/R-CMD-check/badge.svg)](https://github.com/UchidaMizuki/dibble/actions)
 <!-- badges: end -->
 
-A ‘dibble’ is a data frame consisting of arrays with named dimensions
-(known as data cubes). The columns of the dibbles are classified into
-dimensions or measures, and the operations on the measures are
-broadcasted. The name “dibble” is derived from “dimensional tibble”.
+A ‘dibble’ (derived from ‘dimensional tibble’) is a data frame
+consisting of arrays with named dimensions (known as data cubes). The
+columns of the dibbles are classified into dimensions or measures, and
+the operations on the measures are broadcasted.
 
 ## Installation
 
