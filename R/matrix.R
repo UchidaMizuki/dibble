@@ -53,17 +53,13 @@ diag.default <- function(x = 1, nrow, ncol,
 #' @rdname diag
 #' @export
 diag.tbl_ddf <- function(x, axes, ...) {
-  diag_dibble(x, axes, ...)
+  wrap_dibble(diag)(x, axes, ...)
 }
 
 #' @rdname diag
 #' @export
 diag.grouped_ddf <- function(x, axes, ...) {
-  diag_dibble(x, axes, ...)
-}
-
-diag_dibble <- function(x, axes, ...) {
-  diag(as_ddf_col(x), axes, ...)
+  wrap_dibble(diag)(x, axes, ...)
 }
 
 #' @rdname diag
@@ -111,8 +107,8 @@ diag.ddf_col <- function(x, axes, ...) {
 #' @export
 `diag<-.tbl_ddf` <- function(x, ..., value) {
   nm <- colnames(x)
-  out <- `diag<-_dibble`(x, ..., value)
-  dibble(!!nm := out)
+  x <- wrap_dibble(`diag<-`)(x, ..., value)
+  dibble(!!nm := x)
 }
 
 #' @rdname diag
@@ -120,13 +116,9 @@ diag.ddf_col <- function(x, axes, ...) {
 `diag<-.grouped_ddf` <- function(x, ..., value) {
   axes <- group_vars(x)
   nm <- colnames(x)
-  out <- `diag<-_dibble`(x, ..., value)
-  out <- dibble(!!nm := out)
-  group_by(out, dplyr::all_of(axes))
-}
-
-`diag<-_dibble` <- function(x, ..., value) {
-  `diag<-`(as_ddf_col(x), ..., value)
+  x <- wrap_dibble(`diag<-`)(x, ..., value)
+  x <- dibble(!!nm := x)
+  group_by(x, dplyr::all_of(axes))
 }
 
 #' @rdname diag

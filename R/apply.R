@@ -47,17 +47,13 @@ apply.default <- function(X, MARGIN, FUN, ...,
 #' @rdname apply
 #' @export
 apply.tbl_ddf <- function(X, MARGIN, FUN, ...) {
-  apply_dibble(X, MARGIN, FUN, ...)
+  wrap_dibble(apply)(X, MARGIN, FUN, ...)
 }
 
 #' @rdname apply
 #' @export
 apply.grouped_ddf <- function(X, MARGIN, FUN, ...) {
-  apply_dibble(X, MARGIN, FUN, ...)
-}
-
-apply_dibble <- function(X, MARGIN, FUN, ...) {
-  apply(as_ddf_col(X), MARGIN, FUN, ...)
+  wrap_dibble(apply)(X, MARGIN, FUN, ...)
 }
 
 #' @rdname apply

@@ -19,12 +19,12 @@ as.list.tbl_ddf <- function(x, ...) {
 
 #' @export
 as.array.tbl_ddf <- function(x, ...) {
-  as.array(as_ddf_col(x), ...)
+  wrap_dibble(as.array)(x, ...)
 }
 
 #' @export
 as.table.tbl_ddf <- function(x, ...) {
-  as.table(as_ddf_col(x), ...)
+  wrap_dibble(as.table)(x, ...)
 }
 
 #' @export
@@ -51,6 +51,31 @@ as_tibble.tbl_ddf <- function(x, ...) {
 #' @export
 aperm.tbl_ddf <- function(a, perm = NULL, ...) {
   aperm_dibble(a, perm, ...)
+}
+
+#' @export
+`!.tbl_ddf` <- function(x) {
+  wrap_dibble(`!`)(x)
+}
+
+#' @export
+is.finite.tbl_ddf <- function(x) {
+  wrap_dibble(is.finite)(x)
+}
+
+#' @export
+is.infinite.tbl_ddf <- function(x) {
+  wrap_dibble(is.infinite)(x)
+}
+
+#' @export
+is.na.tbl_ddf <- function(x) {
+  wrap_dibble(is.na)(x)
+}
+
+#' @export
+is.nan.tbl_ddf <- function(x) {
+  wrap_dibble(is.nan)(x)
 }
 
 

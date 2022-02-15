@@ -60,6 +60,31 @@ aperm.ddf_col <- function(a, perm = NULL, ...) {
   aperm_dibble(a, perm, ...)
 }
 
+#' @export
+`!.ddf_col` <- function(x) {
+  wrap_ddf_col(`!`)(x)
+}
+
+#' @export
+is.finite.ddf_col <- function(x) {
+  wrap_ddf_col(is.finite)(x)
+}
+
+#' @export
+is.infinite.ddf_col <- function(x) {
+  wrap_ddf_col(is.infinite)(x)
+}
+
+#' @export
+is.na.ddf_col <- function(x) {
+  wrap_ddf_col(is.na)(x)
+}
+
+#' @export
+is.nan.ddf_col <- function(x) {
+  wrap_ddf_col(is.nan)(x)
+}
+
 
 
 # Verbs -------------------------------------------------------------------

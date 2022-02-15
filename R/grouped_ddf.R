@@ -82,12 +82,12 @@ ungroup.grouped_ddf <- function(x, ...) {
 
 #' @export
 as.array.grouped_ddf <- function(x, ...) {
-  as.array(as_ddf_col(x), ...)
+  wrap_dibble(as.array)(x, ...)
 }
 
 #' @export
 as.table.grouped_ddf <- function(x, ...) {
-  as.table(as_ddf_col(x), ...)
+  wrap_dibble(as.table)(x, ...)
 }
 
 #' @export
@@ -115,6 +115,32 @@ dim.grouped_ddf <- function(x) {
 as_tibble.grouped_ddf <- function(x, ...) {
   as_tibble(ungroup(x), ...)
 }
+
+#' @export
+`!.grouped_ddf` <- function(x) {
+  wrap_dibble(`!`)(x)
+}
+
+#' @export
+is.finite.grouped_ddf <- function(x) {
+  wrap_dibble(is.finite)(x)
+}
+
+#' @export
+is.infinite.grouped_ddf <- function(x) {
+  wrap_dibble(is.infinite)(x)
+}
+
+#' @export
+is.na.grouped_ddf <- function(x) {
+  wrap_dibble(is.na)(x)
+}
+
+#' @export
+is.nan.grouped_ddf <- function(x) {
+  wrap_dibble(is.nan)(x)
+}
+
 
 
 

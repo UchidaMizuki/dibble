@@ -30,17 +30,13 @@ ifelse.default <- function(test, yes, no, ...) {
 #' @rdname ifelse
 #' @export
 ifelse.tbl_ddf <- function(test, yes, no, ...) {
-  ifelse_dibble(test, yes, no)
+  wrap_dibble(ifelse)(test, yes, no, ...)
 }
 
 #' @rdname ifelse
 #' @export
 ifelse.grouped_ddf <- function(test, yes, no, ...) {
-  ifelse_dibble(test, yes, no)
-}
-
-ifelse_dibble <- function(test, yes, no) {
-  ifelse(as_ddf_col(test), yes, no)
+  wrap_dibble(ifelse)(test, yes, no, ...)
 }
 
 #' @rdname ifelse
