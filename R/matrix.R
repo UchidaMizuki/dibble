@@ -1,4 +1,22 @@
 #' @export
+solve.tbl_ddf <- function(a, b, ...) {
+  if (is_missing(b)) {
+    wrap_dibble(solve)(a, ...)
+  } else {
+    wrap_dibble(solve)(a, b, ...)
+  }
+}
+
+#' @export
+solve.grouped_ddf <- function(a, b, ...) {
+  if (is_missing(b)) {
+    wrap_dibble(solve)(a, ...)
+  } else {
+    wrap_dibble(solve)(a, b, ...)
+  }
+}
+
+#' @export
 solve.ddf_col <- function(a, b, ...) {
   if (is_missing(b)) {
     dim_names <- dimnames(a)
