@@ -15,7 +15,7 @@
 \usage{
 diag(x, ...)
 
-\method{diag}{default}(x = 1, nrow, ncol, names = TRUE, ...)
+\method{diag}{default}(x = 1, nrow, ncol, names, ...)
 
 \method{diag}{tbl_ddf}(x, axes, ...)
 
