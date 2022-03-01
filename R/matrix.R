@@ -58,14 +58,25 @@ diag <- function(x, ...) {
 
 #' @rdname diag
 #' @export
-diag.default <- function(x = 1, nrow, ncol,
-                         names = TRUE, ...) {
-  if (is.matrix(x)) {
-    base::diag(x,
-               names = names, ...)
-  } else {
-    base::diag(x, nrow, ncol, names)
+diag.default <- function(x = 1, nrow, ncol, names, ...) {
+  args <- list(x = x)
+
+  if (!is_missing(nrow)) {
+    args <- c(args,
+              list(nrow = nrow))
   }
+
+  if (!is_missing(ncol)) {
+    args <- c(args,
+              list(ncol = ncol))
+  }
+
+  if (!is_missing(names)) {
+    args <- c(args,
+              list(names = names))
+  }
+
+  exec(base::diag, !!!args)
 }
 
 #' @rdname diag
