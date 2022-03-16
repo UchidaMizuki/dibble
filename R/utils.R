@@ -28,3 +28,7 @@ wrap_ddf_col <- function(f) {
     new_ddf_col(x, dim_names)
   }
 }
+
+list_sizes_unnamed <- function(x) {
+  unname(list_sizes(x))
+}

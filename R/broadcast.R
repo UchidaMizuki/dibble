@@ -35,7 +35,7 @@ broadcast.default <- function(x, dim_names, ...) {
       is_dim_names(dim_names)
     )
 
-    dim <- list_sizes(dim_names)
+    dim <- list_sizes_unnamed(dim_names)
     x <- array(vec_recycle(x, prod(dim)),
                dim = dim)
 
@@ -104,7 +104,7 @@ broadcast_dim_names <- function(old_dim_names, new_dim_names) {
     } else {
       # Set dimensions
       new_dim <- vec_rep(1, vec_size(new_axes))
-      new_dim[new_axes %in% old_axes] <- list_sizes(old_dim_names)
+      new_dim[new_axes %in% old_axes] <- list_sizes_unnamed(old_dim_names)
 
       # Subsetting
       old_dim_names <- old_dim_names[new_axes]

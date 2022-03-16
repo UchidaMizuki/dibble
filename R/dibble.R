@@ -117,7 +117,7 @@ as_dibble.rowwise_df <- function(x, ...) {
   )
 
   dim_names <- lapply(haystack, vec_unique)
-  dim <- list_sizes(dim_names)
+  dim <- list_sizes_unnamed(dim_names)
 
   needles <- expand.grid(dim_names,
                          KEEP.OUT.ATTRS = FALSE,
@@ -214,7 +214,7 @@ dimnames_dibble <- function(x) {
 }
 
 dim_dibble <- function(x) {
-  list_sizes(dimnames(x))
+  list_sizes_unnamed(dimnames(x))
 }
 
 as_tibble_dibble <- function(x, ..., n) {
@@ -412,7 +412,7 @@ rename_dibble <- function(.data, ...) {
 print_dibble <- function(x, n, ...) {
   dim_names <- dimnames(x)
   axes <- names(dim_names)
-  dim <- list_sizes(dim_names)
+  dim <- list_sizes_unnamed(dim_names)
   size_dim <- prod(dim)
 
   meas_names <- colnames(x)
@@ -439,7 +439,7 @@ print_dibble <- function(x, n, ...) {
 
     if (is_grouped_ddf(x)) {
       group_dim_names <- group_keys(x)
-      size_groups <- big_mark(prod(list_sizes(group_dim_names)))
+      size_groups <- big_mark(prod(list_sizes_unnamed(group_dim_names)))
       tbl_sum <- c(tbl_sum,
                    Groups = paste0(commas(names(group_dim_names)), " [", size_groups, "]"))
     }
