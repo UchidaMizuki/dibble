@@ -32,3 +32,7 @@ wrap_ddf_col <- function(f) {
 list_sizes_unnamed <- function(x) {
   unname(list_sizes(x))
 }
+
+expand_grid_col_major <- function(...) {
+  rev(tidyr::expand_grid(!!!rev(list2(...))))
+}
