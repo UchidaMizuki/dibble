@@ -15,3 +15,17 @@ test_that("dibble", {
 
   expect_s3_class(tbl_ddf, "tbl_ddf")
 })
+
+test_that("dibble_by", {
+  library(dplyr)
+  library(tidyr)
+
+  df <- expand_grid(axis1 = letters[1:3],
+                    axis2 = letters[1:3]) %>%
+    mutate(value = row_number())
+
+  expect_equal(df,
+               df %>%
+                 dibble_by(axis1, axis2) %>%
+                 as_tibble())
+})
