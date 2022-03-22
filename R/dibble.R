@@ -411,6 +411,10 @@ rename_dibble <- function(.data, ...) {
   .data
 }
 
+#' @importFrom dplyr filter
+#' @export
+dplyr::filter
+
 filter_dibble <- function(.data, ...) {
   args <- enquos(...)
   dim_names <- dimnames(.data)
