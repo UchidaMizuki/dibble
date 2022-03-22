@@ -160,6 +160,12 @@ rename.tbl_ddf <- function(.data, ...) {
   rename_dibble(.data, ...)
 }
 
+#' @importFrom dplyr filter
+#' @export
+filter.tbl_ddf <- function(.data, ..., .preserve = FALSE) {
+  filter_dibble(.data, ...)
+}
+
 
 
 # Printing ----------------------------------------------------------------

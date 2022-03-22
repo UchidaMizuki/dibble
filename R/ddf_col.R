@@ -114,6 +114,12 @@ rename.ddf_col <- function(.data, ...) {
   rename_dibble(.data, ...)
 }
 
+#' @importFrom dplyr filter
+#' @export
+filter.ddf_col <- function(.data, ..., .preserve = FALSE) {
+  filter_dibble(.data, ...)
+}
+
 
 
 # Printing ----------------------------------------------------------------

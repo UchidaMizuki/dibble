@@ -31,7 +31,7 @@ group_by.tbl_ddf <- function(.data, ...) {
   loc <- tidyselect::eval_select(expr(c(...)), dim_names)
 
   stopifnot(
-    length(loc) < length(dim)
+    vec_size(loc) < vec_size(dim)
   )
 
   group_dim_names <- dim_names[loc]
@@ -256,6 +256,12 @@ relocate.grouped_ddf <- function(.data, ...) {
 #' @export
 rename.grouped_ddf <- function(.data, ...) {
   rename_dibble(.data, ...)
+}
+
+#' @importFrom dplyr filter
+#' @export
+filter.grouped_ddf <- function(.data, ..., .preserve = FALSE) {
+  filter_dibble(.data, ...)
 }
 
 
