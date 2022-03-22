@@ -74,7 +74,7 @@ ncol.tbl_ddf <- function(x, ...) {
 #' @rdname nrow-ncol
 #' @export
 ncol.grouped_ddf <- function(x, ...) {
-  length(colnames(x))
+  vec_size(colnames(x))
 }
 
 ncol_dibble <- function(x, ...) {
