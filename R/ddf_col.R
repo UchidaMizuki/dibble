@@ -51,8 +51,7 @@ dim.ddf_col <- function(x) {
 #' @export
 as_tibble.ddf_col <- function(x, ...,
                               n = ".") {
-  as_tibble_dibble(x, ...,
-                   n = n)
+  as_tibble_dibble(x, n)
 }
 
 #' @export

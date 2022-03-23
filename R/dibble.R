@@ -218,7 +218,7 @@ dim_dibble <- function(x) {
   list_sizes_unnamed(dimnames(x))
 }
 
-as_tibble_dibble <- function(x, ..., n) {
+as_tibble_dibble <- function(x, n) {
   dim_names <- tidyr::expand_grid(!!!dimnames(x))
 
   fun <- function(x) {
@@ -245,8 +245,6 @@ as_tibble_dibble <- function(x, ..., n) {
                      .name_repair = "check_unique")
 
   }
-
-  out <- as_tibble(out, ...)
 
   if (is_grouped_ddf(x)) {
     out <- group_by(out, dplyr::all_of(group_vars(x)))
