@@ -112,8 +112,10 @@ dim.grouped_ddf <- function(x) {
 
 #' @importFrom tibble as_tibble
 #' @export
-as_tibble.grouped_ddf <- function(x, ...) {
-  as_tibble(ungroup(x), ...)
+as_tibble.grouped_ddf <- function(x, ...,
+                                  n = NULL) {
+  as_tibble(ungroup(x), ...,
+            n = n)
 }
 
 #' @export

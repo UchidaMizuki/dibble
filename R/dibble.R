@@ -230,7 +230,18 @@ as_tibble_dibble <- function(x, ..., n) {
                      !!n := fun(undibble(x)),
                      .name_repair = "check_unique")
   } else {
-    out <- vec_cbind(dim_names, !!!lapply(undibble(x), fun),
+    out <- lapply(undibble(x), fun)
+
+    if (!is.null(n)) {
+      stopifnot(
+        vec_size(out) == vec_size(n)
+      )
+
+      names(n)[names2(n) == ""] <- names(out)[!names(out) %in% names2(n)]
+      names(out) <- n[names(out)]
+    }
+
+    out <- vec_cbind(dim_names, !!!out,
                      .name_repair = "check_unique")
 
   }

@@ -44,8 +44,10 @@ dim.tbl_ddf <- function(x) {
 
 #' @importFrom tibble as_tibble
 #' @export
-as_tibble.tbl_ddf <- function(x, ...) {
-  as_tibble_dibble(x, ...)
+as_tibble.tbl_ddf <- function(x, ...,
+                              n = NULL) {
+  as_tibble_dibble(x, ...,
+                   n = n)
 }
 
 #' @export
@@ -172,5 +174,5 @@ filter.tbl_ddf <- function(.data, ..., .preserve = FALSE) {
 
 #' @export
 print.tbl_ddf <- function(x, n = NULL, ...) {
-  print_dibble(x, n, ...)
+  print_dibble(x, n)
 }
