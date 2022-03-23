@@ -83,7 +83,7 @@ dibble_by <- function(x, ...) {
   # pack data
   nms <- names2(args)
   x <- tidyr::pack(x, !!!args[nms != ""])
-  args[nms != ""] <- nms[nms != ""]
+  args[nms != ""] <- as_quosures(nms[nms != ""])
   args <- unname(args)
 
   as_dibble(dplyr::rowwise(x, !!!args))
