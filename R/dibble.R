@@ -118,7 +118,7 @@ as_dibble.default <- function(x, ...) {
 #' @export
 as_dibble.rowwise_df <- function(x, ...) {
   axes <- dplyr::group_vars(x)
-  x <- ungroup(x)
+  x <- dplyr::ungroup(x)
   haystack <- x[axes]
   stopifnot(
     !vec_duplicate_any(haystack)
