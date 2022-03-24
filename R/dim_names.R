@@ -59,8 +59,8 @@ is_dim_names <- function(x) {
   is_named(x)
 }
 
-union_dim_names <- function(...) {
-  x <- vec_c(...)
+union_dim_names <- function(x) {
+  x <- vec_c(!!!x)
   nms <- names(x)
   nms_unique <- unique(nms)
   x <- lapply(nms_unique,
