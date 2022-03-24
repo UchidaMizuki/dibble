@@ -25,6 +25,15 @@ as.array.ddf_col <- function(x, ...) {
 }
 
 #' @export
+as.matrix.ddf_col <- function(x, ...) {
+  stopifnot(
+    vec_size(dimnames(x)) == 2L
+  )
+
+  as.array(undibble(x))
+}
+
+#' @export
 as.table.ddf_col <- function(x, ...) {
   dim_names <- dimnames(x)
   x <- undibble(x)

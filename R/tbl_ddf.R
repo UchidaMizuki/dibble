@@ -23,6 +23,11 @@ as.array.tbl_ddf <- function(x, ...) {
 }
 
 #' @export
+as.matrix.tbl_ddf <- function(x, ...) {
+  wrap_dibble(as.matrix)(x, ...)
+}
+
+#' @export
 as.table.tbl_ddf <- function(x, ...) {
   wrap_dibble(as.table)(x, ...)
 }
