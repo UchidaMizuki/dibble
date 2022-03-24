@@ -7,7 +7,6 @@
 \alias{as_dibble.grouped_df}
 \alias{as_dibble.ddf_col}
 \alias{as_dibble.tbl_ddf}
-\alias{as_dibble.grouped_ddf}
 \title{Coerce an object to a dibble}
 \usage{
 as_dibble(x, ...)
@@ -21,8 +20,6 @@ as_dibble(x, ...)
 \method{as_dibble}{ddf_col}(x, ...)
 
 \method{as_dibble}{tbl_ddf}(x, ...)
-
-\method{as_dibble}{grouped_ddf}(x, ...)
 }
 \arguments{
 \item{x}{An object.}

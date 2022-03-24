@@ -6,12 +6,10 @@
 \alias{nrow.default}
 \alias{nrow.ddf_col}
 \alias{nrow.tbl_ddf}
-\alias{nrow.grouped_ddf}
 \alias{ncol}
 \alias{ncol.default}
 \alias{ncol.ddf_col}
 \alias{ncol.tbl_ddf}
-\alias{ncol.grouped_ddf}
 \title{The number of rows/columns}
 \usage{
 nrow(x, ...)
@@ -22,8 +20,6 @@ nrow(x, ...)
 
 \method{nrow}{tbl_ddf}(x, ...)
 
-\method{nrow}{grouped_ddf}(x, ...)
-
 ncol(x, ...)
 
 \method{ncol}{default}(x, ...)
@@ -31,8 +27,6 @@ ncol(x, ...)
 \method{ncol}{ddf_col}(x, ...)
 
 \method{ncol}{tbl_ddf}(x, ...)
-
-\method{ncol}{grouped_ddf}(x, ...)
 }
 \arguments{
 \item{x}{An object.}

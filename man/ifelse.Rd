@@ -4,7 +4,6 @@
 \alias{ifelse}
 \alias{ifelse.default}
 \alias{ifelse.tbl_ddf}
-\alias{ifelse.grouped_ddf}
 \alias{ifelse.ddf_col}
 \title{Conditional element selection}
 \usage{
@@ -13,8 +12,6 @@ ifelse(test, yes, no, ...)
 \method{ifelse}{default}(test, yes, no, ...)
 
 \method{ifelse}{tbl_ddf}(test, yes, no, ...)
-
-\method{ifelse}{grouped_ddf}(test, yes, no, ...)
 
 \method{ifelse}{ddf_col}(test, yes, no, ...)
 }

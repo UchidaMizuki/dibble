@@ -4,7 +4,6 @@
 \alias{apply}
 \alias{apply.default}
 \alias{apply.tbl_ddf}
-\alias{apply.grouped_ddf}
 \alias{apply.ddf_col}
 \title{Apply functions over array margins}
 \usage{
@@ -13,8 +12,6 @@ apply(X, MARGIN, FUN, ...)
 \method{apply}{default}(X, MARGIN, FUN, ..., simplify = TRUE)
 
 \method{apply}{tbl_ddf}(X, MARGIN, FUN, ...)
-
-\method{apply}{grouped_ddf}(X, MARGIN, FUN, ...)
 
 \method{apply}{ddf_col}(X, MARGIN, FUN, ...)
 }

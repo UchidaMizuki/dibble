@@ -4,12 +4,10 @@
 \alias{diag}
 \alias{diag.default}
 \alias{diag.tbl_ddf}
-\alias{diag.grouped_ddf}
 \alias{diag.ddf_col}
 \alias{diag<-}
 \alias{diag<-.default}
 \alias{diag<-.tbl_ddf}
-\alias{diag<-.grouped_ddf}
 \alias{diag<-.ddf_col}
 \title{Matrix diagonals}
 \usage{
@@ -19,8 +17,6 @@ diag(x, ...)
 
 \method{diag}{tbl_ddf}(x, axes, ...)
 
-\method{diag}{grouped_ddf}(x, axes, ...)
-
 \method{diag}{ddf_col}(x, axes, ...)
 
 diag(x, ...) <- value
@@ -28,8 +24,6 @@ diag(x, ...) <- value
 \method{diag}{default}(x, ...) <- value
 
 \method{diag}{tbl_ddf}(x, ...) <- value
-
-\method{diag}{grouped_ddf}(x, ...) <- value
 
 \method{diag}{ddf_col}(x, ...) <- value
 }

@@ -66,14 +66,6 @@ broadcast.tbl_ddf <- function(x, dim_names, ...) {
   new_tbl_ddf(x, brdcst$new_dim_names)
 }
 
-#' @rdname broadcast
-#' @export
-broadcast.grouped_ddf <- function(x, dim_names, ...) {
-  axes <- group_vars(x)
-  x <- broadcast(ungroup(x), dim_names, ...)
-  group_by(x, dplyr::all_of(axes))
-}
-
 broadcast_dibble <- function(x, dim_names) {
   old_dim_names <- dimnames(x)
   new_dim_names <- as_dim_names(dim_names, old_dim_names)

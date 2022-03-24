@@ -8,15 +8,6 @@ solve.tbl_ddf <- function(a, b, ...) {
 }
 
 #' @export
-solve.grouped_ddf <- function(a, b, ...) {
-  if (is_missing(b)) {
-    wrap_dibble(solve)(a, ...)
-  } else {
-    wrap_dibble(solve)(a, b, ...)
-  }
-}
-
-#' @export
 solve.ddf_col <- function(a, b, ...) {
   if (is_missing(b)) {
     dim_names <- dimnames(a)
@@ -87,12 +78,6 @@ diag.tbl_ddf <- function(x, axes, ...) {
 
 #' @rdname diag
 #' @export
-diag.grouped_ddf <- function(x, axes, ...) {
-  wrap_dibble(diag)(x, axes, ...)
-}
-
-#' @rdname diag
-#' @export
 diag.ddf_col <- function(x, axes, ...) {
   old_dim_names <- dimnames(x)
   is_scalar_old_dim_names <- is_scalar_list(old_dim_names)
@@ -138,16 +123,6 @@ diag.ddf_col <- function(x, axes, ...) {
   nm <- colnames(x)
   x <- wrap_dibble(`diag<-`)(x, ..., value)
   dibble(!!nm := x)
-}
-
-#' @rdname diag
-#' @export
-`diag<-.grouped_ddf` <- function(x, ..., value) {
-  axes <- group_vars(x)
-  nm <- colnames(x)
-  x <- wrap_dibble(`diag<-`)(x, ..., value)
-  x <- dibble(!!nm := x)
-  group_by(x, dplyr::all_of(axes))
 }
 
 #' @rdname diag

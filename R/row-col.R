@@ -37,12 +37,6 @@ nrow.tbl_ddf <- function(x, ...) {
   nrow_dibble(x, ...)
 }
 
-#' @rdname nrow-ncol
-#' @export
-nrow.grouped_ddf <- function(x, ...) {
-  nrow_dibble(x)
-}
-
 nrow_dibble <- function(x, ...) {
   prod(dim(x))
 }
@@ -69,12 +63,6 @@ ncol.ddf_col <- function(x, ...) {
 #' @export
 ncol.tbl_ddf <- function(x, ...) {
   ncol_dibble(x, ...)
-}
-
-#' @rdname nrow-ncol
-#' @export
-ncol.grouped_ddf <- function(x, ...) {
-  vec_size(colnames(x))
 }
 
 ncol_dibble <- function(x, ...) {
@@ -124,12 +112,6 @@ rownames.tbl_ddf <- function(x, ...) {
   rownames_dibble(x, ...)
 }
 
-#' @rdname row-colnames
-#' @export
-rownames.grouped_ddf <- function(x, ...) {
-  rownames_dibble(x, ...)
-}
-
 rownames_dibble <- function(x, ...) {
   NULL
 }
@@ -155,12 +137,6 @@ colnames.ddf_col <- function(x, ...) {
 #' @rdname row-colnames
 #' @export
 colnames.tbl_ddf <- function(x, ...) {
-  colnames_dibble(x, ...)
-}
-
-#' @rdname row-colnames
-#' @export
-colnames.grouped_ddf <- function(x, ...) {
   colnames_dibble(x, ...)
 }
 

@@ -52,12 +52,6 @@ apply.tbl_ddf <- function(X, MARGIN, FUN, ...) {
 
 #' @rdname apply
 #' @export
-apply.grouped_ddf <- function(X, MARGIN, FUN, ...) {
-  wrap_dibble(apply)(X, MARGIN, FUN, ...)
-}
-
-#' @rdname apply
-#' @export
 apply.ddf_col <- function(X, MARGIN, FUN, ...) {
   dim_names <- dimnames(X)
 

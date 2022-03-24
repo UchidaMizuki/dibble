@@ -5,7 +5,7 @@ new_ddf_col <- function(x, dim_names) {
 }
 
 as_ddf_col <- function(x, ...) {
-  if (is_tbl_ddf(x) || is_grouped_ddf(x)) {
+  if (is_tbl_ddf(x)) {
     stopifnot(
       ncol(x) == 1L
     )

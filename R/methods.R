@@ -1,5 +1,5 @@
 Ops_dibble <- function(e1, e2) {
-  if (is_tbl_ddf(e1) || is_grouped_ddf(e1)) {
+  if (is_tbl_ddf(e1)) {
     e1 <- as_ddf_col(e1)
     is_ddf_col_e1 <- TRUE
   } else {
@@ -9,7 +9,7 @@ Ops_dibble <- function(e1, e2) {
   if (is_missing(e2)) {
     new_dim_names <- dimnames(e1)
   } else {
-    if (is_tbl_ddf(e2) || is_grouped_ddf(e2)) {
+    if (is_tbl_ddf(e2)) {
       e2 <- as_ddf_col(e2)
       is_ddf_col_e2 <- TRUE
     } else {

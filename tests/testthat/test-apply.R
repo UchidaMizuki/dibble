@@ -15,9 +15,7 @@ test_that("apply", {
 
   ddf_col <- dibble(arr)
   tbl_ddf <- dibble(value = arr)
-  grouped_ddf <- group_by(tbl_ddf, axis1)
 
   test_apply(ddf_col)
   test_apply(tbl_ddf)
-  test_apply(grouped_ddf)
 })

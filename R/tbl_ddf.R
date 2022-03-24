@@ -136,12 +136,6 @@ mutate.tbl_ddf <- function(.data, ...) {
   new_tbl_ddf(.data, dim_names)
 }
 
-#' @importFrom dplyr ungroup
-#' @export
-ungroup.tbl_ddf <- function(x, ...) {
-  x
-}
-
 #' @importFrom dplyr select
 #' @export
 select.tbl_ddf <- function(.data, ...) {

@@ -6,12 +6,10 @@
 \alias{rownames.default}
 \alias{rownames.ddf_col}
 \alias{rownames.tbl_ddf}
-\alias{rownames.grouped_ddf}
 \alias{colnames}
 \alias{colnames.default}
 \alias{colnames.ddf_col}
 \alias{colnames.tbl_ddf}
-\alias{colnames.grouped_ddf}
 \title{Row and column names}
 \usage{
 rownames(x, ...)
@@ -22,8 +20,6 @@ rownames(x, ...)
 
 \method{rownames}{tbl_ddf}(x, ...)
 
-\method{rownames}{grouped_ddf}(x, ...)
-
 colnames(x, ...)
 
 \method{colnames}{default}(x, ...)
@@ -31,8 +27,6 @@ colnames(x, ...)
 \method{colnames}{ddf_col}(x, ...)
 
 \method{colnames}{tbl_ddf}(x, ...)
-
-\method{colnames}{grouped_ddf}(x, ...)
 }
 \arguments{
 \item{x}{A matrix-like object.}

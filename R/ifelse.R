@@ -35,12 +35,6 @@ ifelse.tbl_ddf <- function(test, yes, no, ...) {
 
 #' @rdname ifelse
 #' @export
-ifelse.grouped_ddf <- function(test, yes, no, ...) {
-  wrap_dibble(ifelse)(test, yes, no, ...)
-}
-
-#' @rdname ifelse
-#' @export
 ifelse.ddf_col <- function(test, yes, no, ...) {
   dim_names <- union_dim_names(dimnames(test), dimnames(yes), dimnames(no))
   test <- as.array(broadcast(test, dim_names))
