@@ -140,3 +140,117 @@ diag.ddf_col <- function(x, axes, ...) {
   diag(x) <- as.vector(broadcast(value, dim_names[1L]))
   new_ddf_col(x, dim_names)
 }
+
+#' Basic matrices and arrays
+#'
+#' Create basic matrices and arrays.
+#'
+#' These functions override base functions to make them generic. The default
+#' methods call the base versions.
+#'
+#' @param x An object.
+#' @param y A scalar integer.
+#' @param ... Other arguments passed on to methods.
+#'
+#' @return A dibble if x is a dibble. Otherwise, returns a matrix or an array.
+#'
+#' @export
+#' @name basic-matrices-arrays
+
+#' @rdname basic-matrices-arrays
+#' @export
+eye <- function(x, ...) {
+  UseMethod("eye")
+}
+
+#' @rdname basic-matrices-arrays
+#' @export
+eye.default <- function(x,
+                        y = x, ...) {
+  base::diag(nrow = x,
+             ncol = y)
+}
+
+#' @rdname basic-matrices-arrays
+#' @export
+eye.matrix <- function(x, ...) {
+  dim <- dim(x)
+  out <- base::diag(nrow = dim[[1L]],
+                    ncol = dim[[2L]])
+  dimnames(out) <- dimnames(x)
+  out
+}
+
+#' @rdname basic-matrices-arrays
+#' @export
+eye.ddf_col <- function(x, ...) {
+  wrap_ddf_col(eye, matrix = TRUE)(x, ...)
+}
+
+#' @rdname basic-matrices-arrays
+#' @export
+eye.tbl_ddf <- function(x, ...) {
+  wrap_dibble(eye)(x, ...)
+}
+
+#' @rdname basic-matrices-arrays
+#' @export
+ones <- function(x, ...) {
+  UseMethod("ones")
+}
+
+#' @rdname basic-matrices-arrays
+#' @export
+ones.default <- function(x,
+                         y = x, ...) {
+  matrix(1, x, y)
+}
+
+#' @rdname basic-matrices-arrays
+#' @export
+ones.array <- function(x, ...) {
+  array(1, dim(x), dimnames(x))
+}
+
+#' @rdname basic-matrices-arrays
+#' @export
+ones.ddf_col <- function(x, ...) {
+  wrap_ddf_col(ones)(x, ...)
+}
+
+#' @rdname basic-matrices-arrays
+#' @export
+ones.tbl_ddf <- function(x, ...) {
+  wrap_dibble(ones)(x, ...)
+}
+
+#' @rdname basic-matrices-arrays
+#' @export
+zeros <- function(x, ...) {
+  UseMethod("zeros")
+}
+
+#' @rdname basic-matrices-arrays
+#' @export
+zeros.default <- function(x,
+                          y = x, ...) {
+  matrix(0, x, y)
+}
+
+#' @rdname basic-matrices-arrays
+#' @export
+zeros.array <- function(x, ...) {
+  array(0, dim(x), dimnames(x))
+}
+
+#' @rdname basic-matrices-arrays
+#' @export
+zeros.ddf_col <- function(x, ...) {
+  wrap_ddf_col(zeros)(x, ...)
+}
+
+#' @rdname basic-matrices-arrays
+#' @export
+zeros.tbl_ddf <- function(x, ...) {
+  wrap_dibble(zeros)(x, ...)
+}
