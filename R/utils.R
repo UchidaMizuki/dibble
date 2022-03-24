@@ -4,12 +4,7 @@ commas <- function(...) {
 }
 
 big_mark <- function(x) {
-  if (identical(getOption("OutDec"), ",")) {
-    mark <- "."
-  } else {
-    mark <- ","
-  }
-
+  mark <- if (identical(getOption("OutDec"), ",")) "." else ","
   formatC(x,
           big.mark = mark,
           format = "d")
@@ -21,11 +16,16 @@ wrap_dibble <- function(f) {
   }
 }
 
-wrap_ddf_col <- function(f) {
+wrap_ddf_col <- function(f, matrix = FALSE) {
+  if (matrix) {
+    as <- as.matrix
+  } else {
+    as <- as.array
+  }
+
   function(x, ...) {
-    dim_names <- dimnames(x)
-    x <- f(as.array(x), ...)
-    new_ddf_col(x, dim_names)
+    new_ddf_col(f(as(x), ...),
+                dim_names = dimnames(x))
   }
 }
 
