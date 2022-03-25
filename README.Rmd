@@ -64,9 +64,9 @@ broadcast(ddf1 * ddf2,
           dim_names = c("axis1", "axis2"))
 ```
 
-### dplyr backends
+### dplyr methods
 
-dibble provides some dplyr functions as follows,
+dibble provides some dplyr methods as follows,
 
 - `as_tibble()`: From tibble package
 - `filter()`

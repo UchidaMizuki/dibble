@@ -35,6 +35,7 @@ devtools::install_github("UchidaMizuki/dibble")
 ``` r
 library(dibble)
 library(dplyr)
+#> Warning: パッケージ 'dplyr' はバージョン 4.1.3 の R の下で造られました
 library(tidyr)
 ```
 
@@ -48,7 +49,7 @@ arr2 <- array(1:2, 2,
               list(axis2 = letters[1:2]))
 
 try(arr1 * arr2)
-#> Error in arr1 * arr2 : non-conformable arrays
+#> Error in arr1 * arr2 :  適切な配列ではありません
 
 ddf1 <- as_dibble(arr1)
 ddf2 <- as_dibble(arr2)
@@ -84,9 +85,9 @@ broadcast(ddf1 * ddf2,
 #> 6 b     c        NA
 ```
 
-### dplyr backends
+### dplyr methods
 
-dibble provides some dplyr functions as follows,
+dibble provides some dplyr methods as follows,
 
 -   `as_tibble()`: From tibble package
 -   `filter()`
