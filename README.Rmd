@@ -38,7 +38,7 @@ devtools::install_github("UchidaMizuki/dibble")
 
 ## Examples
 
-```{r,message=FALSE}
+```{r,message=FALSE,warning=FALSE}
 library(dibble)
 library(dplyr)
 library(tidyr)
