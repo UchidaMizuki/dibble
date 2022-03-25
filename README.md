@@ -41,9 +41,9 @@ library(dplyr)
 arr1 <- array(1:6, c(2, 3),
               list(axis1 = letters[1:2],
                    axis2 = letters[1:3]))
-arr2 <- array(1:12, c(3, 4),
-              list(axis2 = letters[1:3],
-                   axis3 = letters[1:4]))
+arr2 <- array(1:20, c(4, 5),
+              list(axis2 = letters[1:4],
+                   axis3 = letters[1:5]))
 
 try(arr1 * arr2)
 #> Error in arr1 * arr2 : non-conformable arrays
@@ -53,48 +53,45 @@ ddf2 <- as_dibble(arr2)
 
 ddf1 * ddf2
 #> Warning: Broadcasting,
-#>  $ axis1: chr [1:2] "a" "b"
-#>  $ axis2: chr [1:3] "a" "b" "c"
-#>  $ axis3: chr [1:4] "a" "b" "c" "d"
-
+#> New axes, dim_names = c("axis1", "axis2", "axis3")
+#> New coordinates, 
+#>  $ axis2: chr "d"
 #> Warning: Broadcasting,
-#>  $ axis1: chr [1:2] "a" "b"
-#>  $ axis2: chr [1:3] "a" "b" "c"
-#>  $ axis3: chr [1:4] "a" "b" "c" "d"
-#> # A dibble:   24
-#> # Dimensions: axis1 [2], axis2 [3], axis3 [4]
+#> New axes, dim_names = c("axis1", "axis2", "axis3")
+#> # A dibble:   40
+#> # Dimensions: axis1 [2], axis2 [4], axis3 [5]
 #>    axis1 axis2 axis3     .
 #>    <chr> <chr> <chr> <int>
 #>  1 a     a     a         1
-#>  2 a     a     b         4
-#>  3 a     a     c         7
-#>  4 a     a     d        10
-#>  5 a     b     a         6
-#>  6 a     b     b        15
-#>  7 a     b     c        24
-#>  8 a     b     d        33
-#>  9 a     c     a        15
-#> 10 a     c     b        30
-#> # ... with 14 more rows
+#>  2 a     a     b         5
+#>  3 a     a     c         9
+#>  4 a     a     d        13
+#>  5 a     a     e        17
+#>  6 a     b     a         6
+#>  7 a     b     b        18
+#>  8 a     b     c        30
+#>  9 a     b     d        42
+#> 10 a     b     e        54
+#> # ... with 30 more rows
 
 # You can use broadcast() to suppress the warnings.
 broadcast(ddf1 * ddf2,
           dim_names = c("axis1", "axis2", "axis3"))
-#> # A dibble:   24
-#> # Dimensions: axis1 [2], axis2 [3], axis3 [4]
+#> # A dibble:   40
+#> # Dimensions: axis1 [2], axis2 [4], axis3 [5]
 #>    axis1 axis2 axis3     .
 #>    <chr> <chr> <chr> <int>
 #>  1 a     a     a         1
-#>  2 a     a     b         4
-#>  3 a     a     c         7
-#>  4 a     a     d        10
-#>  5 a     b     a         6
-#>  6 a     b     b        15
-#>  7 a     b     c        24
-#>  8 a     b     d        33
-#>  9 a     c     a        15
-#> 10 a     c     b        30
-#> # ... with 14 more rows
+#>  2 a     a     b         5
+#>  3 a     a     c         9
+#>  4 a     a     d        13
+#>  5 a     a     e        17
+#>  6 a     b     a         6
+#>  7 a     b     b        18
+#>  8 a     b     c        30
+#>  9 a     b     d        42
+#> 10 a     b     e        54
+#> # ... with 30 more rows
 ```
 
 ### How to build a dibble
