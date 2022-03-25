@@ -21,8 +21,8 @@ Ops_dibble <- function(e1, e2) {
       old_dim_names_e2 <- dimnames(e2)
       new_dim_names <- union_dim_names(list(old_dim_names_e1, old_dim_names_e2))
 
-      brdcst_e1 <- broadcast_dim_names(old_dim_names_e1, new_dim_names)
-      brdcst_e2 <- broadcast_dim_names(old_dim_names_e2, new_dim_names)
+      brdcst_e1 <- broadcast_dim_names_warn(old_dim_names_e1, new_dim_names)
+      brdcst_e2 <- broadcast_dim_names_warn(old_dim_names_e2, new_dim_names)
 
       e1 <- broadcast_array(as.array(e1), brdcst_e1)
       e2 <- broadcast_array(as.array(e2), brdcst_e2)
