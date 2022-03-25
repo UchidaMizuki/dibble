@@ -71,7 +71,7 @@ broadcast_dibble <- function(x, dim_names) {
   new_dim_names <- as_dim_names(dim_names, old_dim_names)
 
   list(new_dim_names = new_dim_names,
-       broadcast = broadcast_dim_names(old_dim_names, new_dim_names))
+       broadcast = broadcast_dim_names_warn(old_dim_names, new_dim_names))
 }
 
 broadcast_dim_names <- function(old_dim_names, new_dim_names) {
@@ -115,24 +115,75 @@ broadcast_dim_names <- function(old_dim_names, new_dim_names) {
     }
   }
 
-  out <- list(perm = perm,
-              new_dim = new_dim,
-              loc = loc)
+  list(perm = perm,
+       new_dim = new_dim,
+       loc = loc)
+}
 
-  if (is.null(new_dim)) {
-    out
+broadcast_dim_names_warn <- function(old_dim_names, new_dim_names) {
+  out <- broadcast_dim_names(old_dim_names, new_dim_names)
+
+  if (!is.null(out$new_dim)) {
+    message <- broadcast_dim_names_message(old_dim_names, new_dim_names, out)
+
+    if (vec_is_empty(message)) {
+      out
+    } else {
+      withRestarts({
+        warning(warningCondition(message,
+                                 class = "warning_broadcast"))
+
+        out
+      },
+      restart_broadcast = function() {
+        out
+      })
+    }
+  }
+}
+
+broadcast_dim_names_message <- function(old_dim_names, new_dim_names, brdcst) {
+  new_axes <- names(new_dim_names)
+  size_new_axes <- vec_size(new_axes)
+
+  if (vec_size(old_dim_names) == size_new_axes) {
+    message <- character()
   } else {
-    withRestarts({
-      warning(warningCondition(paste0(c("Broadcasting,",
-                                        utils::capture.output(utils::str(new_dim_names))[-1]),
-                                      collapse = "\n"),
-                               class = "warning_broadcast"))
+    new_axes_code <- encodeString(new_axes, quote = "\"")
 
-      out
-    },
-    restart_broadcast = function() {
-      out
-    })
+    if (size_new_axes > 1L) {
+      new_axes_code <- paste0("c(", paste(new_axes_code, collapse = ", "), ")")
+    }
+
+    message <- paste0("New axes, dim_names = ", new_axes_code)
+  }
+
+  new_coords <- mapply(new_dim_names, brdcst$loc,
+                       FUN = function(new_dim_name, loc) {
+                         loc <- is.na(loc)
+
+                         if (any(loc)) {
+                           new_dim_name[loc]
+                         } else {
+                           NULL
+                         }
+                       })
+  loc_null <- vapply(new_coords, is.null,
+                     FUN.VALUE = logical(1))
+  new_coords <- new_coords[!loc_null]
+
+  if (vec_size(new_coords) >= 1L) {
+    message <- paste0(c(message,
+                        "New coordinates, ",
+                        utils::capture.output(utils::str(new_coords))[-1]),
+                      collapse = "\n")
+  }
+
+  if (vec_is_empty(message)) {
+    character()
+  } else {
+    paste0(c("Broadcasting,", message),
+           collapse = "\n")
   }
 }
 
