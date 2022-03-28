@@ -21,7 +21,8 @@
 #' broadcast(x * y, c("axis1", "axis2"))
 #'
 #' @export
-broadcast <- function(x, dim_names, ...) {
+broadcast <- function(x,
+                      dim_names = NULL, ...) {
   x <- suppress_warning_broadcast(x)
 
   UseMethod("broadcast")
@@ -29,7 +30,8 @@ broadcast <- function(x, dim_names, ...) {
 
 #' @rdname broadcast
 #' @export
-broadcast.default <- function(x, dim_names, ...) {
+broadcast.default <- function(x,
+                              dim_names = NULL, ...) {
   if (is.null(dimnames(x))) {
     stopifnot(
       is_dim_names(dim_names)
