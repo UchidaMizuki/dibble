@@ -141,6 +141,8 @@ ddf$value1
 
 #### From an array with dimension names or a vector
 
+dibble provides some dplyr methods as follows,
+
 ``` r
 # from an array with dimension names
 arr <- array(1:4, c(2, 2),
