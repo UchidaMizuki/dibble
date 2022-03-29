@@ -165,7 +165,7 @@ broadcast_dim_names_message <- function(old_dim_names, new_dim_names, brdcst) {
                          loc <- is.na(loc)
 
                          if (any(loc)) {
-                           new_dim_name[loc]
+                           vec_slice(new_dim_name, loc)
                          } else {
                            NULL
                          }
