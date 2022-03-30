@@ -125,7 +125,9 @@ broadcast_dim_names <- function(old_dim_names, new_dim_names) {
 broadcast_dim_names_warn <- function(old_dim_names, new_dim_names) {
   out <- broadcast_dim_names(old_dim_names, new_dim_names)
 
-  if (!is.null(out$new_dim)) {
+  if (is.null(out$new_dim)) {
+    out
+  } else {
     message <- broadcast_dim_names_message(old_dim_names, new_dim_names, out)
 
     if (vec_is_empty(message)) {
