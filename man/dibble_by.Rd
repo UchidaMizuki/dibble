@@ -4,12 +4,14 @@
 \alias{dibble_by}
 \title{Constructs a dibble by one or more variables}
 \usage{
-dibble_by(x, ...)
+dibble_by(x, ..., .names_sep = NULL)
 }
 \arguments{
 \item{x}{A data frame or a dibble.}
 
 \item{...}{Variables.}
+
+\item{.names_sep}{Passed to \code{tidyr::pack()}.}
 }
 \value{
 A dibble.

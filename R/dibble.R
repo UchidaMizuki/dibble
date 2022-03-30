@@ -73,17 +73,20 @@ dibble <- function(...,
 #'
 #' @param x A data frame or a dibble.
 #' @param ... Variables.
+#' @param .names_sep Passed to `tidyr::pack()`.
 #'
 #' @return A dibble.
 #'
 #' @export
-dibble_by <- function(x, ...) {
+dibble_by <- function(x, ...,
+                      .names_sep = NULL) {
   args <- enquos(...)
 
   # pack data
   nms <- names2(args)
   loc <- nms != ""
-  x <- tidyr::pack(x, !!!args[loc])
+  x <- tidyr::pack(x, !!!args[loc],
+                   .names_sep = .names_sep)
   args[loc] <- as_quosures(nms[loc])
   args <- unname(args)
 
