@@ -7,9 +7,9 @@
 \alias{broadcast.tbl_ddf}
 \title{Broadcast to a new dimension}
 \usage{
-broadcast(x, dim_names, ...)
+broadcast(x, dim_names = NULL, ...)
 
-\method{broadcast}{default}(x, dim_names, ...)
+\method{broadcast}{default}(x, dim_names = NULL, ...)
 
 \method{broadcast}{ddf_col}(x, dim_names, ...)
 
