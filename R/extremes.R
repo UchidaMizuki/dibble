@@ -14,6 +14,7 @@
 #' @seealso [base::pmax()], [base::pmin()].
 #'
 #' @name extremes
+NULL
 
 #' @rdname extremes
 #' @export
