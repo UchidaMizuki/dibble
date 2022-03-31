@@ -171,7 +171,8 @@ broadcast_dim_names_message <- function(old_dim_names, new_dim_names, brdcst) {
                          } else {
                            NULL
                          }
-                       })
+                       },
+                       SIMPLIFY = FALSE)
   loc_null <- vapply(new_coords, is.null,
                      FUN.VALUE = logical(1))
   new_coords <- new_coords[!loc_null]
