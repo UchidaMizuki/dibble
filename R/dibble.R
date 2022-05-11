@@ -17,9 +17,9 @@
 #' @export
 dibble <- function(...,
                    .dim_names = NULL) {
-  dots <- list2(...)
+  args <- list2(...)
 
-  old_dim_names <- union_dim_names(lapply(unname(dots), dimnames))
+  old_dim_names <- union_dim_names(lapply(unname(args), dimnames))
   new_dim_names <- as_dim_names(.dim_names, old_dim_names)
 
   fun <- function(x) {
@@ -33,7 +33,7 @@ dibble <- function(...,
     undibble(broadcast(x, new_dim_names))
   }
 
-  dots <- mapply(dots, names2(dots),
+  args <- mapply(args, names2(args),
                  FUN = function(x, nm) {
                    if (is_tbl_ddf(x)) {
                      x <- lapply(as.list(x), fun)
@@ -54,16 +54,16 @@ dibble <- function(...,
                  },
                  SIMPLIFY = FALSE,
                  USE.NAMES = FALSE)
-  dots <- vec_c(!!!dots)
+  args <- vec_c(!!!args)
 
-  if (!is_named(dots)) {
+  if (!is_named(args)) {
     stopifnot(
-      is_scalar_list(dots)
+      is_scalar_list(args)
     )
 
-    new_ddf_col(dots[[1L]], new_dim_names)
+    new_ddf_col(args[[1L]], new_dim_names)
   } else {
-    new_tbl_ddf(dots, new_dim_names)
+    new_tbl_ddf(args, new_dim_names)
   }
 }
 
