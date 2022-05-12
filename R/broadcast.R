@@ -60,10 +60,10 @@ broadcast.ddf_col <- function(x, dim_names, ...) {
 #' @export
 broadcast.tbl_ddf <- function(x, dim_names, ...) {
   brdcst <- broadcast_dibble(x, dim_names)
-  x <- lapply(undibble(x),
-              function(x) {
-                broadcast_array(x, brdcst$broadcast)
-              })
+  x <- map(undibble(x),
+           function(x) {
+             broadcast_array(x, brdcst$broadcast)
+           })
 
   new_tbl_ddf(x, brdcst$new_dim_names)
 }
@@ -162,8 +162,8 @@ broadcast_dim_names_message <- function(old_dim_names, new_dim_names, brdcst) {
     message <- paste0("New axes, dim_names = ", new_axes_code)
   }
 
-  new_coords <- mapply(new_dim_names, brdcst$loc,
-                       FUN = function(new_dim_name, loc) {
+  new_coords <- map2(new_dim_names, brdcst$loc,
+                     function(new_dim_name, loc) {
                          loc <- is.na(loc)
 
                          if (any(loc)) {
@@ -171,10 +171,8 @@ broadcast_dim_names_message <- function(old_dim_names, new_dim_names, brdcst) {
                          } else {
                            NULL
                          }
-                       },
-                       SIMPLIFY = FALSE)
-  loc_null <- vapply(new_coords, is.null,
-                     FUN.VALUE = logical(1))
+                       })
+  loc_null <- map_lgl(new_coords, is.null)
   new_coords <- new_coords[!loc_null]
 
   if (vec_size(new_coords) >= 1L) {

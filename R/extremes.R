@@ -49,11 +49,11 @@ pmax.tbl_ddf <- function(...,
 
 pmax_dibble <- function(..., na.rm) {
   args <- list2(...)
-  dim_names <- union_dim_names(lapply(args, dimnames))
-  args <- lapply(args,
-                 function(x) {
-                   as.array(broadcast(x, dim_names))
-                 })
+  dim_names <- union_dim_names(map(args, dimnames))
+  args <- map(args,
+              function(x) {
+                as.array(broadcast(x, dim_names))
+              })
 
   new_ddf_col(exec(base::pmax, !!!args),
               dim_names)
@@ -92,11 +92,11 @@ pmin.tbl_ddf <- function(...,
 
 pmin_dibble <- function(..., na.rm) {
   args <- list2(...)
-  dim_names <- union_dim_names(lapply(args, dimnames))
-  args <- lapply(args,
-                 function(x) {
-                   as.array(broadcast(x, dim_names))
-                 })
+  dim_names <- union_dim_names(map(args, dimnames))
+  args <- map(args,
+              function(x) {
+                as.array(broadcast(x, dim_names))
+              })
 
   new_ddf_col(exec(base::pmin, !!!args),
               dim_names)

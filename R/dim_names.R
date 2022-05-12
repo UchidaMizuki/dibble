@@ -13,25 +13,23 @@ as_dim_names <- function(x, dim_names) {
     )
 
     loc <- names2(x) == ""
-    nms <- vapply(x[loc],
-                  function(x) {
-                    stopifnot(
-                      is_scalar_character(x)
-                    )
-                    x
-                  },
-                  character(1))
+    nms <- map_chr(x[loc],
+                   function(x) {
+                     stopifnot(
+                       is_scalar_character(x)
+                     )
+                     x
+                   })
     x[loc] <- list(NULL)
     names(x)[loc] <- nms
   }
 
   stopifnot(
     is_named(x),
-    vapply(x,
-           function(x) {
-             is.null(x) || !vec_duplicate_any(x)
-           },
-           logical(1L))
+    every(x,
+          function(x) {
+            is.null(x) || !vec_duplicate_any(x)
+          })
   )
 
   new_axes <- names(x)
@@ -42,15 +40,14 @@ as_dim_names <- function(x, dim_names) {
 
   dim_names <- dim_names[vec_match(new_axes, old_axes)]
 
-  x <- mapply(x, dim_names,
-              FUN = function(x, dim_name) {
-                x <- x %||% vec_unique(dim_name)
-                stopifnot(
-                  !is.null(x)
-                )
-                x
-              },
-              SIMPLIFY = FALSE)
+  x <- map2(x, dim_names,
+            function(x, dim_name) {
+              x <- x %||% unique(dim_name)
+              stopifnot(
+                !is.null(x)
+              )
+              x
+            })
   names(x) <- new_axes
   x
 }
@@ -63,10 +60,10 @@ union_dim_names <- function(x) {
   x <- vec_c(!!!x)
   nms <- names(x)
   nms_unique <- unique(nms)
-  x <- lapply(nms_unique,
-              function(nm_unique) {
-                unique(vec_c(!!!unname(x[nms == nm_unique])))
-              })
+  x <- map(nms_unique,
+           function(nm_unique) {
+             unique(vec_c(!!!unname(x[nms == nm_unique])))
+           })
   names(x) <- nms_unique
   x
 }

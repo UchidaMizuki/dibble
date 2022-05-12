@@ -11,10 +11,10 @@ is_tbl_ddf <- function(x) {
 #' @export
 as.list.tbl_ddf <- function(x, ...) {
   dim_names <- dimnames(x)
-  lapply(undibble(x),
-         function(x) {
-           new_ddf_col(x, dim_names)
-         })
+  map(undibble(x),
+      function(x) {
+        new_ddf_col(x, dim_names)
+      })
 }
 
 #' @export
