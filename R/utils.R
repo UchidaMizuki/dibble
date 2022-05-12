@@ -36,3 +36,9 @@ list_sizes_unnamed <- function(x) {
 expand_grid_col_major <- function(...) {
   rev(tidyr::expand_grid(!!!rev(list2(...))))
 }
+
+set_intersect <- function(x, y) {
+  loc_in_y <- vec_match(x, y)
+  loc_in_y <- vec_slice(loc_in_y, !is.na(loc_in_y))
+  vec_slice(y, loc_in_y)
+}

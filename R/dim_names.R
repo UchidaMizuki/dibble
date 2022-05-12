@@ -60,10 +60,17 @@ union_dim_names <- function(x) {
   x <- vec_c(!!!x)
   nms <- names(x)
   nms_unique <- unique(nms)
-  x <- map(nms_unique,
-           function(nm_unique) {
-             unique(vec_c(!!!unname(x[nms == nm_unique])))
-           })
-  names(x) <- nms_unique
-  x
+  out <- map(nms_unique,
+             function(nm_unique) {
+               unique(vec_c(!!!unname(x[nms == nm_unique])))
+             })
+  names(out) <- nms_unique
+  out
+}
+
+intersect_dim_names <- function(x) {
+  map(transpose(x),
+      function(x) {
+        reduce(x, set_intersect)
+      })
 }
