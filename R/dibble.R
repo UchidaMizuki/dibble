@@ -19,7 +19,7 @@ dibble <- function(...,
                    .dim_names = NULL) {
   args <- list2(...)
 
-  old_dim_names <- union_dim_names(map(unname(args), dimnames))
+  old_dim_names <- union_dim_names(purrr::modify(unname(args), dimnames))
   new_dim_names <- as_dim_names(.dim_names, old_dim_names)
 
   fun <- function(x) {
@@ -33,25 +33,25 @@ dibble <- function(...,
     undibble(broadcast(x, new_dim_names))
   }
 
-  args <- map2(unname(args), names2(args),
-               function(x, nm) {
-                 if (is_tbl_ddf(x)) {
-                   x <- map(as.list(x), fun)
+  args <- purrr::map2(unname(args), names2(args),
+                      function(x, nm) {
+                        if (is_tbl_ddf(x)) {
+                          x <- purrr::modify(as.list(x), fun)
 
-                   if (nm != "") {
-                     stopifnot(
-                       is_scalar_list(x)
-                     )
+                          if (nm != "") {
+                            stopifnot(
+                              is_scalar_list(x)
+                            )
 
-                     names(x) <- nm
-                   }
-                   x
-                 } else {
-                   x <- list(fun(x))
-                   names(x) <- nm
-                   x
-                 }
-               })
+                            names(x) <- nm
+                          }
+                          x
+                        } else {
+                          x <- list(fun(x))
+                          names(x) <- nm
+                          x
+                        }
+                      })
   args <- vec_c(!!!args)
 
   if (!is_named(args)) {
@@ -126,16 +126,16 @@ as_dibble.rowwise_df <- function(x, ...) {
     !vec_duplicate_any(haystack)
   )
 
-  dim_names <- map(haystack, unique)
+  dim_names <- purrr::map(haystack, unique)
   dim <- list_sizes_unnamed(dim_names)
 
   needles <- expand_grid_col_major(!!!dim_names)
   x <- vec_slice(x[!names(x) %in% axes],
                  vec_match(needles, haystack))
-  x <- map(x,
-           function(x) {
-             array(x, dim)
-           })
+  x <- purrr::map(x,
+                  function(x) {
+                    array(x, dim)
+                  })
   new_tbl_ddf(x, dim_names)
 }
 
@@ -204,7 +204,7 @@ as_tibble_dibble <- function(x, n) {
                      !!n := fun(undibble(x)),
                      .name_repair = "check_unique")
   } else {
-    out <- map(undibble(x), fun)
+    out <- purrr::modify(undibble(x), fun)
 
     if (!is.null(n)) {
       stopifnot(
@@ -240,10 +240,10 @@ aperm_dibble <- function(a, perm, ...) {
     a <- aperm(as.array(a), perm, ...)
     new_ddf_col(a, dim_names)
   } else {
-    a <- map(undibble(a),
-             function(x) {
-               aperm(x, perm, ...)
-             })
+    a <- purrr::modify(undibble(a),
+                       function(x) {
+                         aperm(x, perm, ...)
+                       })
     new_tbl_ddf(a, dim_names)
   }
 }
@@ -253,10 +253,10 @@ aperm_dibble <- function(a, perm, ...) {
 # Verbs -------------------------------------------------------------------
 
 slice_dibble <- function(.data, ...) {
-  locs <- map(list2(...),
-              function(x) {
-                x %||% missing_arg()
-              })
+  locs <- purrr::modify(list2(...),
+                        function(x) {
+                          x %||% missing_arg()
+                        })
   nms <- names2(locs)
 
   dim_names <- dimnames(.data)
@@ -270,14 +270,14 @@ slice_dibble <- function(.data, ...) {
   names(locs)[nms == ""] <- axes[!axes %in% nms]
   locs <- locs[axes]
 
-  dim_names <- map2(dim_names, locs,
-                    function(x, i) {
-                      if (is_missing(i)) {
-                        x
-                      } else {
-                        vec_slice(x, i)
-                      }
-                    })
+  dim_names <- purrr::map2(dim_names, locs,
+                           function(x, i) {
+                             if (is_missing(i)) {
+                               x
+                             } else {
+                               vec_slice(x, i)
+                             }
+                           })
   names(dim_names) <- axes
 
   if (is_ddf_col(.data)) {
@@ -285,11 +285,11 @@ slice_dibble <- function(.data, ...) {
                      drop = FALSE),
                 dim_names = dim_names)
   } else if (is_tbl_ddf(.data)) {
-    new_tbl_ddf(map(undibble(.data),
-                    function(x) {
-                      exec(`[`, x, !!!locs,
-                           drop = FALSE)
-                    }),
+    new_tbl_ddf(purrr::modify(undibble(.data),
+                              function(x) {
+                                exec(`[`, x, !!!locs,
+                                     drop = FALSE)
+                              }),
                 dim_names = dim_names)
   }
 }
@@ -353,10 +353,10 @@ filter_dibble <- function(.data, ...) {
   args <- enquos(...)
   dim_names <- dimnames(.data)
   axes <- names(dim_names)
-  idxs <- map_int(unname(args),
-                  function(x) {
-                    find_index_check(x, axes)
-                  })
+  idxs <- purrr::map_int(unname(args),
+                         function(x) {
+                           find_index_check(x, axes)
+                         })
 
   size <- vec_size(dim_names)
   locs <- vec_init(list(), vec_size(dim_names))
@@ -388,13 +388,13 @@ find_index_check <- function(x, names) {
 find_index <- function(x, names) {
   if (is_atomic(x)) {
     integer()
-  } else if (is_symbol(x) || x[[1]] == "$") {
+  } else if (is_symbol(x) || x[[1L]] == "$") {
     which(head_symbol(x) == names)
   } else {
     stopifnot(is_call(x))
 
-    out <- map(x[-1], find_index,
-               names = names)
+    out <- purrr::map(x[-1L], find_index,
+                      names = names)
     vec_c(!!!out)
   }
 }
@@ -454,7 +454,7 @@ head_dibble <- function(x, n) {
   if (!all(i)) {
     loc[[which(!i)[[1L]]]] <- ceiling(n / prod(dim))
   }
-  loc <- rev(map(loc, seq_len))
+  loc <- rev(purrr::map(loc, seq_len))
 
   slice(x, !!!loc)
 }

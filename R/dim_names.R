@@ -13,23 +13,23 @@ as_dim_names <- function(x, dim_names) {
     )
 
     loc <- names2(x) == ""
-    nms <- map_chr(x[loc],
-                   function(x) {
-                     stopifnot(
-                       is_scalar_character(x)
-                     )
-                     x
-                   })
+    nms <- purrr::map_chr(x[loc],
+                          function(x) {
+                            stopifnot(
+                              is_scalar_character(x)
+                            )
+                            x
+                          })
     x[loc] <- list(NULL)
     names(x)[loc] <- nms
   }
 
   stopifnot(
     is_named(x),
-    every(x,
-          function(x) {
-            is.null(x) || !vec_duplicate_any(x)
-          })
+    purrr::every(x,
+                 function(x) {
+                   is.null(x) || !vec_duplicate_any(x)
+                 })
   )
 
   new_axes <- names(x)
@@ -40,14 +40,14 @@ as_dim_names <- function(x, dim_names) {
 
   dim_names <- dim_names[vec_match(new_axes, old_axes)]
 
-  x <- map2(x, dim_names,
-            function(x, dim_name) {
-              x <- x %||% unique(dim_name)
-              stopifnot(
-                !is.null(x)
-              )
-              x
-            })
+  x <- purrr::map2(x, dim_names,
+                   function(x, dim_name) {
+                     x <- x %||% unique(dim_name)
+                     stopifnot(
+                       !is.null(x)
+                     )
+                     x
+                   })
   names(x) <- new_axes
   x
 }
@@ -60,17 +60,17 @@ union_dim_names <- function(x) {
   x <- vec_c(!!!x)
   nms <- names(x)
   nms_unique <- unique(nms)
-  out <- map(nms_unique,
-             function(nm_unique) {
-               unique(vec_c(!!!unname(x[nms == nm_unique])))
-             })
+  out <- purrr::map(nms_unique,
+                    function(nm_unique) {
+                      unique(vec_c(!!!unname(x[nms == nm_unique])))
+                    })
   names(out) <- nms_unique
   out
 }
 
 intersect_dim_names <- function(x) {
-  map(transpose(x),
-      function(x) {
-        reduce(x, set_intersect)
-      })
+  purrr::modify(purrr::transpose(x),
+                function(x) {
+                  purrr::reduce(x, set_intersect)
+                })
 }

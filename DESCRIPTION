@@ -18,6 +18,7 @@ Imports:
     dplyr,
     memoise,
     pillar,
+    purrr,
     rlang,
     tibble,
     tidyr,
