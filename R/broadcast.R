@@ -50,25 +50,33 @@ broadcast.default <- function(x,
 #' @rdname broadcast
 #' @export
 broadcast.ddf_col <- function(x, dim_names, ...) {
-  brdcst <- broadcast_dibble(x, dim_names)
-  x <- broadcast_array(as.array(x), brdcst$broadcast)
+  brdcst_dim_names <- broadcast_dim_names(x, dim_names)
+  x <- broadcast_dibble(x, brdcst_dim_names$broadcast)
 
-  new_ddf_col(x, brdcst$new_dim_names)
+  new_ddf_col(x, brdcst_dim_names$new_dim_names)
 }
 
 #' @rdname broadcast
 #' @export
 broadcast.tbl_ddf <- function(x, dim_names, ...) {
-  brdcst <- broadcast_dibble(x, dim_names)
-  x <- purrr::modify(undibble(x),
-                     function(x) {
-                       broadcast_array(x, brdcst$broadcast)
-                     })
+  brdcst_dim_names <- broadcast_dim_names(x, dim_names)
+  x <- broadcast_dibble(x, brdcst_dim_names$broadcast)
 
-  new_tbl_ddf(x, brdcst$new_dim_names)
+  new_tbl_ddf(x, brdcst_dim_names$new_dim_names)
 }
 
-broadcast_dibble <- function(x, dim_names) {
+broadcast_dibble <- function(x, brdcst) {
+  if (is_ddf_col(x)) {
+    broadcast_array(as.array(x), brdcst)
+  } else if (is_tbl_ddf(x)) {
+    purrr::modify(undibble(x),
+                  function(x) {
+                    broadcast_array(x, brdcst)
+                  })
+  }
+}
+
+broadcast_dim_names <- function(x, dim_names) {
   old_dim_names <- dimnames(x)
   new_dim_names <- as_dim_names(dim_names, old_dim_names)
 
@@ -76,7 +84,7 @@ broadcast_dibble <- function(x, dim_names) {
        broadcast = broadcast_dim_names_warn(old_dim_names, new_dim_names))
 }
 
-broadcast_dim_names <- function(old_dim_names, new_dim_names) {
+broadcast_dim_names_impl <- function(old_dim_names, new_dim_names) {
   if (identical(old_dim_names, new_dim_names)) {
     perm <- NULL
     new_dim <- NULL
@@ -123,7 +131,7 @@ broadcast_dim_names <- function(old_dim_names, new_dim_names) {
 }
 
 broadcast_dim_names_warn <- function(old_dim_names, new_dim_names) {
-  out <- broadcast_dim_names(old_dim_names, new_dim_names)
+  out <- broadcast_dim_names_impl(old_dim_names, new_dim_names)
 
   if (is.null(out$new_dim)) {
     out
@@ -197,7 +205,7 @@ suppress_warning_broadcast <- function(x) {
                       })
 }
 
-# Broadcast an array based on the results of `broadcast_dim_names()`.
+# Broadcast an array based on the results of `broadcast_dim_names_impl()`.
 broadcast_array <- function(x, brdcst) {
   perm <- brdcst$perm
 

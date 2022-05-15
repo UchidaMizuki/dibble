@@ -42,3 +42,8 @@ set_intersect <- function(x, y) {
   loc_in_y <- vec_slice(loc_in_y, !is.na(loc_in_y))
   vec_slice(y, loc_in_y)
 }
+
+set_diff <- function(x, y) {
+  x_in_y <- vec_in(x, y)
+  vec_slice(x, !x_in_y)
+}

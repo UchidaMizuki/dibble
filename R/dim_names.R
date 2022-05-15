@@ -74,3 +74,10 @@ intersect_dim_names <- function(x) {
                   purrr::reduce(x, set_intersect)
                 })
 }
+
+diff_dim_names <- function(x) {
+  purrr::modify(purrr::transpose(x),
+                function(x) {
+                  purrr::reduce(x, set_diff)
+                })
+}
