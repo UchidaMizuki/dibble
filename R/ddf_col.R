@@ -64,6 +64,13 @@ as_tibble.ddf_col <- function(x, ...,
 }
 
 #' @export
+as.data.frame.ddf_col <- function(x, row.names = NULL, optional = FALSE, ...) {
+  as.data.frame(as_tibble(x, ...),
+                row.names = row.names,
+                optional = optional)
+}
+
+#' @export
 aperm.ddf_col <- function(a, perm = NULL, ...) {
   aperm_dibble(a, perm, ...)
 }
