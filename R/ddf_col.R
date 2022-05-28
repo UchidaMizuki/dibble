@@ -26,11 +26,11 @@ as.array.ddf_col <- function(x, ...) {
 
 #' @export
 as.matrix.ddf_col <- function(x, ...) {
-  stopifnot(
-    vec_size(dimnames(x)) == 2L
-  )
+  if (vec_size(dimnames(x)) > 2) {
+    abort("The dimension of `x` must be 1 or 2.")
+  }
 
-  as.array(undibble(x))
+  as.matrix(undibble(x))
 }
 
 #' @export
