@@ -85,7 +85,7 @@ broadcast_dim_names <- function(x, dim_names) {
 }
 
 broadcast_dim_names_impl <- function(old_dim_names, new_dim_names) {
-  if (identical(old_dim_names, new_dim_names)) {
+  if (isTRUE(all.equal(old_dim_names, new_dim_names))) {
     perm <- NULL
     new_dim <- NULL
     loc <- NULL
@@ -100,7 +100,7 @@ broadcast_dim_names_impl <- function(old_dim_names, new_dim_names) {
     perm <- vec_match(new_axes[new_axes %in% old_axes], old_axes)
     old_dim_names <- old_dim_names[perm]
 
-    if (identical(old_dim_names, new_dim_names)) {
+    if (isTRUE(all.equal(old_dim_names, new_dim_names))) {
       new_dim <- NULL
       loc <- NULL
     } else {

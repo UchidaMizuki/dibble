@@ -95,7 +95,7 @@ diag.ddf_col <- function(x, axes, ...) {
   } else {
     stopifnot(
       is_scalar_character(axes),
-      identical(old_dim_names[[1L]], old_dim_names[[2L]])
+      isTRUE(all.equal(old_dim_names[[1L]], old_dim_names[[2L]]))
     )
 
     new_dim_names <- old_dim_names[1L]
@@ -132,7 +132,7 @@ diag.ddf_col <- function(x, axes, ...) {
   dim_names_value <- dimnames(value)
   stopifnot(
     is_list(dim_names, 2L),
-    identical(dim_names[[1L]], dim_names[[2L]]),
+    isTRUE(all.equal(dim_names[[1L]], dim_names[[2L]])),
     is.null(dim_names_value) || is_scalar_list(dim_names_value)
   )
 
