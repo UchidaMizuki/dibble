@@ -1,7 +1,7 @@
 Package: dibble
 Type: Package
 Title: Dimensional Data Frames
-Version: 0.1.1
+Version: 0.1.1.9000
 Authors@R: 
     person(
         given = "Mizuki", 
