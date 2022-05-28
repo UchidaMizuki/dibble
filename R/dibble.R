@@ -19,7 +19,7 @@ dibble <- function(...,
                    .dim_names = NULL) {
   args <- list2(...)
 
-  old_dim_names <- union_dim_names(purrr::modify(unname(args), dimnames))
+  old_dim_names <- union_dim_names(purrr::map(unname(args), dimnames))
   new_dim_names <- as_dim_names(.dim_names, old_dim_names)
 
   fun <- function(x) {

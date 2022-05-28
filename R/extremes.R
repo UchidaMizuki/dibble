@@ -49,7 +49,7 @@ pmax.tbl_ddf <- function(...,
 
 pmax_dibble <- function(..., na.rm) {
   args <- list2(...)
-  dim_names <- union_dim_names(purrr::modify(args, dimnames))
+  dim_names <- union_dim_names(purrr::map(args, dimnames))
   args <- purrr::modify(args,
                         function(x) {
                           as.array(broadcast(x, dim_names))
@@ -92,7 +92,7 @@ pmin.tbl_ddf <- function(...,
 
 pmin_dibble <- function(..., na.rm) {
   args <- list2(...)
-  dim_names <- union_dim_names(purrr::modify(args, dimnames))
+  dim_names <- union_dim_names(purrr::map(args, dimnames))
   args <- purrr::modify(args,
                         function(x) {
                           as.array(broadcast(x, dim_names))
