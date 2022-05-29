@@ -1,3 +1,12 @@
+# dibble 0.2.0
+
+* Override `base::%*%` and support matrix multiplications for dibbles.
+* Override `base::pmin()` and `base::pmax()` functions.
+* Add `t()` methods for dibbles.
+* Add `dplyr::filter()` and `dplyr::rows_*()` methods for dibbles.
+* Add .names_sep argument to dibble_by() and support dibble whose dim names are data frames.
+* Add `tidyr::replace_na()` methods for dibbles.
+
 # dibble 0.1.1
 
 * Support unary operation by `-`.
