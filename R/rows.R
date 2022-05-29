@@ -19,7 +19,7 @@ rows_upsert_dibble <- function(type = c("insert", "update", "patch", "upsert"),
   } else if (type %in% c("update", "patch")) {
     if (unmatched == "error") {
       stopifnot(
-        isTRUE(all.equal(dim_names_x, new_dim_names))
+        all_equal_dim_names(dim_names_x, new_dim_names)
       )
     } else {
       new_dim_names <- dim_names_x

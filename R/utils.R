@@ -47,3 +47,14 @@ set_diff <- function(x, y) {
   x_in_y <- vec_in(x, y)
   vec_slice(x, !x_in_y)
 }
+
+all_equal_dim_names <- function(target, current) {
+  if (all(names(target) == names(current))) {
+    all(purrr::map2_lgl(target, current,
+                        function(target, current) {
+                          isTRUE(all.equal(target, current))
+                        }))
+  } else {
+    FALSE
+  }
+}
