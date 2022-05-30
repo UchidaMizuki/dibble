@@ -12,8 +12,9 @@ x \%*\% y
 \item{y}{Numeric or complex dibble, matrices or vectors.}
 }
 \value{
-A dibble if x is a dibble. See \code{\link[base:matmult]{base::\%*\%}} for the return
-value of the default method.
+A dibble if x or y is a dibble of a matrix. A scalar numeric if both
+x and y are dibbles of vectors. See \code{\link[base:matmult]{base::\%*\%}} for the return value of the
+default method.
 }
 \description{
 Multiplies two matrices, if they are conformable.
