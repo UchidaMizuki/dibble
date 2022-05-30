@@ -8,8 +8,9 @@
 #' @param x Numeric or complex dibble, matrices or vectors.
 #' @param y Numeric or complex dibble, matrices or vectors.
 #'
-#' @return A dibble if x is a dibble. See [`base::%*%`] for the return
-#' value of the default method.
+#' @return A dibble if x or y is a dibble of a matrix. A scalar numeric if both
+#' x and y are dibbles of vectors. See [`base::%*%`] for the return value of the
+#' default method.
 #'
 #' @seealso [`base::%*%`]
 #'
@@ -40,49 +41,32 @@ matmult_dibble <- function(x, y) {
   dim_names_x <- dimnames(x)
   dim_names_y <- dimnames(y)
 
-  axes_x <- names(dim_names_x)
-  axes_y <- names(dim_names_y)
-  axes_intersect <- intersect(axes_x, axes_y)
-
-  size_axes_x <- vec_size(axes_x)
-  size_axes_y <- vec_size(axes_y)
-
-  if (vec_size(axes_intersect) != 1L) {
-    abort("Just 1 dimension name must match.")
-  }
-
-  if (size_axes_x == 1L && size_axes_y == 1L) {
-    abort("Either `x` or `y` must be a matrix.")
-  }
-
-  if (size_axes_x == 1L) {
-    x <- t(as.matrix(x))
+  if (vec_size(dim_names_x) == 1L) {
+    x <- as.vector(x)
     dim_names_x <- NULL
-  } else if (axes_x[[2L]] == axes_intersect) {
+  } else {
     x <- as.matrix(x)
     dim_names_x <- dim_names_x[1L]
-  } else {
-    x <- t(as.matrix(x))
-    dim_names_x <- dim_names_x[2L]
   }
 
-  if (size_axes_y == 1L) {
-    y <- as.matrix(y)
+  if (vec_size(dim_names_y) == 1L) {
+    y <- as.vector(y)
     dim_names_y <- NULL
-  } else if (axes_y[[1L]] == axes_intersect) {
+  } else {
     y <- as.matrix(y)
     dim_names_y <- dim_names_y[2L]
-  } else {
-    y <- t(as.matrix(y))
-    dim_names_y <- dim_names_y[1L]
   }
 
   new_dim_names <- purrr::compact(c(dim_names_x, dim_names_y))
 
   out <- x %*% y
-  dim(out) <- list_sizes_unnamed(new_dim_names)
 
-  new_ddf_col(out, new_dim_names)
+  if (is_empty(new_dim_names)) {
+    as.vector(out)
+  } else {
+    dim(out) <- list_sizes_unnamed(new_dim_names)
+    new_ddf_col(out, new_dim_names)
+  }
 }
 
 #' @export
@@ -111,7 +95,7 @@ solve.ddf_col <- function(a, b, ...) {
   if (is_missing(b)) {
     dim_names <- dimnames(a)
     a <- undibble(a)
-    new_ddf_col(unname(solve(a)), dim_names)
+    new_ddf_col(unname(solve(a)), rev(dim_names))
   } else {
     NextMethod()
   }

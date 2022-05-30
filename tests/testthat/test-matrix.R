@@ -10,16 +10,6 @@ test_that("%*%", {
   ddf_y <- as_dibble(mat_y)
   expect_equal(as.matrix(ddf_x %*% ddf_y), unname(mat_x %*% mat_y))
 
-  mat_x <- matrix(1:9, 3,
-                  dimnames = list(axis2 = 1:3,
-                                  axis1 = 1:3))
-  mat_y <- matrix(1:9, 3,
-                  dimnames = list(axis2 = 1:3,
-                                  axis3 = 1:3))
-  ddf_x <- as_dibble(mat_x)
-  ddf_y <- as_dibble(mat_y)
-  expect_equal(as.matrix(ddf_x %*% ddf_y), unname(t(mat_x) %*% mat_y))
-
   # vec %*% mat
   vec_x <- array(1:3, 3,
                  dimnames = list(axis2 = 1:3))
@@ -29,15 +19,6 @@ test_that("%*%", {
   ddf_x <- as_dibble(vec_x)
   ddf_y <- as_dibble(mat_y)
   expect_equal(as.matrix(ddf_x %*% ddf_y), t(unname(vec_x %*% mat_y)))
-
-  vec_x <- array(1:3, 3,
-                 dimnames = list(axis2 = 1:3))
-  mat_y <- matrix(1:9, 3,
-                  dimnames = list(axis3 = 1:3,
-                                  axis2 = 1:3))
-  ddf_x <- as_dibble(vec_x)
-  ddf_y <- as_dibble(mat_y)
-  expect_equal(as.matrix(ddf_x %*% ddf_y), t(unname(vec_x %*% t(mat_y))))
 
   # mat %*% vec
   mat_x <- matrix(1:9, 3,
@@ -49,14 +30,14 @@ test_that("%*%", {
   ddf_y <- as_dibble(vec_y)
   expect_equal(as.matrix(ddf_x %*% ddf_y), unname(mat_x %*% vec_y))
 
-  mat_x <- matrix(1:9, 3,
-                  dimnames = list(axis2 = 1:3,
-                                  axis1 = 1:3))
+  # vec %*% vec
+  vec_x <- array(1:3, 3,
+                 dimnames = list(axis2 = 1:3))
   vec_y <- array(1:3, 3,
                  dimnames = list(axis2 = 1:3))
-  ddf_x <- as_dibble(mat_x)
+  ddf_x <- as_dibble(vec_x)
   ddf_y <- as_dibble(vec_y)
-  expect_equal(as.matrix(ddf_x %*% ddf_y), unname(t(mat_x) %*% vec_y))
+  expect_equal(ddf_x %*% ddf_y, as.vector(vec_x %*% vec_y))
 })
 
 test_that("t", {
