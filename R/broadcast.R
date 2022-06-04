@@ -133,66 +133,62 @@ broadcast_dim_names_impl <- function(old_dim_names, new_dim_names) {
 broadcast_dim_names_warn <- function(old_dim_names, new_dim_names) {
   out <- broadcast_dim_names_impl(old_dim_names, new_dim_names)
 
-  if (is.null(out$new_dim)) {
+  message <- broadcast_dim_names_message(old_dim_names, new_dim_names, out)
+
+  if (vec_is_empty(message)) {
     out
   } else {
-    message <- broadcast_dim_names_message(old_dim_names, new_dim_names, out)
+    withRestarts({
+      warning(warningCondition(message,
+                               class = "warning_broadcast"))
 
-    if (vec_is_empty(message)) {
       out
-    } else {
-      withRestarts({
-        warning(warningCondition(message,
-                                 class = "warning_broadcast"))
-
-        out
-      },
-      restart_broadcast = function() {
-        out
-      })
-    }
+    },
+    restart_broadcast = function() {
+      out
+    })
   }
 }
 
 broadcast_dim_names_message <- function(old_dim_names, new_dim_names, brdcst) {
-  new_axes <- names(new_dim_names)
-  size_new_axes <- vec_size(new_axes)
-
-  if (vec_size(old_dim_names) == size_new_axes) {
-    message <- character()
-  } else {
-    new_axes_code <- encodeString(new_axes, quote = "\"")
-
-    if (size_new_axes > 1L) {
-      new_axes_code <- paste0("c(", paste(new_axes_code, collapse = ", "), ")")
-    }
-
-    message <- paste0("New axes, dim_names = ", new_axes_code)
-  }
-
-  new_coords <- purrr::map2(new_dim_names, brdcst$loc,
-                            function(new_dim_name, loc) {
-                              loc <- is.na(loc)
-
-                              if (any(loc)) {
-                                vec_slice(new_dim_name, loc)
-                              } else {
-                                NULL
-                              }
-                            })
-  loc_null <- purrr::map_lgl(new_coords, is.null)
-  new_coords <- new_coords[!loc_null]
-
-  if (vec_size(new_coords) >= 1L) {
-    message <- paste0(c(message,
-                        "New coordinates, ",
-                        utils::capture.output(utils::str(new_coords))[-1]),
-                      collapse = "\n")
-  }
-
-  if (vec_is_empty(message)) {
+  if (is.null(brdcst$perm)) {
     character()
   } else {
+    old_axes <- names(old_dim_names)
+    new_axes <- names(new_dim_names)
+
+    if (identical(old_axes, new_axes)) {
+      message <- character()
+    } else {
+      new_axes_code <- encodeString(new_axes, quote = "\"")
+
+      if (vec_size(new_axes_code) > 1L) {
+        new_axes_code <- paste0("c(", paste(new_axes_code, collapse = ", "), ")")
+      }
+
+      message <- paste0("New axes, dim_names = ", new_axes_code)
+    }
+
+    new_coords <- purrr::map2(new_dim_names, brdcst$loc,
+                              function(new_dim_name, loc) {
+                                loc <- is.na(loc)
+
+                                if (any(loc)) {
+                                  vec_slice(new_dim_name, loc)
+                                } else {
+                                  NULL
+                                }
+                              })
+    loc_null <- purrr::map_lgl(new_coords, is.null)
+    new_coords <- new_coords[!loc_null]
+
+    if (vec_size(new_coords) >= 1L) {
+      message <- paste0(c(message,
+                          "New coordinates, ",
+                          utils::capture.output(utils::str(new_coords))[-1]),
+                        collapse = "\n")
+    }
+
     paste0(c("Broadcasting,", message),
            collapse = "\n")
   }
