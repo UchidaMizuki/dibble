@@ -380,7 +380,7 @@ filter_dibble <- function(.data, ...) {
 find_index_check <- function(x, names) {
   out <- find_index(quo_get_expr(x), names)
   stopifnot(
-    vec_size(out) == 1
+    vec_size(out) == 1L
   )
   out
 }
@@ -401,7 +401,13 @@ find_index <- function(x, names) {
 
 head_symbol <- function(x) {
   while (!is_symbol(x)) {
-    x <- x[[2L]]
+    lhs <- f_lhs(x)
+
+    if (lhs == ".data") {
+      x <- f_rhs(x)
+    } else {
+      x <- lhs
+    }
   }
   x
 }
