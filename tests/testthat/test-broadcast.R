@@ -11,3 +11,31 @@ test_that("broadcast", {
 
   expect_silent(broadcast(x * y, c("axis1", "axis2")))
 })
+
+test_that("broadcast-warn", {
+  x <- broadcast(1:4,
+                 list(axis1 = 1:2,
+                      axis2 = 1:2))
+  y <- x
+
+  expect_silent(x * y)
+
+  y <- t(x)
+
+  expect_warning(x * y)
+  expect_silent(broadcast(x * y,
+                          c("axis1", "axis2")))
+
+  y <- broadcast(1:6,
+                 list(axis1 = 1:2,
+                      axis2 = 1:3))
+  expect_warning(x * y)
+  expect_silent(broadcast(x * y,
+                          c("axis1", "axis2")))
+
+  y <- broadcast(1:3,
+                 list(axis1 = 1:3))
+  # expect_warning(x * y)
+  expect_silent(broadcast(x * y,
+                          c("axis1", "axis2")))
+})
