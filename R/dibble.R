@@ -238,13 +238,13 @@ aperm_dibble <- function(a, perm, ...) {
 
   if (is_ddf_col(a)) {
     a <- aperm(as.array(a), perm, ...)
-    new_ddf_col(a, dim_names)
+    new_ddf_col(a, new_dim_names)
   } else {
     a <- purrr::modify(undibble(a),
                        function(x) {
                          aperm(x, perm, ...)
                        })
-    new_tbl_ddf(a, dim_names)
+    new_tbl_ddf(a, new_dim_names)
   }
 }
 
