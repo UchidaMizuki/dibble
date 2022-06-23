@@ -129,9 +129,9 @@ as_dibble.rowwise_df <- function(x, ...) {
   dim_names <- purrr::map(haystack, unique)
   dim <- list_sizes_unnamed(dim_names)
 
-  needles <- expand_grid_col_major(!!!dim_names)
+  needles <- expand_grid_col_major(dim_names)
   x <- vec_slice(x[!names(x) %in% axes],
-                 vec_match(needles, haystack))
+                 memo_vec_match(needles, haystack))
   x <- purrr::map(x,
                   function(x) {
                     array(x, dim)

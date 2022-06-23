@@ -33,8 +33,8 @@ list_sizes_unnamed <- function(x) {
   unname(list_sizes(x))
 }
 
-expand_grid_col_major <- function(...) {
-  rev(tidyr::expand_grid(!!!rev(list2(...))))
+expand_grid_col_major <- function(x) {
+  rev(tidyr::expand_grid(!!!rev(x)))
 }
 
 set_intersect <- function(x, y) {
