@@ -2,6 +2,7 @@
 
 * Broadcasts with transpositions are now warned.
 * Resolve warning when checking equality of axis names.
+* Fixed few bugs.
 
 # dibble 0.2.0
 
