@@ -6,8 +6,6 @@
 
   expand_grid_col_major <<- memoise::memoise(expand_grid_col_major)
 
-  memo_vec_match <<- memoise::memoise(vec_match)
-
   registerS3method("Ops", "ddf_col", Ops_dibble)
   registerS3method("Ops", "tbl_ddf", Ops_dibble)
 
