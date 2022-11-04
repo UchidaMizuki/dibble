@@ -169,16 +169,20 @@ broadcast_dim_names_message <- function(old_dim_names, new_dim_names, brdcst) {
       message <- paste0("New axes, dim_names = ", new_axes_code)
     }
 
-    new_coords <- purrr::map2(new_dim_names, brdcst$loc,
-                              function(new_dim_name, loc) {
-                                loc <- is.na(loc)
+    if (is.null(brdcst$loc)) {
+      new_coords <- list()
+    } else {
+      new_coords <- purrr::map2(new_dim_names, brdcst$loc,
+                                function(new_dim_name, loc) {
+                                  loc <- is.na(loc)
 
-                                if (any(loc)) {
-                                  vec_slice(new_dim_name, loc)
-                                } else {
-                                  NULL
-                                }
-                              })
+                                  if (any(loc)) {
+                                    vec_slice(new_dim_name, loc)
+                                  } else {
+                                    NULL
+                                  }
+                                })
+    }
     loc_null <- purrr::map_lgl(new_coords, is.null)
     new_coords <- new_coords[!loc_null]
 
