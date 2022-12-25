@@ -2,5 +2,8 @@ pandoc: 2.19.2
 pkgdown: 2.0.7
 pkgdown_sha: ~
 articles: {}
-last_built: 2022-12-25T02:04Z
+last_built: 2022-12-25T02:15Z
+urls:
+  reference: https://uchidamizuki.github.io/dibble/reference
+  article: https://uchidamizuki.github.io/dibble/articles
 

@@ -1,66 +1,66 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>/404.html</loc>
+    <loc>https://uchidamizuki.github.io/dibble/404.html</loc>
   </url>
   <url>
-    <loc>/LICENSE-text.html</loc>
+    <loc>https://uchidamizuki.github.io/dibble/LICENSE-text.html</loc>
   </url>
   <url>
-    <loc>/LICENSE.html</loc>
+    <loc>https://uchidamizuki.github.io/dibble/LICENSE.html</loc>
   </url>
   <url>
-    <loc>/authors.html</loc>
+    <loc>https://uchidamizuki.github.io/dibble/authors.html</loc>
   </url>
   <url>
-    <loc>/index.html</loc>
+    <loc>https://uchidamizuki.github.io/dibble/index.html</loc>
   </url>
   <url>
-    <loc>/news/index.html</loc>
+    <loc>https://uchidamizuki.github.io/dibble/news/index.html</loc>
   </url>
   <url>
-    <loc>/reference/apply.html</loc>
+    <loc>https://uchidamizuki.github.io/dibble/reference/apply.html</loc>
   </url>
   <url>
-    <loc>/reference/as_dibble.html</loc>
+    <loc>https://uchidamizuki.github.io/dibble/reference/as_dibble.html</loc>
   </url>
   <url>
-    <loc>/reference/basic-matrices-arrays.html</loc>
+    <loc>https://uchidamizuki.github.io/dibble/reference/basic-matrices-arrays.html</loc>
   </url>
   <url>
-    <loc>/reference/broadcast.html</loc>
+    <loc>https://uchidamizuki.github.io/dibble/reference/broadcast.html</loc>
   </url>
   <url>
-    <loc>/reference/diag.html</loc>
+    <loc>https://uchidamizuki.github.io/dibble/reference/diag.html</loc>
   </url>
   <url>
-    <loc>/reference/dibble.html</loc>
+    <loc>https://uchidamizuki.github.io/dibble/reference/dibble.html</loc>
   </url>
   <url>
-    <loc>/reference/dibble_by.html</loc>
+    <loc>https://uchidamizuki.github.io/dibble/reference/dibble_by.html</loc>
   </url>
   <url>
-    <loc>/reference/extremes.html</loc>
+    <loc>https://uchidamizuki.github.io/dibble/reference/extremes.html</loc>
   </url>
   <url>
-    <loc>/reference/grapes-times-grapes.html</loc>
+    <loc>https://uchidamizuki.github.io/dibble/reference/grapes-times-grapes.html</loc>
   </url>
   <url>
-    <loc>/reference/ifelse.html</loc>
+    <loc>https://uchidamizuki.github.io/dibble/reference/ifelse.html</loc>
   </url>
   <url>
-    <loc>/reference/index.html</loc>
+    <loc>https://uchidamizuki.github.io/dibble/reference/index.html</loc>
   </url>
   <url>
-    <loc>/reference/is_dibble.html</loc>
+    <loc>https://uchidamizuki.github.io/dibble/reference/is_dibble.html</loc>
   </url>
   <url>
-    <loc>/reference/nrow-ncol.html</loc>
+    <loc>https://uchidamizuki.github.io/dibble/reference/nrow-ncol.html</loc>
   </url>
   <url>
-    <loc>/reference/reexports.html</loc>
+    <loc>https://uchidamizuki.github.io/dibble/reference/reexports.html</loc>
   </url>
   <url>
-    <loc>/reference/row-colnames.html</loc>
+    <loc>https://uchidamizuki.github.io/dibble/reference/row-colnames.html</loc>
   </url>
 </urlset>
