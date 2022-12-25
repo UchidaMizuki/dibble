@@ -1,3 +1,7 @@
+# dibble 0.2.2
+
+* Fix for dev purrr (#9).
+
 # dibble 0.2.1
 
 * Broadcasts with transpositions are now warned.
