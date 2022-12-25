@@ -9,7 +9,7 @@
 status](https://www.r-pkg.org/badges/version/dibble)](https://CRAN.R-project.org/package=dibble)
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
-[![R-CMD-check](https://github.com/UchidaMizuki/dibble/workflows/R-CMD-check/badge.svg)](https://github.com/UchidaMizuki/dibble/actions)
+[![R-CMD-check](https://github.com/UchidaMizuki/dibble/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/UchidaMizuki/dibble/actions/workflows/R-CMD-check.yaml)
 [![Codecov test
 coverage](https://codecov.io/gh/UchidaMizuki/dibble/branch/main/graph/badge.svg)](https://app.codecov.io/gh/UchidaMizuki/dibble?branch=main)
 <!-- badges: end -->
@@ -48,7 +48,7 @@ arr2 <- array(1:2, 2,
               list(axis2 = letters[1:2]))
 
 try(arr1 * arr2)
-#> Error in arr1 * arr2 : non-conformable arrays
+#> Error in arr1 * arr2 :  適切な配列ではありません
 
 ddf1 <- as_dibble(arr1)
 ddf2 <- as_dibble(arr2)
@@ -88,12 +88,12 @@ broadcast(ddf1 * ddf2,
 
 dibble provides some dplyr methods as follows,
 
--   `as_tibble()`: From tibble package
--   `filter()`
--   `mutate()`: Experimental
--   `rename()`
--   `select()` and `relocate()`
--   `slice()`: Specify locations (a integer vector) for each dimension
+- `as_tibble()`: From tibble package
+- `filter()`
+- `mutate()`: Experimental
+- `rename()`
+- `select()` and `relocate()`
+- `slice()`: Specify locations (a integer vector) for each dimension
 
 ### How to build a dibble
 
@@ -109,7 +109,7 @@ ddf <- df %>%
   dibble_by(axis1, axis2)
 
 df
-#> # A tibble: 4 x 4
+#> # A tibble: 4 × 4
 #>   axis1 axis2 value1 value2
 #>   <chr> <chr>  <int>  <dbl>
 #> 1 a     a          1      2
