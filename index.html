@@ -97,7 +97,7 @@
 <span>              <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>axis2 <span class="op">=</span> <span class="va">letters</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/try.html" class="external-link">try</a></span><span class="op">(</span><span class="va">arr1</span> <span class="op">*</span> <span class="va">arr2</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error in arr1 * arr2 : non-conformable arrays</span></span>
+<span><span class="co">#&gt; Error in arr1 * arr2 :  適切な配列ではありません</span></span>
 <span></span>
 <span><span class="va">ddf1</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/as_dibble.html">as_dibble</a></span><span class="op">(</span><span class="va">arr1</span><span class="op">)</span></span>
 <span><span class="va">ddf2</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/as_dibble.html">as_dibble</a></span><span class="op">(</span><span class="va">arr2</span><span class="op">)</span></span>
@@ -166,7 +166,7 @@
 <span>  <span class="fu"><a href="reference/dibble_by.html">dibble_by</a></span><span class="op">(</span><span class="va">axis1</span>, <span class="va">axis2</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">df</span></span>
-<span><span class="co">#&gt; # A tibble: 4 x 4</span></span>
+<span><span class="co">#&gt; # A tibble: 4 × 4</span></span>
 <span><span class="co">#&gt;   axis1 axis2 value1 value2</span></span>
 <span><span class="co">#&gt;   &lt;chr&gt; &lt;chr&gt;  &lt;int&gt;  &lt;dbl&gt;</span></span>
 <span><span class="co">#&gt; 1 a     a          1      2</span></span>
@@ -276,7 +276,7 @@
 <ul class="list-unstyled">
 <li><a href="https://CRAN.R-project.org/package=dibble" class="external-link"><img src="https://www.r-pkg.org/badges/version/dibble" alt="CRAN status"></a></li>
 <li><a href="https://lifecycle.r-lib.org/articles/stages.html#experimental" class="external-link"><img src="https://img.shields.io/badge/lifecycle-experimental-orange.svg" alt="Lifecycle: experimental"></a></li>
-<li><a href="https://github.com/UchidaMizuki/dibble/actions" class="external-link"><img src="https://github.com/UchidaMizuki/dibble/workflows/R-CMD-check/badge.svg" alt="R-CMD-check"></a></li>
+<li><a href="https://github.com/UchidaMizuki/dibble/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/UchidaMizuki/dibble/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a></li>
 <li><a href="https://app.codecov.io/gh/UchidaMizuki/dibble?branch=main" class="external-link"><img src="https://codecov.io/gh/UchidaMizuki/dibble/branch/main/graph/badge.svg" alt="Codecov test coverage"></a></li>
 </ul>
 </div>
