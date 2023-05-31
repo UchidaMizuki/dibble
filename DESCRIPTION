@@ -18,7 +18,7 @@ Imports:
     dplyr,
     memoise,
     pillar,
-    purrr,
+    purrr (>= 1.0.0),
     rlang,
     tibble,
     tidyr,
