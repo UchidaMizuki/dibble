@@ -13,7 +13,7 @@ rows_upsert_dibble <- function(type = c("insert", "update", "patch", "upsert"),
   if (type == "insert") {
     if (conflict == "error") {
       stopifnot(
-        purrr::some(intersect_dim_names(list(dim_names_x, dim_names_y)), is_empty)
+        purrr::some(intersect_dim_names(list(dim_names_x, dim_names_y)), vec_is_empty)
       )
     }
   } else if (type %in% c("update", "patch")) {

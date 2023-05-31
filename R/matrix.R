@@ -61,7 +61,7 @@ matmult_dibble <- function(x, y) {
 
   out <- x %*% y
 
-  if (is_empty(new_dim_names)) {
+  if (vec_is_empty(new_dim_names)) {
     as.vector(out)
   } else {
     dim(out) <- list_sizes_unnamed(new_dim_names)
