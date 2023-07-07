@@ -204,7 +204,8 @@ diag.ddf_col <- function(x, axes, ...) {
 #' @export
 `diag<-.tbl_ddf` <- function(x, ..., value) {
   nm <- colnames(x)
-  x <- wrap_dibble(`diag<-`)(x, ..., value)
+  x <- wrap_dibble(`diag<-`)(x, ...,
+                             value = value)
   dibble(!!nm := x)
 }
 
