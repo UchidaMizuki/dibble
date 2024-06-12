@@ -10,8 +10,6 @@ status](https://www.r-pkg.org/badges/version/dibble)](https://CRAN.R-project.org
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![R-CMD-check](https://github.com/UchidaMizuki/dibble/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/UchidaMizuki/dibble/actions/workflows/R-CMD-check.yaml)
-[![Codecov test
-coverage](https://codecov.io/gh/UchidaMizuki/dibble/branch/main/graph/badge.svg)](https://app.codecov.io/gh/UchidaMizuki/dibble?branch=main)
 <!-- badges: end -->
 
 A ‘dibble’ (derived from ‘dimensional tibble’) is a data frame
@@ -49,6 +47,9 @@ arr2 <- array(1:2, 2,
 
 try(arr1 * arr2)
 #> Error in arr1 * arr2 : non-conformable arrays
+```
+
+``` r
 
 ddf1 <- as_dibble(arr1)
 ddf2 <- as_dibble(arr2)
@@ -68,6 +69,9 @@ ddf1 * ddf2
 #> 4 b     a         2
 #> 5 b     b         8
 #> 6 b     c        NA
+```
+
+``` r
 
 # You can use broadcast() to suppress the warnings.
 broadcast(ddf1 * ddf2,
@@ -116,6 +120,9 @@ df
 #> 2 a     b          2      4
 #> 3 b     a          3      6
 #> 4 b     b          4      8
+```
+
+``` r
 ddf
 #> # A dibble:   4 x 2
 #> # Dimensions: axis1 [2], axis2 [2]
@@ -126,6 +133,9 @@ ddf
 #> 2 a     b          2      4
 #> 3 b     a          3      6
 #> 4 b     b          4      8
+```
+
+``` r
 
 # You can access the measures from the dibble with `$`.
 ddf$value1
@@ -161,6 +171,9 @@ arr
 #> axis1 a b
 #>     a 1 3
 #>     b 2 4
+```
+
+``` r
 ddf1
 #> # A dibble:   4
 #> # Dimensions: axis1 [2], axis2 [2]
@@ -170,6 +183,9 @@ ddf1
 #> 2 a     b         3
 #> 3 b     a         2
 #> 4 b     b         4
+```
+
+``` r
 ddf2
 #> # A dibble:   4
 #> # Dimensions: axis1 [2], axis2 [2]
