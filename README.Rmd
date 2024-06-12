@@ -80,11 +80,11 @@ dibble provides some dplyr methods as follows,
 
 ```{r}
 df <- expand_grid(axis1 = letters[1:2],
-                  axis2 = letters[1:2]) %>% 
+                  axis2 = letters[1:2]) |> 
   mutate(value1 = row_number(),
          value2 = value1 * 2)
 
-ddf <- df %>% 
+ddf <- df |> 
   dibble_by(axis1, axis2)
 
 df
