@@ -10,6 +10,8 @@ status](https://www.r-pkg.org/badges/version/dibble)](https://CRAN.R-project.org
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![R-CMD-check](https://github.com/UchidaMizuki/dibble/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/UchidaMizuki/dibble/actions/workflows/R-CMD-check.yaml)
+[![Codecov test
+coverage](https://codecov.io/gh/UchidaMizuki/dibble/branch/main/graph/badge.svg)](https://app.codecov.io/gh/UchidaMizuki/dibble?branch=main)
 <!-- badges: end -->
 
 A ‘dibble’ (derived from ‘dimensional tibble’) is a data frame
@@ -46,7 +48,7 @@ arr2 <- array(1:2, 2,
               list(axis2 = letters[1:2]))
 
 try(arr1 * arr2)
-#> Error in arr1 * arr2 : non-conformable arrays
+#> Error in arr1 * arr2 : 適切な配列ではありません
 ```
 
 ``` r
