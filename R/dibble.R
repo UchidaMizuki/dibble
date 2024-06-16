@@ -236,15 +236,18 @@ aperm_dibble <- function(a, perm, ...) {
     }
   }
 
+  class <- class(a)
   if (is_ddf_col(a)) {
     a <- aperm(as.array(a), perm, ...)
-    new_ddf_col(a, new_dim_names)
+    new_ddf_col(a, new_dim_names,
+                class = class)
   } else {
     a <- purrr::modify(undibble(a),
                        function(x) {
                          aperm(x, perm, ...)
                        })
-    new_tbl_ddf(a, new_dim_names)
+    new_tbl_ddf(a, new_dim_names,
+                class = class)
   }
 }
 
@@ -280,17 +283,20 @@ slice_dibble <- function(.data, ...) {
                            })
   names(dim_names) <- axes
 
+  class <- class(.data)
   if (is_ddf_col(.data)) {
     new_ddf_col(exec(`[`, .data, !!!locs,
                      drop = FALSE),
-                dim_names = dim_names)
+                dim_names = dim_names,
+                class = class)
   } else if (is_tbl_ddf(.data)) {
     new_tbl_ddf(purrr::modify(undibble(.data),
                               function(x) {
                                 exec(`[`, x, !!!locs,
                                      drop = FALSE)
                               }),
-                dim_names = dim_names)
+                dim_names = dim_names,
+                class = class)
   }
 }
 

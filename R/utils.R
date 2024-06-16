@@ -25,7 +25,8 @@ wrap_ddf_col <- function(f, matrix = FALSE) {
 
   function(x, ...) {
     new_ddf_col(f(as(x), ...),
-                dim_names = dimnames(x))
+                dim_names = dimnames(x),
+                class = class(x))
   }
 }
 

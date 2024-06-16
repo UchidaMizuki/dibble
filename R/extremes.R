@@ -49,6 +49,7 @@ pmax.tbl_ddf <- function(...,
 
 pmax_dibble <- function(..., na.rm) {
   args <- list2(...)
+  class <- class(args[[1]])
   dim_names <- union_dim_names(purrr::map(args, dimnames))
   args <- purrr::modify(args,
                         function(x) {
@@ -56,7 +57,8 @@ pmax_dibble <- function(..., na.rm) {
                         })
 
   new_ddf_col(exec(base::pmax, !!!args),
-              dim_names)
+              dim_names,
+              class = class)
 }
 
 #' @rdname extremes
@@ -92,6 +94,7 @@ pmin.tbl_ddf <- function(...,
 
 pmin_dibble <- function(..., na.rm) {
   args <- list2(...)
+  class <- class(args[[1]])
   dim_names <- union_dim_names(purrr::map(args, dimnames))
   args <- purrr::modify(args,
                         function(x) {
@@ -99,5 +102,6 @@ pmin_dibble <- function(..., na.rm) {
                         })
 
   new_ddf_col(exec(base::pmin, !!!args),
-              dim_names)
+              dim_names,
+              class = class)
 }

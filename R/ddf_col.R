@@ -1,7 +1,8 @@
-new_ddf_col <- function(x, dim_names) {
+new_ddf_col <- function(x, dim_names,
+                        class = character()) {
   structure(x,
             dim_names = dim_names,
-            class = "ddf_col")
+            class = c(setdiff(class, "ddf_col"), "ddf_col"))
 }
 
 as_ddf_col <- function(x, ...) {

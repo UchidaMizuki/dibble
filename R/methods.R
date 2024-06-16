@@ -6,6 +6,7 @@ Ops_dibble <- function(e1, e2) {
     is_ddf_col_e1 <- is_ddf_col(e1)
   }
 
+  class <- class(e1)
   if (is_missing(e2)) {
     new_dim_names <- dimnames(e1)
   } else {
@@ -35,7 +36,8 @@ Ops_dibble <- function(e1, e2) {
     }
   }
 
-  new_ddf_col(NextMethod(), new_dim_names)
+  new_ddf_col(NextMethod(), new_dim_names,
+              class = class)
 }
 
 methods_dibble <- function(x, ...) {

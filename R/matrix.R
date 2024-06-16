@@ -38,6 +38,7 @@ matmult_dibble <- function(x, y) {
   x <- as_ddf_col(x)
   y <- as_ddf_col(y)
 
+  class <- class(x)
   dim_names_x <- dimnames(x)
   dim_names_y <- dimnames(y)
 
@@ -65,20 +66,23 @@ matmult_dibble <- function(x, y) {
     as.vector(out)
   } else {
     dim(out) <- list_sizes_unnamed(new_dim_names)
-    new_ddf_col(out, new_dim_names)
+    new_ddf_col(out, new_dim_names,
+                class = class)
   }
 }
 
 #' @export
 t.tbl_ddf <- function(x) {
   new_tbl_ddf(purrr::modify(undibble(x), t),
-              rev(dimnames(x)))
+              rev(dimnames(x)),
+              class = class(x))
 }
 
 #' @export
 t.ddf_col <- function(x) {
   new_ddf_col(t(undibble(x)),
-              rev(dimnames(x)))
+              rev(dimnames(x)),
+              class = class(x))
 }
 
 #' @export
@@ -94,8 +98,10 @@ solve.tbl_ddf <- function(a, b, ...) {
 solve.ddf_col <- function(a, b, ...) {
   if (is_missing(b)) {
     dim_names <- dimnames(a)
+    class <- class(a)
     a <- undibble(a)
-    new_ddf_col(unname(solve(a)), rev(dim_names))
+    new_ddf_col(unname(solve(a)), rev(dim_names),
+                class = class)
   } else {
     NextMethod()
   }
@@ -185,7 +191,8 @@ diag.ddf_col <- function(x, axes, ...) {
     names(new_dim_names) <- axes
   }
   new_ddf_col(diag(as.array(x), ...),
-              new_dim_names)
+              new_dim_names,
+              class = class(x))
 }
 
 #' @rdname diag
@@ -220,9 +227,11 @@ diag.ddf_col <- function(x, axes, ...) {
     is.null(dim_names_value) || is_scalar_list(dim_names_value)
   )
 
+  class <- class(x)
   x <- as.array(x)
   diag(x) <- as.vector(broadcast(value, dim_names[1L]))
-  new_ddf_col(x, dim_names)
+  new_ddf_col(x, dim_names,
+              class = class)
 }
 
 #' Basic matrices and arrays
