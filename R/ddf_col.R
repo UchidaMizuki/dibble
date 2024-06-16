@@ -142,5 +142,40 @@ filter.ddf_col <- function(.data, ..., .preserve = FALSE) {
 
 #' @export
 print.ddf_col <- function(x, n = NULL, ...) {
-  print_dibble(x, n)
+  print_dibble(x,
+               n = n,
+               ...)
+}
+
+#' @export
+format.ddf_col <- function(x, n = NULL, ...) {
+  format_dibble(x,
+                n = n,
+                ...)
+}
+
+#' @export
+tbl_format_setup.ddf_col <- function(x, width = NULL, ..., n = NULL, max_extra_cols = NULL, max_footer_lines = NULL, focus = NULL) {
+  tbl_format_setup_dibble(x,
+                          width = width,
+                          ...,
+                          n = n,
+                          max_extra_cols = max_extra_cols,
+                          max_footer_lines = max_footer_lines,
+                          focus = focus)
+}
+
+#' @export
+tbl_format_header.ddf_col <- function(x, setup, ...) {
+  tbl_format_header_dibble(x, setup, ...)
+}
+
+#' @export
+tbl_format_body.ddf_col <- function(x, setup, ...) {
+  tbl_format_body_dibble(x, setup, ...)
+}
+
+#' @export
+tbl_format_footer.ddf_col <- function(x, setup, ...) {
+  tbl_format_footer_dibble(x, setup, ...)
 }
