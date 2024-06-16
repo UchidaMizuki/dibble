@@ -6,6 +6,7 @@ Ops_dibble <- function(e1, e2) {
     is_ddf_col_e1 <- is_ddf_col(e1)
   }
 
+  class <- class(e1)
   if (is_missing(e2)) {
     new_dim_names <- dimnames(e1)
   } else {
@@ -35,7 +36,45 @@ Ops_dibble <- function(e1, e2) {
     }
   }
 
-  new_ddf_col(NextMethod(), new_dim_names)
+  new_ddf_col(NextMethod(), new_dim_names,
+              class = class)
+}
+
+matrixOps_dibble <- function(e1, e2) {
+  e1 <- as_ddf_col(e1)
+  e2 <- as_ddf_col(e2)
+
+  class <- class(e1)
+  dim_names_x <- dimnames(e1)
+  dim_names_y <- dimnames(e2)
+
+  if (vec_size(dim_names_x) == 1L) {
+    e1 <- as.vector(e1)
+    dim_names_x <- NULL
+  } else {
+    e1 <- as.matrix(e1)
+    dim_names_x <- dim_names_x[1L]
+  }
+
+  if (vec_size(dim_names_y) == 1L) {
+    e2 <- as.vector(e2)
+    dim_names_y <- NULL
+  } else {
+    e2 <- as.matrix(e2)
+    dim_names_y <- dim_names_y[2L]
+  }
+
+  new_dim_names <- purrr::compact(c(dim_names_x, dim_names_y))
+
+  out <- NextMethod()
+
+  if (vec_is_empty(new_dim_names)) {
+    as.vector(out)
+  } else {
+    dim(out) <- list_sizes_unnamed(new_dim_names)
+    new_ddf_col(out, new_dim_names,
+                class = class)
+  }
 }
 
 methods_dibble <- function(x, ...) {

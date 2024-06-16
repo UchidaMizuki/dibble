@@ -49,14 +49,16 @@ pmax.tbl_ddf <- function(...,
 
 pmax_dibble <- function(..., na.rm) {
   args <- list2(...)
+  class <- class(args[[1]])
   dim_names <- union_dim_names(purrr::map(args, dimnames))
   args <- purrr::modify(args,
                         function(x) {
                           as.array(broadcast(x, dim_names))
                         })
 
-  new_ddf_col(exec(base::pmax, !!!args),
-              dim_names)
+  new_ddf_col(exec(base::pmax, !!!args, na.rm = na.rm),
+              dim_names,
+              class = setdiff(class, "tbl_ddf"))
 }
 
 #' @rdname extremes
@@ -92,12 +94,14 @@ pmin.tbl_ddf <- function(...,
 
 pmin_dibble <- function(..., na.rm) {
   args <- list2(...)
+  class <- class(args[[1]])
   dim_names <- union_dim_names(purrr::map(args, dimnames))
   args <- purrr::modify(args,
                         function(x) {
                           as.array(broadcast(x, dim_names))
                         })
 
-  new_ddf_col(exec(base::pmin, !!!args),
-              dim_names)
+  new_ddf_col(exec(base::pmin, !!!args, na.rm = na.rm),
+              dim_names,
+              class = setdiff(class, "tbl_ddf"))
 }

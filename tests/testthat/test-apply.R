@@ -1,4 +1,4 @@
-test_that("apply", {
+test_that("apply() works", {
   arr <- array(1:24, 2:4,
                list(axis1 = 1:2,
                     axis2 = 1:3,
@@ -18,4 +18,11 @@ test_that("apply", {
 
   test_apply(ddf_col)
   test_apply(tbl_ddf)
+
+  # Test that the class is preserved
+  class(ddf_col) <- c("my_class", class(ddf_col))
+  expect_s3_class(apply(ddf_col, 2, sum), c("my_class", "ddf_col"))
+
+  class(tbl_ddf) <- c("my_class", class(tbl_ddf))
+  expect_s3_class(apply(tbl_ddf, 2, sum), c("my_class", "ddf_col"))
 })

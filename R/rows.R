@@ -36,6 +36,7 @@ rows_upsert_dibble <- function(type = c("insert", "update", "patch", "upsert"),
     )
     is_ddf_col_new <- FALSE
   }
+  class <- class(x)
 
   # locations of x to new
   brdcst_x <- broadcast_dim_names_warn(dim_names_x, new_dim_names)
@@ -107,9 +108,11 @@ rows_upsert_dibble <- function(type = c("insert", "update", "patch", "upsert"),
   }
 
   if (is_ddf_col_new) {
-    new_ddf_col(new, new_dim_names)
+    new_ddf_col(new, new_dim_names,
+                class = class)
   } else {
-    new_tbl_ddf(new, new_dim_names)
+    new_tbl_ddf(new, new_dim_names,
+                class = class)
   }
 }
 

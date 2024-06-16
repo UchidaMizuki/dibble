@@ -1,84 +1,15 @@
-#' Matrix Multiplication
-#'
-#' Multiplies two matrices, if they are conformable.
-#'
-#' `%*%` overrides [`base::%*%`] to make it generic. The default method
-#' calls the base version.
-#'
-#' @param x Numeric or complex dibble, matrices or vectors.
-#' @param y Numeric or complex dibble, matrices or vectors.
-#'
-#' @return A dibble if x or y is a dibble of a matrix. A scalar numeric if both
-#' x and y are dibbles of vectors. See [`base::%*%`] for the return value of the
-#' default method.
-#'
-#' @seealso [`base::%*%`]
-#'
-#' @export
-`%*%` <- function(x, y) {
-  UseMethod("%*%")
-}
-
-#' @export
-`%*%.default` <- function(x, y) {
-  base::`%*%`(x, y)
-}
-
-#' @export
-`%*%.tbl_ddf` <- function(x, y) {
-  matmult_dibble(x, y)
-}
-
-#' @export
-`%*%.ddf_col` <- function(x, y) {
-  matmult_dibble(x, y)
-}
-
-matmult_dibble <- function(x, y) {
-  x <- as_ddf_col(x)
-  y <- as_ddf_col(y)
-
-  dim_names_x <- dimnames(x)
-  dim_names_y <- dimnames(y)
-
-  if (vec_size(dim_names_x) == 1L) {
-    x <- as.vector(x)
-    dim_names_x <- NULL
-  } else {
-    x <- as.matrix(x)
-    dim_names_x <- dim_names_x[1L]
-  }
-
-  if (vec_size(dim_names_y) == 1L) {
-    y <- as.vector(y)
-    dim_names_y <- NULL
-  } else {
-    y <- as.matrix(y)
-    dim_names_y <- dim_names_y[2L]
-  }
-
-  new_dim_names <- purrr::compact(c(dim_names_x, dim_names_y))
-
-  out <- x %*% y
-
-  if (vec_is_empty(new_dim_names)) {
-    as.vector(out)
-  } else {
-    dim(out) <- list_sizes_unnamed(new_dim_names)
-    new_ddf_col(out, new_dim_names)
-  }
-}
-
 #' @export
 t.tbl_ddf <- function(x) {
   new_tbl_ddf(purrr::modify(undibble(x), t),
-              rev(dimnames(x)))
+              rev(dimnames(x)),
+              class = class(x))
 }
 
 #' @export
 t.ddf_col <- function(x) {
   new_ddf_col(t(undibble(x)),
-              rev(dimnames(x)))
+              rev(dimnames(x)),
+              class = class(x))
 }
 
 #' @export
@@ -94,8 +25,10 @@ solve.tbl_ddf <- function(a, b, ...) {
 solve.ddf_col <- function(a, b, ...) {
   if (is_missing(b)) {
     dim_names <- dimnames(a)
+    class <- class(a)
     a <- undibble(a)
-    new_ddf_col(unname(solve(a)), rev(dim_names))
+    new_ddf_col(unname(solve(a)), rev(dim_names),
+                class = class)
   } else {
     NextMethod()
   }
@@ -185,7 +118,8 @@ diag.ddf_col <- function(x, axes, ...) {
     names(new_dim_names) <- axes
   }
   new_ddf_col(diag(as.array(x), ...),
-              new_dim_names)
+              new_dim_names,
+              class = class(x))
 }
 
 #' @rdname diag
@@ -220,9 +154,11 @@ diag.ddf_col <- function(x, axes, ...) {
     is.null(dim_names_value) || is_scalar_list(dim_names_value)
   )
 
+  class <- class(x)
   x <- as.array(x)
   diag(x) <- as.vector(broadcast(value, dim_names[1L]))
-  new_ddf_col(x, dim_names)
+  new_ddf_col(x, dim_names,
+              class = class)
 }
 
 #' Basic matrices and arrays

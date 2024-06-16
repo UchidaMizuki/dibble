@@ -59,6 +59,8 @@ apply.ddf_col <- function(X, MARGIN, FUN, ...) {
     MARGIN <- vec_match(MARGIN, names(dim_names))
   }
 
+  class <- class(X)
   X <- apply(as.array(X), MARGIN, FUN, ...)
-  new_ddf_col(X, dim_names[MARGIN])
+  new_ddf_col(X, dim_names[MARGIN],
+              class = class)
 }

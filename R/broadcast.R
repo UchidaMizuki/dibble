@@ -50,19 +50,23 @@ broadcast.default <- function(x,
 #' @rdname broadcast
 #' @export
 broadcast.ddf_col <- function(x, dim_names, ...) {
+  class <- class(x)
   brdcst_dim_names <- broadcast_dim_names(x, dim_names)
   x <- broadcast_dibble(x, brdcst_dim_names$broadcast)
 
-  new_ddf_col(x, brdcst_dim_names$new_dim_names)
+  new_ddf_col(x, brdcst_dim_names$new_dim_names,
+              class = class)
 }
 
 #' @rdname broadcast
 #' @export
 broadcast.tbl_ddf <- function(x, dim_names, ...) {
+  class <- class(x)
   brdcst_dim_names <- broadcast_dim_names(x, dim_names)
   x <- broadcast_dibble(x, brdcst_dim_names$broadcast)
 
-  new_tbl_ddf(x, brdcst_dim_names$new_dim_names)
+  new_tbl_ddf(x, brdcst_dim_names$new_dim_names,
+              class = class)
 }
 
 broadcast_dibble <- function(x, brdcst) {
