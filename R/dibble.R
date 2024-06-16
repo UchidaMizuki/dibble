@@ -52,7 +52,7 @@ dibble <- function(...,
                           x
                         }
                       })
-  args <- vec_c(!!!args)
+  args <- list_unchop(args)
 
   if (!is_named(args)) {
     stopifnot(
@@ -399,9 +399,10 @@ find_index <- function(x, names) {
   } else {
     stopifnot(is_call(x))
 
-    out <- purrr::map(x[-1L], find_index,
-                      names = names)
-    vec_c(!!!out)
+    out <- purrr::map(as.list(x[-1L]),
+                      \(x) find_index(x,
+                                      names = names))
+    list_unchop(out)
   }
 }
 

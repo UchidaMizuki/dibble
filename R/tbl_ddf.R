@@ -134,6 +134,7 @@ mutate.tbl_ddf <- function(.data, ...) {
   nms <- names(dots)
 
   dim_names <- dimnames(.data)
+  class <- class(.data)
   data <- as.list(.data)
 
   .data <- undibble(.data)
@@ -150,7 +151,7 @@ mutate.tbl_ddf <- function(.data, ...) {
     .data[[nm]] <- undibble(data_nm)
   }
   new_tbl_ddf(.data, dim_names,
-              class = class(.data))
+              class = class)
 }
 
 #' @importFrom dplyr select

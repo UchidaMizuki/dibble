@@ -1,4 +1,4 @@
-test_that("dibble", {
+test_that("dibble() works", {
   arr1 <- array(1:6, 2:3,
                 list(axis1 = letters[1:2],
                      axis2 = letters[1:3]))
@@ -14,15 +14,15 @@ test_that("dibble", {
                     .dim_names = c("axis1", "axis2", "axis3"))
 
   expect_s3_class(tbl_ddf, "tbl_ddf")
+
+  tbl_ddf2 <- dibble(tbl_ddf)
+  expect_equal(tbl_ddf2, tbl_ddf)
 })
 
-test_that("dibble_by", {
-  library(dplyr)
-  library(tidyr)
-
-  df <- expand_grid(axis1 = letters[1:3],
-                    axis2 = letters[1:3]) %>%
-    mutate(value = row_number())
+test_that("dibble_by() works", {
+  df <- tidyr::expand_grid(axis1 = letters[1:3],
+                           axis2 = letters[1:3]) %>%
+    dplyr::mutate(value = dplyr::row_number())
 
   expect_equal(df,
                df %>%

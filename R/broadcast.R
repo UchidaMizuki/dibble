@@ -37,13 +37,11 @@ broadcast.default <- function(x,
       is_dim_names(dim_names)
     )
 
-    class <- class(x)
     dim <- list_sizes_unnamed(dim_names)
     x <- array(vec_recycle(x, prod(dim)),
                dim = dim)
 
-    new_ddf_col(x, dim_names,
-                class = class)
+    new_ddf_col(x, dim_names)
   } else {
     broadcast(as_dibble(x), dim_names)
   }

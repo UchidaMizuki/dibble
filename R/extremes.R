@@ -56,9 +56,9 @@ pmax_dibble <- function(..., na.rm) {
                           as.array(broadcast(x, dim_names))
                         })
 
-  new_ddf_col(exec(base::pmax, !!!args),
+  new_ddf_col(exec(base::pmax, !!!args, na.rm = na.rm),
               dim_names,
-              class = class)
+              class = setdiff(class, "tbl_ddf"))
 }
 
 #' @rdname extremes
@@ -101,7 +101,7 @@ pmin_dibble <- function(..., na.rm) {
                           as.array(broadcast(x, dim_names))
                         })
 
-  new_ddf_col(exec(base::pmin, !!!args),
+  new_ddf_col(exec(base::pmin, !!!args, na.rm = na.rm),
               dim_names,
-              class = class)
+              class = setdiff(class, "tbl_ddf"))
 }
