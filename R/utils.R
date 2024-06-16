@@ -59,3 +59,16 @@ all_equal_dim_names <- function(target, current) {
     FALSE
   }
 }
+
+# From pillar:::get_n_print()
+get_n_print <- function(n, rows) {
+  if (!is.null(n) && n >= 0) {
+    return(n)
+  }
+  if (is.na(rows) || rows > 20) {
+    10
+  }
+  else {
+    rows
+  }
+}

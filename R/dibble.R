@@ -422,6 +422,23 @@ head_symbol <- function(x) {
 # Printing ----------------------------------------------------------------
 
 print_dibble <- function(x, n, ...) {
+  writeLines(format(x, n = n, ...))
+  invisible(x)
+}
+
+format_dibble <- function(x, n, ...) {
+  n <- get_n_print(n, nrow(x))
+
+  setup <- tbl_format_setup(x,
+                            n = n,
+                            ...)
+  header <- tbl_format_header(x, setup)
+  body <- tbl_format_body(x, setup)
+  footer <- tbl_format_footer(x, setup)
+  c(header, body, footer)
+}
+
+tbl_format_setup_dibble <- function(x, n, ...) {
   dim_names <- dimnames(x)
   axes <- names(dim_names)
   dim <- list_sizes_unnamed(dim_names)
@@ -430,32 +447,46 @@ print_dibble <- function(x, n, ...) {
   meas_names <- colnames(x)
   size_meas <- big_mark(vec_size(meas_names))
 
-  df <- new_data_frame(as_tibble(head_dibble(x, n)),
-                       class = c("tbl_dibble", "tbl"))
-
   dim_sum <- c(`Dimensions` = commas(paste0(axes, " [", big_mark(dim), "]")))
-
   if (is_ddf_col(x)) {
-    attr(df, "tbl_sum") <- c(`A dibble` = big_mark(size_dim),
+    tbl_sum <- c(`A dibble` = big_mark(size_dim),
                              dim_sum)
   } else {
     tbl_sum <- c(`A dibble` = paste(big_mark(size_dim), size_meas,
                                     sep = " x "),
                  dim_sum,
                  `Measures` = commas(meas_names))
-
-    attr(df, "tbl_sum") <- tbl_sum
   }
 
-  attr(df, "rows_total") <- size_dim
-  print(df)
+  x <- tibble::as_tibble(head_dibble(x,
+                                     n = n))
+  setup <- tbl_format_setup(x,
+                            n = n,
+                            ...)
+  setup$tbl_sum <- tbl_sum
+  rows_total_old <- setup$rows_total
+  rows_total_new <- size_dim
+  setup$rows_total <- rows_total_new
+  setup$rows_missing <- setup$rows_missing + rows_total_new - rows_total_old
+  setup
+}
 
-  invisible(x)
+tbl_format_header_dibble <- function(x, setup, ...) {
+  x <- setup$x
+  tbl_format_header(x, setup, ...)
+}
+
+tbl_format_body_dibble <- function(x, setup, ...) {
+  x <- setup$x
+  tbl_format_body(x, setup, ...)
+}
+
+tbl_format_footer_dibble <- function(x, setup, ...) {
+  x <- setup$x
+  tbl_format_footer(x, setup, ...)
 }
 
 head_dibble <- function(x, n) {
-  # pillar:::get_pillar_option_print_max() + 1
-  n <- n %||% 21
   dim <- rev(dim(x))
 
   loc <- rep(1, vec_size(dim))
@@ -470,18 +501,4 @@ head_dibble <- function(x, n) {
   loc <- rev(purrr::map(loc, seq_len))
 
   slice(x, !!!loc)
-}
-
-#' @importFrom pillar tbl_format_setup
-#' @export
-tbl_format_setup.tbl_dibble <- function(x, width, ..., n, max_extra_cols, max_footer_lines) {
-  setup <- NextMethod()
-
-  setup$tbl_sum <-  attr(x, "tbl_sum")
-
-  rows_total_old <- setup$rows_total
-  rows_total_new <- attr(x, "rows_total")
-  setup$rows_total <- rows_total_new
-  setup$rows_missing <- rows_total_new - (rows_total_old - setup$rows_missing)
-  setup
 }
