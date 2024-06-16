@@ -48,7 +48,7 @@ arr2 <- array(1:2, 2,
               list(axis2 = letters[1:2]))
 
 try(arr1 * arr2)
-#> Error in arr1 * arr2 : 適切な配列ではありません
+#> Error in arr1 * arr2 : non-conformable arrays
 ```
 
 ``` r
