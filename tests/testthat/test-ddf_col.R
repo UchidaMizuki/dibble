@@ -46,7 +46,7 @@ test_that("as.data.frame.ddf_col() works", {
                                   axis2 = 1:3))
   y <- expect_s3_class(as.data.frame(x), "data.frame")
 
-  y <- y %>%
+  y <- y |>
     dibble_by("axis1", "axis2")
   y <- y[[1]]
   expect_equal(y, x)
@@ -121,9 +121,9 @@ test_that("select.ddf_col() and relocate.ddf_col() work", {
   ddf_col <- broadcast(1:6,
                        dim_names = list(axis1 = 1:2,
                                         axis2 = 1:3))
-  ddf_col_selected <- ddf_col %>%
+  ddf_col_selected <- ddf_col |>
     select("axis2")
-  ddf_col_relocated <- ddf_col %>%
+  ddf_col_relocated <- ddf_col |>
     relocate("axis2")
 
   expect_equal(names(dimnames(ddf_col_selected)), c("axis2", "axis1"))
@@ -141,7 +141,7 @@ test_that("rename.ddf_col() works", {
   ddf_col <- broadcast(1:6,
                        dim_names = list(axis1 = 1:2,
                                         axis2 = 1:3))
-  ddf_col_renamed <- ddf_col %>%
+  ddf_col_renamed <- ddf_col |>
     rename("axis1_2" = "axis1",
            "axis2_2" = "axis2")
   expect_equal(names(dimnames(ddf_col_renamed)), c("axis1_2", "axis2_2"))
@@ -157,7 +157,7 @@ test_that("filter.ddf_col() works", {
                                         axis2 = 1:3))
   arr <- array(1:6, c(2, 3))
 
-  ddf_col_filtered <- ddf_col %>%
+  ddf_col_filtered <- ddf_col |>
     filter(axis1 == 2)
   expect_equal(as.vector(ddf_col_filtered), arr[2, ])
 

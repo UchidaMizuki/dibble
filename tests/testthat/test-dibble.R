@@ -21,11 +21,11 @@ test_that("dibble() works", {
 
 test_that("dibble_by() works", {
   df <- tidyr::expand_grid(axis1 = letters[1:3],
-                           axis2 = letters[1:3]) %>%
+                           axis2 = letters[1:3]) |>
     dplyr::mutate(value = dplyr::row_number())
 
   expect_equal(df,
-               df %>%
-                 dibble_by(axis1, axis2) %>%
+               df |>
+                 dibble_by(axis1, axis2) |>
                  as_tibble())
 })
