@@ -53,4 +53,15 @@ test_that("broadcast() warns", {
   # expect_warning(x * y)
   expect_silent(broadcast(x * y,
                           c("axis1", "axis2")))
+
+  x <- dibble::dibble(1:6,
+                      .dim_names = list(axis1 = 1:3,
+                                        axis2 = 1:2))
+  y <- dibble::dibble(1:6,
+                      .dim_names = list(axis1 = 2:4,
+                                        axis2 = 2:3))
+  expect_silent(dibble::broadcast(x * y,
+                                  dim_names = dimnames(x)))
+  expect_silent(dibble::broadcast(x * y,
+                                  dim_names = dimnames(y)))
 })
