@@ -197,8 +197,11 @@ broadcast_dim_names_message <- function(old_dim_names, new_dim_names, brdcst) {
                         collapse = "\n")
     }
 
-    paste0(c("Broadcasting,", message),
-           collapse = "\n")
+    if (!vec_is_empty(message)) {
+      message <- paste0(c("Broadcasting,", message),
+                        collapse = "\n")
+    }
+    message
   }
 }
 
