@@ -148,8 +148,8 @@ df <- expand_grid(tibble(axis1_key = letters[1:2],
 
 # You can `pack` several columns into one dimension (See `tidyr::pack()`).
 df |> 
-  dibble_by(axis1 = c("axis1_key", "axis1_value"),
-            axis2 = c("axis2_key", "axis2_value"),
+  dibble_by(axis1 = c(axis1_key, axis1_value),
+            axis2 = c(axis2_key, axis2_value),
             .names_sep = "_")
 #> # A dibble:   4 x 2
 #> # Dimensions: axis1 [2], axis2 [2]
