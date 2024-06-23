@@ -56,6 +56,9 @@ test_that("aperm.ddf_col() works", {
   x <- broadcast(1:6,
                  dim_names = list(axis1 = 1:2,
                                   axis2 = 1:3))
+  y <- aperm(x)
+  expect_equal(y, t(x))
+
   y <- aperm(x, c(2, 1))
   expect_equal(y, t(x))
 

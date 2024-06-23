@@ -3,7 +3,8 @@
 replace_na.tbl_ddf <- function(data, replace, ...) {
   if (!vec_is_list(replace)) {
     abort("`replace` must be a list.")
-  } else if (!is_named(replace)) {
+  }
+  if (!is_named(replace)) {
     abort("`replace` must be a named list.")
   }
 

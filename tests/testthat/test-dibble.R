@@ -17,6 +17,9 @@ test_that("dibble() works", {
 
   tbl_ddf2 <- dibble(tbl_ddf)
   expect_equal(tbl_ddf2, tbl_ddf)
+
+  expect_error(dibble(value = tbl_ddf))
+  expect_no_error(dibble(value = tbl_ddf[[1]]))
 })
 
 test_that("dibble_by() works", {
@@ -28,4 +31,23 @@ test_that("dibble_by() works", {
                df |>
                  dibble_by(axis1, axis2) |>
                  as_tibble())
+})
+
+test_that("as_dibble() and is_dibble() work", {
+  df <- tidyr::expand_grid(axis1 = letters[1:3],
+                           axis2 = letters[1:3]) |>
+    dplyr::mutate(value = dplyr::row_number())
+
+  tbl_ddf <- expect_equal(df |>
+                            dplyr::group_by(axis1, axis2) |>
+                            as_dibble(),
+                          df |>
+                            dibble_by(axis1, axis2))
+
+  expect_equal(as_dibble(tbl_ddf), tbl_ddf)
+  expect_equal(as_dibble(tbl_ddf[[1]]), tbl_ddf[[1]])
+
+  expect_false(is_dibble(df))
+  expect_true(is_dibble(tbl_ddf))
+  expect_true(is_dibble(tbl_ddf[[1]]))
 })
