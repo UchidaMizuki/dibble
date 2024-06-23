@@ -1,3 +1,10 @@
+# dibble 0.3.0
+
+* Change to preserve class in operations on dibbles (#13).
+* Implement a formatting system similar to pillar (#16).
+* Fix warning in `broadcast()` (#18).
+* Add tests and fix minor bugs.
+
 # dibble 0.2.2
 
 * Fix for dev purrr (#9).

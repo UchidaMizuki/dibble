@@ -1,9 +1,9 @@
 ## Test environments
 
-* local Windows 10 Pro, R 4.2.0
-* R-hub: Ubuntu Linux 20.04.1 LTS, R-release, GCC
-* R-hub: Fedora Linux, R-devel, clang, gfortran
-* R-hub: Windows Server 2022, R-devel, 64 bit
+* local Windows 11 Pro, R 4.4.1
+* R-hub: linux (R-devel)
+* R-hub: macos (R-devel)
+* R-hub: macos-arm64 (R-devel)
 * win-builder (devel)
 
 ## R CMD check results
