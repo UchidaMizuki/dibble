@@ -74,7 +74,6 @@ ddf1 * ddf2
 ```
 
 ``` r
-
 # You can use broadcast() to suppress the warnings.
 broadcast(ddf1 * ddf2,
           dim_names = c("axis1", "axis2"))
@@ -113,18 +112,6 @@ df <- expand_grid(axis1 = letters[1:2],
 
 ddf <- df |> 
   dibble_by(axis1, axis2)
-
-df
-#> # A tibble: 4 × 4
-#>   axis1 axis2 value1 value2
-#>   <chr> <chr>  <int>  <dbl>
-#> 1 a     a          1      2
-#> 2 a     b          2      4
-#> 3 b     a          3      6
-#> 4 b     b          4      8
-```
-
-``` r
 ddf
 #> # A dibble:   4 x 2
 #> # Dimensions: axis1 [2], axis2 [2]
@@ -138,7 +125,6 @@ ddf
 ```
 
 ``` r
-
 # You can access the measures from the dibble with `$`.
 ddf$value1
 #> # A dibble:   4
@@ -149,6 +135,31 @@ ddf$value1
 #> 2 a     b         2
 #> 3 b     a         3
 #> 4 b     b         4
+```
+
+``` r
+
+df <- expand_grid(tibble(axis1_key = letters[1:2],
+                         axis1_value = 1:2),
+                  tibble(axis2_key = letters[1:2],
+                         axis2_value = 1:2)) |>
+  mutate(value1 = row_number(),
+         value2 = value1 * 2)
+
+# You can `pack` several columns into one dimension (See `tidyr::pack()`).
+df |> 
+  dibble_by(axis1 = c("axis1_key", "axis1_value"),
+            axis2 = c("axis2_key", "axis2_value"),
+            .names_sep = "_")
+#> # A dibble:   4 x 2
+#> # Dimensions: axis1 [2], axis2 [2]
+#> # Measures:   value1, value2
+#>   axis1$key $value axis2$key $value value1 value2
+#>   <chr>      <int> <chr>      <int>  <int>  <dbl>
+#> 1 a              1 a              1      1      2
+#> 2 a              1 b              2      2      4
+#> 3 b              2 a              1      3      6
+#> 4 b              2 b              2      4      8
 ```
 
 #### From an array with dimension names or a vector
