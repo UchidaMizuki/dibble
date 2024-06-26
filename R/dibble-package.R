@@ -8,5 +8,6 @@
 #' @importFrom pillar tbl_format_footer
 #' @importFrom pillar tbl_format_header
 #' @importFrom pillar tbl_format_setup
+#' @importFrom pillar tbl_sum
 ## usethis namespace: end
 NULL

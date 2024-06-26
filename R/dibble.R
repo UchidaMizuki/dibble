@@ -439,31 +439,13 @@ format_dibble <- function(x, n, ...) {
 }
 
 tbl_format_setup_dibble <- function(x, n, ...) {
-  dim_names <- dimnames(x)
-  axes <- names(dim_names)
-  dim <- list_sizes_unnamed(dim_names)
-  size_dim <- prod(dim)
+  size_dim <- prod(list_sizes_unnamed(dimnames(x)))
 
-  meas_names <- colnames(x)
-  size_meas <- big_mark(vec_size(meas_names))
-
-  dim_sum <- c(`Dimensions` = commas(paste0(axes, " [", big_mark(dim), "]")))
-  if (is_ddf_col(x)) {
-    tbl_sum <- c(`A dibble` = big_mark(size_dim),
-                             dim_sum)
-  } else {
-    tbl_sum <- c(`A dibble` = paste(big_mark(size_dim), size_meas,
-                                    sep = " x "),
-                 dim_sum,
-                 `Measures` = commas(meas_names))
-  }
-
-  x <- tibble::as_tibble(head_dibble(x,
-                                     n = n))
-  setup <- tbl_format_setup(x,
+  setup <- tbl_format_setup(tibble::as_tibble(head_dibble(x,
+                                                          n = n)),
                             n = n,
                             ...)
-  setup$tbl_sum <- tbl_sum
+  setup$tbl_sum <- tbl_sum(x)
   rows_total_old <- setup$rows_total
   rows_total_new <- size_dim
   setup$rows_total <- rows_total_new

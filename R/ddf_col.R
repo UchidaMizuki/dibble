@@ -155,6 +155,16 @@ format.ddf_col <- function(x, n = NULL, ...) {
 }
 
 #' @export
+tbl_sum.ddf_col <- function(x) {
+  dim_names <- dimnames(x)
+  dim <- list_sizes_unnamed(dim_names)
+  size_dim <- prod(dim)
+
+  c(`A dibble` = big_mark(size_dim),
+    `Dimensions` = commas(paste0(names(dim_names), " [", big_mark(dim), "]")))
+}
+
+#' @export
 tbl_format_setup.ddf_col <- function(x, width = NULL, ..., n = NULL, max_extra_cols = NULL, max_footer_lines = NULL, focus = NULL) {
   tbl_format_setup_dibble(x,
                           width = width,
