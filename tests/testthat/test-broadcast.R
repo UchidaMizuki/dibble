@@ -24,6 +24,15 @@ test_that("broadcast() works", {
   class(x) <- c("my_class", class(x))
   xy <- broadcast(x * y, c("axis1", "axis2"))
   expect_s3_class(xy, class(x))
+
+  # broadcast() works for NA keys (#21)
+  data <- tibble::tibble(key = "a", value = 1) |>
+    dibble::dibble_by(key)
+  expect_no_error(dibble::broadcast(data, dim_names = "key"))
+
+  data <- tibble::tibble(key = NA, value = 1) |>
+    dibble::dibble_by(key)
+  expect_no_error(dibble::broadcast(data, dim_names = "key"))
 })
 
 test_that("broadcast() warns", {
