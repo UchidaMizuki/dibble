@@ -54,7 +54,7 @@ all_equal_dim_names <- function(target, current) {
     all(purrr::map2_lgl(target, current,
                         function(target, current) {
                           vec_size(target) == vec_size(current) &&
-                            all(target == current)
+                            all(vec_equal(target, current, na_equal = TRUE))
                         }))
   } else {
     FALSE
