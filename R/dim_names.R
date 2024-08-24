@@ -69,14 +69,14 @@ union_dim_names <- function(x) {
 }
 
 intersect_dim_names <- function(x) {
-  purrr::modify(purrr::list_transpose(x),
+  purrr::modify(purrr::list_transpose(x, simplify = FALSE),
                 function(x) {
                   purrr::reduce(x, set_intersect)
                 })
 }
 
 diff_dim_names <- function(x) {
-  purrr::modify(purrr::list_transpose(x),
+  purrr::modify(purrr::list_transpose(x, simplify = FALSE),
                 function(x) {
                   purrr::reduce(x, set_diff)
                 })

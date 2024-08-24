@@ -33,4 +33,30 @@ test_that("rbind.ddf_col() and rbind.tbl_ddf() work", {
                  filter(axis1 %in% dimnames(ddf_col2)[["axis1"]],
                         axis2 %in% dimnames(ddf_col2)[["axis2"]]),
                ddf_col2)
+
+  # works when the number of key rows is 1 (#23)
+  data_1 <- tidyr::expand_grid(key = tibble::tibble(col_1 = 1,
+                                                    col_2 = 1)) |>
+    tibble::add_column(value = 1) |>
+    dibble_by("key")
+
+  data_2 <- tidyr::expand_grid(key = tibble::tibble(col_1 = 2:3,
+                                                    col_2 = 2:3)) |>
+    tibble::add_column(value = 2) |>
+    dibble_by("key")
+
+  data_3 <- tidyr::expand_grid(key = tibble::tibble(col_1 = 2,
+                                                    col_2 = 2)) |>
+    tibble::add_column(value = 2) |>
+    dibble_by("key")
+
+  data_4 <- tidyr::expand_grid(key = tibble::tibble(col_1 = 2,
+                                                    col_2 = 2),
+                               key_2 = tibble::tibble(col_1 = 2)) |>
+    tibble::add_column(value = 2) |>
+    dibble_by("key", "key_2")
+
+  expect_no_error(broadcast(rbind(data_1, data_2), "key"))
+  expect_no_error(broadcast(rbind(data_1, data_3), "key"))
+  expect_no_error(broadcast(rbind(data_1, data_4), c("key", "key_2")))
 })
