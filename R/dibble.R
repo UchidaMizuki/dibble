@@ -126,7 +126,7 @@ as_dibble.rowwise_df <- function(x, ...) {
     !vec_duplicate_any(haystack)
   )
 
-  dim_names <- purrr::map(haystack, unique)
+  dim_names <- purrr::map(haystack, vec_unique)
   dim <- list_sizes_unnamed(dim_names)
 
   needles <- expand_grid_col_major(dim_names)
