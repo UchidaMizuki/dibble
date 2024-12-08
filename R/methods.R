@@ -45,26 +45,36 @@ matrixOps_dibble <- function(e1, e2) {
   e2 <- as_ddf_col(e2)
 
   class <- class(e1)
-  dim_names_x <- dimnames(e1)
-  dim_names_y <- dimnames(e2)
+  dim_names_e1 <- dimnames(e1)
+  dim_names_e2 <- dimnames(e2)
 
-  if (vec_size(dim_names_x) == 1L) {
+  size_dim_names_e1 <- vec_size(dim_names_e1)
+  size_dim_names_e2 <- vec_size(dim_names_e2)
+
+  new_dim_name <- union_dim_names(list(dim_names_e1[size_dim_names_e1], dim_names_e2[1]))
+  dim_names_e1[size_dim_names_e1] <- new_dim_name
+  dim_names_e2[1] <- new_dim_name
+
+  e1 <- broadcast(e1, dim_names_e1)
+  e2 <- broadcast(e2, dim_names_e2)
+
+  if (vec_size(dim_names_e1) == 1L) {
     e1 <- as.vector(e1)
-    dim_names_x <- NULL
+    dim_names_e1 <- NULL
   } else {
     e1 <- as.matrix(e1)
-    dim_names_x <- dim_names_x[1L]
+    dim_names_e1 <- dim_names_e1[1L]
   }
 
-  if (vec_size(dim_names_y) == 1L) {
+  if (vec_size(dim_names_e2) == 1L) {
     e2 <- as.vector(e2)
-    dim_names_y <- NULL
+    dim_names_e2 <- NULL
   } else {
     e2 <- as.matrix(e2)
-    dim_names_y <- dim_names_y[2L]
+    dim_names_e2 <- dim_names_e2[2L]
   }
 
-  new_dim_names <- purrr::compact(c(dim_names_x, dim_names_y))
+  new_dim_names <- purrr::compact(c(dim_names_e1, dim_names_e2))
 
   out <- NextMethod()
 
