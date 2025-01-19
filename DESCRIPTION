@@ -25,13 +25,13 @@ Imports:
     tidyselect,
     vctrs
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.2
 Suggests: 
     covr,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 Depends: 
-    R (>= 4.4)
+    R (>= 4.3)
 URL: https://github.com/UchidaMizuki/dibble,
     https://uchidamizuki.github.io/dibble/
 BugReports: https://github.com/UchidaMizuki/dibble/issues
