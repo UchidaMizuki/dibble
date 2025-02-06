@@ -1,3 +1,10 @@
+# dibble 0.3.1
+
+* Updated R version dependency to 4.3 to use matrixOps.
+* Implemented `pillar::tbl_sum()` for dibble (#20).
+* Fixed bugs in `all_equal_dim_names()` (#22), `rbind()` (#24), and matrixOps (#27).
+* Fixed compatibility issue with purrr 1.0.4 (#28).
+
 # dibble 0.3.0
 
 * Change to preserve class in operations on dibbles (#13).
