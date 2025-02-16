@@ -1,31 +1,31 @@
-Version: 0.3.0
-Date: 2024-06-23 06:08:40 UTC
+Version: 0.3.1
+Date: 2025-02-06 15:34:07 UTC
 SHA: fatal: detected dubious ownership in repository at 'D:/uchid/Documents/GitHub/dibble'
 
-Version: 0.3.0
-Date: 2024-06-23 06:08:40 UTC
+Version: 0.3.1
+Date: 2025-02-06 15:34:07 UTC
 SHA: 'D:/uchid/Documents/GitHub/dibble' is owned by:
 
-Version: 0.3.0
-Date: 2024-06-23 06:08:40 UTC
+Version: 0.3.1
+Date: 2025-02-06 15:34:07 UTC
 SHA: (inconvertible) (S-1-5-21-1833494514-4000878029-2516405291-1001)
 
-Version: 0.3.0
-Date: 2024-06-23 06:08:40 UTC
+Version: 0.3.1
+Date: 2025-02-06 15:34:07 UTC
 SHA: but the current user is:
 
-Version: 0.3.0
-Date: 2024-06-23 06:08:40 UTC
+Version: 0.3.1
+Date: 2025-02-06 15:34:07 UTC
 SHA: P620/uchid (S-1-5-21-2275834154-3469930228-4260842020-1001)
 
-Version: 0.3.0
-Date: 2024-06-23 06:08:40 UTC
+Version: 0.3.1
+Date: 2025-02-06 15:34:07 UTC
 SHA: To add an exception for this directory, call:
 
-Version: 0.3.0
-Date: 2024-06-23 06:08:40 UTC
+Version: 0.3.1
+Date: 2025-02-06 15:34:07 UTC
 SHA:
 
-Version: 0.3.0
-Date: 2024-06-23 06:08:40 UTC
+Version: 0.3.1
+Date: 2025-02-06 15:34:07 UTC
 SHA: git config --global --add safe.directory D:/uchid/Documents/GitHub/dibble
