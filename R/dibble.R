@@ -382,7 +382,7 @@ find_index_check <- function(x, names) {
 find_index <- function(x, names) {
   if (is_atomic(x)) {
     integer()
-  } else if (is_symbol(x) || x[[1L]] == "$") {
+  } else if (is_symbol(x) || as_name(x[[1L]]) %in% c("$", "[[")) {
     which(head_symbol(x) == names)
   } else {
     stopifnot(is_call(x))
@@ -393,11 +393,16 @@ find_index <- function(x, names) {
 }
 
 head_symbol <- function(x) {
-  while (!is_symbol(x)) {
+  while (!is.null(x) && !is_symbol(x)) {
     lhs <- f_lhs(x)
 
-    if (lhs == ".data") {
+    if (is.null(lhs)) {
+      x <- NULL
+    } else if (lhs == ".data") {
       x <- f_rhs(x)
+      if (is.character(x)) {
+        x <- rlang::ensym(x)
+      }
     } else {
       x <- lhs
     }

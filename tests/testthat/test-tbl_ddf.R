@@ -162,6 +162,27 @@ test_that("filter.tbl_ddf() works", {
     filter(axis1 == 2)
   expect_equal(as.vector(tbl_ddf_filtered[["x"]]), arr[2, ])
 
+  # .data
+  tbl_ddf_filtered <- tbl_ddf |>
+    filter(.data$axis1 == 2)
+  expect_equal(as.vector(tbl_ddf_filtered[["x"]]), arr[2, ])
+
+  name <- "axis1"
+  tbl_ddf_filtered <- tbl_ddf |>
+    filter(.data[[name]] == 2)
+  expect_equal(as.vector(tbl_ddf_filtered[["x"]]), arr[2, ])
+
+  # .env
+  value <- 2
+  tbl_ddf_filtered <- tbl_ddf |>
+    filter(.data$axis1 == .env$value)
+  expect_equal(as.vector(tbl_ddf_filtered[["x"]]), arr[2, ])
+
+  name <- "value"
+  tbl_ddf_filtered <- tbl_ddf |>
+    filter(.data$axis1 == .env[[name]])
+  expect_equal(as.vector(tbl_ddf_filtered[["x"]]), arr[2, ])
+
   # Test that the class is preserved
   class(tbl_ddf) <- c("my_class", class(tbl_ddf))
   expect_s3_class(filter(tbl_ddf, axis1 == 2), class(tbl_ddf))

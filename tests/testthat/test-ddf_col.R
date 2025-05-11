@@ -131,6 +131,27 @@ test_that("filter.ddf_col() works", {
     filter(axis1 == 2)
   expect_equal(as.vector(ddf_col_filtered), arr[2, ])
 
+  # .data
+  ddf_col_filtered <- ddf_col |>
+    filter(.data$axis1 == 2)
+  expect_equal(as.vector(ddf_col_filtered), arr[2, ])
+
+  name <- "axis1"
+  ddf_col_filtered <- ddf_col |>
+    filter(.data[[name]] == 2)
+  expect_equal(as.vector(ddf_col_filtered), arr[2, ])
+
+  # .env
+  value <- 2
+  ddf_col_filtered <- ddf_col |>
+    filter(.data$axis1 == .env$value)
+  expect_equal(as.vector(ddf_col_filtered), arr[2, ])
+
+  name <- "value"
+  ddf_col_filtered <- ddf_col |>
+    filter(.data$axis1 == .env[[name]])
+  expect_equal(as.vector(ddf_col_filtered), arr[2, ])
+
   # Test that the class is preserved
   class(ddf_col) <- c("my_class", class(ddf_col))
   expect_s3_class(filter(ddf_col, axis1 == 2), class(ddf_col))
