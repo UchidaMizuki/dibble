@@ -41,17 +41,11 @@ library(tidyr)
 ### Broadcasting
 
 ``` r
-arr1 <- array(1:6, c(2, 3),
-              list(axis1 = letters[1:2],
-                   axis2 = letters[1:3]))
-arr2 <- array(1:2, 2,
-              list(axis2 = letters[1:2]))
+arr1 <- array(1:6, c(2, 3), list(axis1 = letters[1:2], axis2 = letters[1:3]))
+arr2 <- array(1:2, 2, list(axis2 = letters[1:2]))
 
 try(arr1 * arr2)
-#> Error in arr1 * arr2 : non-conformable arrays
-```
-
-``` r
+#> Error in arr1 * arr2 : 適切な配列ではありません
 
 ddf1 <- as_dibble(arr1)
 ddf2 <- as_dibble(arr2)
@@ -71,12 +65,8 @@ ddf1 * ddf2
 #> 4 b     a         2
 #> 5 b     b         8
 #> 6 b     c        NA
-```
-
-``` r
 # You can use broadcast() to suppress the warnings.
-broadcast(ddf1 * ddf2,
-          dim_names = c("axis1", "axis2"))
+broadcast(ddf1 * ddf2, dim_names = c("axis1", "axis2"))
 #> # A dibble:   6
 #> # Dimensions: axis1 [2], axis2 [3]
 #>   axis1 axis2     .
@@ -105,12 +95,10 @@ dibble provides some dplyr methods as follows,
 #### From a data.frame
 
 ``` r
-df <- expand_grid(axis1 = letters[1:2],
-                  axis2 = letters[1:2]) |> 
-  mutate(value1 = row_number(),
-         value2 = value1 * 2)
+df <- expand_grid(axis1 = letters[1:2], axis2 = letters[1:2]) |>
+  mutate(value1 = row_number(), value2 = value1 * 2)
 
-ddf <- df |> 
+ddf <- df |>
   dibble_by(axis1, axis2)
 ddf
 #> # A dibble:   4 x 2
@@ -122,9 +110,6 @@ ddf
 #> 2 a     b          2      4
 #> 3 b     a          3      6
 #> 4 b     b          4      8
-```
-
-``` r
 # You can access the measures from the dibble with `$`.
 ddf$value1
 #> # A dibble:   4
@@ -135,22 +120,20 @@ ddf$value1
 #> 2 a     b         2
 #> 3 b     a         3
 #> 4 b     b         4
-```
 
-``` r
-
-df <- expand_grid(tibble(axis1_key = letters[1:2],
-                         axis1_value = 1:2),
-                  tibble(axis2_key = letters[1:2],
-                         axis2_value = 1:2)) |>
-  mutate(value1 = row_number(),
-         value2 = value1 * 2)
+df <- expand_grid(
+  tibble(axis1_key = letters[1:2], axis1_value = 1:2),
+  tibble(axis2_key = letters[1:2], axis2_value = 1:2)
+) |>
+  mutate(value1 = row_number(), value2 = value1 * 2)
 
 # You can `pack` several columns into one dimension (See `tidyr::pack()`).
-df |> 
-  dibble_by(axis1 = c(axis1_key, axis1_value),
-            axis2 = c(axis2_key, axis2_value),
-            .names_sep = "_")
+df |>
+  dibble_by(
+    axis1 = c(axis1_key, axis1_value),
+    axis2 = c(axis2_key, axis2_value),
+    .names_sep = "_"
+  )
 #> # A dibble:   4 x 2
 #> # Dimensions: axis1 [2], axis2 [2]
 #> # Measures:   value1, value2
@@ -168,25 +151,18 @@ dibble provides some dplyr methods as follows,
 
 ``` r
 # from an array with dimension names
-arr <- array(1:4, c(2, 2),
-             list(axis1 = letters[1:2],
-                  axis2 = letters[1:2]))
+arr <- array(1:4, c(2, 2), list(axis1 = letters[1:2], axis2 = letters[1:2]))
 
 ddf1 <- as_dibble(arr)
 
 # from a vector
-ddf2 <- broadcast(1:4,
-                  list(axis1 = letters[1:2],
-                       axis2 = letters[1:2]))
+ddf2 <- broadcast(1:4, list(axis1 = letters[1:2], axis2 = letters[1:2]))
 
 arr
 #>      axis2
 #> axis1 a b
 #>     a 1 3
 #>     b 2 4
-```
-
-``` r
 ddf1
 #> # A dibble:   4
 #> # Dimensions: axis1 [2], axis2 [2]
@@ -196,9 +172,6 @@ ddf1
 #> 2 a     b         3
 #> 3 b     a         2
 #> 4 b     b         4
-```
-
-``` r
 ddf2
 #> # A dibble:   4
 #> # Dimensions: axis1 [2], axis2 [2]

@@ -1,15 +1,11 @@
 #' @export
 t.tbl_ddf <- function(x) {
-  new_tbl_ddf(purrr::modify(undibble(x), t),
-              rev(dimnames(x)),
-              class = class(x))
+  new_tbl_ddf(purrr::modify(undibble(x), t), rev(dimnames(x)), class = class(x))
 }
 
 #' @export
 t.ddf_col <- function(x) {
-  new_ddf_col(t(undibble(x)),
-              rev(dimnames(x)),
-              class = class(x))
+  new_ddf_col(t(undibble(x)), rev(dimnames(x)), class = class(x))
 }
 
 #' @export
@@ -27,8 +23,7 @@ solve.ddf_col <- function(a, b, ...) {
     dim_names <- dimnames(a)
     class <- class(a)
     a <- undibble(a)
-    new_ddf_col(unname(solve(a)), rev(dim_names),
-                class = class)
+    new_ddf_col(unname(solve(a)), rev(dim_names), class = class)
   } else {
     NextMethod()
   }
@@ -69,18 +64,15 @@ diag.default <- function(x = 1, nrow, ncol, names, ...) {
   args <- list(x = x)
 
   if (!is_missing(nrow)) {
-    args <- c(args,
-              list(nrow = nrow))
+    args <- c(args, list(nrow = nrow))
   }
 
   if (!is_missing(ncol)) {
-    args <- c(args,
-              list(ncol = ncol))
+    args <- c(args, list(ncol = ncol))
   }
 
   if (!is_missing(names)) {
-    args <- c(args,
-              list(names = names))
+    args <- c(args, list(names = names))
   }
 
   exec(base::diag, !!!args)
@@ -117,9 +109,7 @@ diag.ddf_col <- function(x, axes, ...) {
     new_dim_names <- old_dim_names[1L]
     names(new_dim_names) <- axes
   }
-  new_ddf_col(diag(as.array(x), ...),
-              new_dim_names,
-              class = class(x))
+  new_ddf_col(diag(as.array(x), ...), new_dim_names, class = class(x))
 }
 
 #' @rdname diag
@@ -138,8 +128,7 @@ diag.ddf_col <- function(x, axes, ...) {
 #' @export
 `diag<-.tbl_ddf` <- function(x, ..., value) {
   nm <- colnames(x)
-  x <- wrap_dibble(`diag<-`)(x, ...,
-                             value = value)
+  x <- wrap_dibble(`diag<-`)(x, ..., value = value)
   dibble(!!nm := x)
 }
 
@@ -157,8 +146,7 @@ diag.ddf_col <- function(x, axes, ...) {
   class <- class(x)
   x <- as.array(x)
   diag(x) <- as.vector(broadcast(value, dim_names[1L]))
-  new_ddf_col(x, dim_names,
-              class = class)
+  new_ddf_col(x, dim_names, class = class)
 }
 
 #' Basic matrices and arrays
@@ -185,18 +173,15 @@ eye <- function(x, ...) {
 
 #' @rdname basic-matrices-arrays
 #' @export
-eye.default <- function(x,
-                        y = x, ...) {
-  base::diag(nrow = x,
-             ncol = y)
+eye.default <- function(x, y = x, ...) {
+  base::diag(nrow = x, ncol = y)
 }
 
 #' @rdname basic-matrices-arrays
 #' @export
 eye.matrix <- function(x, ...) {
   dim <- dim(x)
-  out <- base::diag(nrow = dim[[1L]],
-                    ncol = dim[[2L]])
+  out <- base::diag(nrow = dim[[1L]], ncol = dim[[2L]])
   dimnames(out) <- dimnames(x)
   out
 }
@@ -221,8 +206,7 @@ ones <- function(x, ...) {
 
 #' @rdname basic-matrices-arrays
 #' @export
-ones.default <- function(x,
-                         y = x, ...) {
+ones.default <- function(x, y = x, ...) {
   matrix(1, x, y)
 }
 
@@ -252,8 +236,7 @@ zeros <- function(x, ...) {
 
 #' @rdname basic-matrices-arrays
 #' @export
-zeros.default <- function(x,
-                          y = x, ...) {
+zeros.default <- function(x, y = x, ...) {
   matrix(0, x, y)
 }
 

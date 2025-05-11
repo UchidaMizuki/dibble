@@ -37,12 +37,14 @@ ifelse.tbl_ddf <- function(test, yes, no, ...) {
 #' @export
 ifelse.ddf_col <- function(test, yes, no, ...) {
   class <- class(test)
-  dim_names <- union_dim_names(list(dimnames(test), dimnames(yes), dimnames(no)))
+  dim_names <- union_dim_names(list(
+    dimnames(test),
+    dimnames(yes),
+    dimnames(no)
+  ))
   test <- as.array(broadcast(test, dim_names))
   yes <- as.array(broadcast(yes, dim_names))
   no <- as.array(broadcast(no, dim_names))
 
-  new_ddf_col(ifelse(test, yes, no),
-              dim_names,
-              class = class)
+  new_ddf_col(ifelse(test, yes, no), dim_names, class = class)
 }

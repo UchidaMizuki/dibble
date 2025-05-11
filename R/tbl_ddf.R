@@ -1,8 +1,9 @@
-new_tbl_ddf <- function(x, dim_names,
-                        class = character()) {
-  structure(x,
-            dim_names = dim_names,
-            class = c(setdiff(class, "tbl_ddf"), "tbl_ddf"))
+new_tbl_ddf <- function(x, dim_names, class = character()) {
+  structure(
+    x,
+    dim_names = dim_names,
+    class = c(setdiff(class, "tbl_ddf"), "tbl_ddf")
+  )
 }
 
 is_tbl_ddf <- function(x) {
@@ -13,11 +14,9 @@ is_tbl_ddf <- function(x) {
 as.list.tbl_ddf <- function(x, ...) {
   dim_names <- dimnames(x)
   class <- class(x)
-  purrr::modify(undibble(x),
-                function(x) {
-                  new_ddf_col(x, dim_names,
-                              class = setdiff(class, "tbl_ddf"))
-                })
+  purrr::modify(undibble(x), function(x) {
+    new_ddf_col(x, dim_names, class = setdiff(class, "tbl_ddf"))
+  })
 }
 
 #' @export
@@ -52,16 +51,13 @@ dim.tbl_ddf <- function(x) {
 
 #' @importFrom tibble as_tibble
 #' @export
-as_tibble.tbl_ddf <- function(x, ...,
-                              n = NULL) {
+as_tibble.tbl_ddf <- function(x, ..., n = NULL) {
   as_tibble_dibble(x, n)
 }
 
 #' @export
 as.data.frame.tbl_ddf <- function(x, row.names = NULL, optional = FALSE, ...) {
-  as.data.frame(as_tibble(x, ...),
-                row.names = row.names,
-                optional = optional)
+  as.data.frame(as_tibble(x, ...), row.names = row.names, optional = optional)
 }
 
 #' @export
@@ -95,13 +91,11 @@ is.nan.tbl_ddf <- function(x) {
 }
 
 
-
 # Subsetting --------------------------------------------------------------
 
 #' @export
 `[.tbl_ddf` <- function(x, i) {
-  new_tbl_ddf(NextMethod(), dimnames(x),
-              class = class(x))
+  new_tbl_ddf(NextMethod(), dimnames(x), class = class(x))
 }
 
 #' @export
@@ -117,7 +111,6 @@ is.nan.tbl_ddf <- function(x) {
 }
 
 
-
 # Verbs -------------------------------------------------------------------
 
 #' @importFrom dplyr slice
@@ -129,8 +122,7 @@ slice.tbl_ddf <- function(.data, ...) {
 #' @importFrom dplyr mutate
 #' @export
 mutate.tbl_ddf <- function(.data, ...) {
-  dots <- enquos(...,
-                 .named = TRUE)
+  dots <- enquos(..., .named = TRUE)
   nms <- names(dots)
 
   dim_names <- dimnames(.data)
@@ -143,15 +135,13 @@ mutate.tbl_ddf <- function(.data, ...) {
     nm <- nms[[i]]
 
     data_nm <- suppress_warning_broadcast(
-      broadcast(eval_tidy(dots[[i]], data),
-                dim_names = dim_names)
+      broadcast(eval_tidy(dots[[i]], data), dim_names = dim_names)
     )
 
     data[[nm]] <- data_nm
     .data[[nm]] <- undibble(data_nm)
   }
-  new_tbl_ddf(.data, dim_names,
-              class = class)
+  new_tbl_ddf(.data, dim_names, class = class)
 }
 
 #' @importFrom dplyr select
@@ -163,8 +153,7 @@ select.tbl_ddf <- function(.data, ...) {
 #' @importFrom dplyr relocate
 #' @export
 relocate.tbl_ddf <- function(.data, ...) {
-  select_dibble(.data, ...,
-                .relocate = TRUE)
+  select_dibble(.data, ..., .relocate = TRUE)
 }
 
 #' @importFrom dplyr rename
@@ -180,21 +169,16 @@ filter.tbl_ddf <- function(.data, ..., .preserve = FALSE) {
 }
 
 
-
 # Printing ----------------------------------------------------------------
 
 #' @export
 print.tbl_ddf <- function(x, n = NULL, ...) {
-  print_dibble(x,
-               n = n,
-               ...)
+  print_dibble(x, n = n, ...)
 }
 
 #' @export
 format.tbl_ddf <- function(x, n = NULL, ...) {
-  format_dibble(x,
-                n = n,
-                ...)
+  format_dibble(x, n = n, ...)
 }
 
 #' @export
@@ -205,21 +189,32 @@ tbl_sum.tbl_ddf <- function(x) {
   meas_names <- colnames(x)
   size_meas <- big_mark(vec_size(meas_names))
 
-  c(`A dibble` = paste(big_mark(size_dim), size_meas,
-                       sep = " x "),
+  c(
+    `A dibble` = paste(big_mark(size_dim), size_meas, sep = " x "),
     `Dimensions` = commas(paste0(names(dim_names), " [", big_mark(dim), "]")),
-    `Measures` = commas(meas_names))
+    `Measures` = commas(meas_names)
+  )
 }
 
 #' @export
-tbl_format_setup.tbl_ddf <- function(x, width = NULL, ..., n = NULL, max_extra_cols = NULL, max_footer_lines = NULL, focus = NULL) {
-  tbl_format_setup_dibble(x,
-                          width = width,
-                          ...,
-                          n = n,
-                          max_extra_cols = max_extra_cols,
-                          max_footer_lines = max_footer_lines,
-                          focus = focus)
+tbl_format_setup.tbl_ddf <- function(
+  x,
+  width = NULL,
+  ...,
+  n = NULL,
+  max_extra_cols = NULL,
+  max_footer_lines = NULL,
+  focus = NULL
+) {
+  tbl_format_setup_dibble(
+    x,
+    width = width,
+    ...,
+    n = n,
+    max_extra_cols = max_extra_cols,
+    max_footer_lines = max_footer_lines,
+    focus = focus
+  )
 }
 
 #' @export

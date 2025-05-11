@@ -38,10 +38,8 @@ apply <- function(X, MARGIN, FUN, ...) {
 
 #' @rdname apply
 #' @export
-apply.default <- function(X, MARGIN, FUN, ...,
-                          simplify = TRUE) {
-  base::apply(X, MARGIN, FUN, ...,
-              simplify = simplify)
+apply.default <- function(X, MARGIN, FUN, ..., simplify = TRUE) {
+  base::apply(X, MARGIN, FUN, ..., simplify = simplify)
 }
 
 #' @rdname apply
@@ -61,6 +59,5 @@ apply.ddf_col <- function(X, MARGIN, FUN, ...) {
 
   class <- class(X)
   X <- apply(as.array(X), MARGIN, FUN, ...)
-  new_ddf_col(X, dim_names[MARGIN],
-              class = class)
+  new_ddf_col(X, dim_names[MARGIN], class = class)
 }

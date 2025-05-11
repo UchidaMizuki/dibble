@@ -1,4 +1,5 @@
-.onLoad <- function(...) { # nocov start
+# nocov start
+.onLoad <- function(...) {
   as_dim_names <<- memoise::memoise(as_dim_names)
   union_dim_names <<- memoise::memoise(union_dim_names)
   broadcast_dim_names_impl <<- memoise::memoise(broadcast_dim_names_impl)
