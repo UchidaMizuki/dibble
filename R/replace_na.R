@@ -24,7 +24,5 @@ replace_na.tbl_ddf <- function(data, replace, ...) {
 
 #' @export
 replace_na.ddf_col <- function(data, replace, ...) {
-  ifelse(is.na(data),
-         replace,
-         data)
+  ifelse(is.na(data), replace, data)
 }

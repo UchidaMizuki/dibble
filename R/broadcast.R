@@ -21,8 +21,7 @@
 #' broadcast(x * y, c("axis1", "axis2"))
 #'
 #' @export
-broadcast <- function(x,
-                      dim_names = NULL, ...) {
+broadcast <- function(x, dim_names = NULL, ...) {
   x <- suppress_warning_broadcast(x)
 
   UseMethod("broadcast")
@@ -30,16 +29,14 @@ broadcast <- function(x,
 
 #' @rdname broadcast
 #' @export
-broadcast.default <- function(x,
-                              dim_names = NULL, ...) {
+broadcast.default <- function(x, dim_names = NULL, ...) {
   if (is.null(dimnames(x))) {
     stopifnot(
       is_dim_names(dim_names)
     )
 
     dim <- list_sizes_unnamed(dim_names)
-    x <- array(vec_recycle(x, prod(dim)),
-               dim = dim)
+    x <- array(vec_recycle(x, prod(dim)), dim = dim)
 
     new_ddf_col(x, dim_names)
   } else {
@@ -54,8 +51,7 @@ broadcast.ddf_col <- function(x, dim_names, ...) {
   brdcst_dim_names <- broadcast_dim_names(x, dim_names)
   x <- broadcast_dibble(x, brdcst_dim_names$broadcast)
 
-  new_ddf_col(x, brdcst_dim_names$new_dim_names,
-              class = class)
+  new_ddf_col(x, brdcst_dim_names$new_dim_names, class = class)
 }
 
 #' @rdname broadcast
@@ -65,18 +61,16 @@ broadcast.tbl_ddf <- function(x, dim_names, ...) {
   brdcst_dim_names <- broadcast_dim_names(x, dim_names)
   x <- broadcast_dibble(x, brdcst_dim_names$broadcast)
 
-  new_tbl_ddf(x, brdcst_dim_names$new_dim_names,
-              class = class)
+  new_tbl_ddf(x, brdcst_dim_names$new_dim_names, class = class)
 }
 
 broadcast_dibble <- function(x, brdcst) {
   if (is_ddf_col(x)) {
     broadcast_array(as.array(x), brdcst)
   } else if (is_tbl_ddf(x)) {
-    purrr::modify(undibble(x),
-                  function(x) {
-                    broadcast_array(x, brdcst)
-                  })
+    purrr::modify(undibble(x), function(x) {
+      broadcast_array(x, brdcst)
+    })
   }
 }
 
@@ -84,8 +78,10 @@ broadcast_dim_names <- function(x, dim_names) {
   old_dim_names <- dimnames(x)
   new_dim_names <- as_dim_names(dim_names, old_dim_names)
 
-  list(new_dim_names = new_dim_names,
-       broadcast = broadcast_dim_names_warn(old_dim_names, new_dim_names))
+  list(
+    new_dim_names = new_dim_names,
+    broadcast = broadcast_dim_names_warn(old_dim_names, new_dim_names)
+  )
 }
 
 broadcast_dim_names_impl <- function(old_dim_names, new_dim_names) {
@@ -129,9 +125,7 @@ broadcast_dim_names_impl <- function(old_dim_names, new_dim_names) {
     }
   }
 
-  list(perm = perm,
-       new_dim = new_dim,
-       loc = loc)
+  list(perm = perm, new_dim = new_dim, loc = loc)
 }
 
 broadcast_dim_names_warn <- function(old_dim_names, new_dim_names) {
@@ -142,15 +136,16 @@ broadcast_dim_names_warn <- function(old_dim_names, new_dim_names) {
   if (vec_is_empty(message)) {
     out
   } else {
-    withRestarts({
-      warning(warningCondition(message,
-                               class = "warning_broadcast"))
+    withRestarts(
+      {
+        warning(warningCondition(message, class = "warning_broadcast"))
 
-      out
-    },
-    restart_broadcast = function() {
-      out
-    })
+        out
+      },
+      restart_broadcast = function() {
+        out
+      }
+    )
   }
 }
 
@@ -167,7 +162,11 @@ broadcast_dim_names_message <- function(old_dim_names, new_dim_names, brdcst) {
       new_axes_code <- encodeString(new_axes, quote = "\"")
 
       if (vec_size(new_axes_code) > 1L) {
-        new_axes_code <- paste0("c(", paste(new_axes_code, collapse = ", "), ")")
+        new_axes_code <- paste0(
+          "c(",
+          paste(new_axes_code, collapse = ", "),
+          ")"
+        )
       }
 
       message <- paste0("New axes, dim_names = ", new_axes_code)
@@ -176,40 +175,45 @@ broadcast_dim_names_message <- function(old_dim_names, new_dim_names, brdcst) {
     if (is.null(brdcst$loc)) {
       new_coords <- list()
     } else {
-      new_coords <- purrr::map2(new_dim_names, brdcst$loc,
-                                function(new_dim_name, loc) {
-                                  loc <- is.na(loc)
+      new_coords <- purrr::map2(
+        new_dim_names,
+        brdcst$loc,
+        function(new_dim_name, loc) {
+          loc <- is.na(loc)
 
-                                  if (any(loc)) {
-                                    vec_slice(new_dim_name, loc)
-                                  } else {
-                                    NULL
-                                  }
-                                })
+          if (any(loc)) {
+            vec_slice(new_dim_name, loc)
+          } else {
+            NULL
+          }
+        }
+      )
     }
     loc_null <- purrr::map_lgl(new_coords, is.null)
     new_coords <- new_coords[!loc_null]
 
     if (vec_size(new_coords) >= 1L) {
-      message <- paste0(c(message,
-                          "New coordinates, ",
-                          utils::capture.output(utils::str(new_coords))[-1]),
-                        collapse = "\n")
+      message <- paste0(
+        c(
+          message,
+          "New coordinates, ",
+          utils::capture.output(utils::str(new_coords))[-1]
+        ),
+        collapse = "\n"
+      )
     }
 
     if (!vec_is_empty(message)) {
-      message <- paste0(c("Broadcasting,", message),
-                        collapse = "\n")
+      message <- paste0(c("Broadcasting,", message), collapse = "\n")
     }
     message
   }
 }
 
 suppress_warning_broadcast <- function(x) {
-  withCallingHandlers(x,
-                      warning_broadcast = function(w) {
-                        invokeRestart("restart_broadcast")
-                      })
+  withCallingHandlers(x, warning_broadcast = function(w) {
+    invokeRestart("restart_broadcast")
+  })
 }
 
 # Broadcast an array based on the results of `broadcast_dim_names_impl()`.
@@ -228,8 +232,7 @@ broadcast_array <- function(x, brdcst) {
       x
     } else {
       dim(x) <- new_dim
-      exec(`[`, x, !!!loc,
-           drop = FALSE)
+      exec(`[`, x, !!!loc, drop = FALSE)
     }
   }
 }

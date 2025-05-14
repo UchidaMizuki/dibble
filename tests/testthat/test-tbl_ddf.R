@@ -1,39 +1,30 @@
 test_that("as.matrix.tbl_ddf() works", {
-  x <- dibble(x = 1:6,
-              y = 7:12,
-              .dim_names = list(axis1 = letters[1:2],
-                                axis2 = letters[1:3]))
+  x <- dibble(
+    x = 1:6,
+    y = 7:12,
+    .dim_names = list(axis1 = letters[1:2], axis2 = letters[1:3])
+  )
   expect_error(as.matrix(x))
   expect_equal(as.matrix(x[[1]]), matrix(1:6, 2, 3))
 })
 
 test_that("as_tibble.tbl_ddf() works", {
-  dim_names <- list(axis1 = letters[1:2],
-                    axis2 = letters[1:3])
-  x <- dibble(x = 1:6,
-              y = 7:12,
-              .dim_names = dim_names)
+  dim_names <- list(axis1 = letters[1:2], axis2 = letters[1:3])
+  x <- dibble(x = 1:6, y = 7:12, .dim_names = dim_names)
   expect_error(as.table(x))
   expect_s3_class(as.table(x[[1]]), "table")
   expect_equal(dimnames(as.table(x[[1]])), dim_names)
 })
 
 test_that("`dimnames<-.tbl_ddf`() works", {
-  dim_names <- list(axis1 = letters[1:2],
-                    axis2 = letters[1:3])
-  x <- dibble(x = 1:6,
-              y = 7:12,
-              .dim_names = list(axis1 = 1:2,
-                                axis2 = 1:3))
+  dim_names <- list(axis1 = letters[1:2], axis2 = letters[1:3])
+  x <- dibble(x = 1:6, y = 7:12, .dim_names = list(axis1 = 1:2, axis2 = 1:3))
   dimnames(x) <- dim_names
   expect_equal(dimnames(x), dim_names)
 })
 
 test_that("as.data.frame.tbl_ddf() works", {
-  x <- dibble(x = 1:6,
-              y = 7:12,
-              .dim_names = list(axis1 = 1:2,
-                                axis2 = 1:3))
+  x <- dibble(x = 1:6, y = 7:12, .dim_names = list(axis1 = 1:2, axis2 = 1:3))
   y <- expect_s3_class(as.data.frame(x), "data.frame")
 
   y <- y |>
@@ -42,20 +33,17 @@ test_that("as.data.frame.tbl_ddf() works", {
 })
 
 test_that("aperm.tbl_ddf() works", {
-  x <- dibble(x = 1:6,
-              y = 7:12,
-              .dim_names = list(axis1 = 1:2,
-                                axis2 = 1:3))
+  x <- dibble(x = 1:6, y = 7:12, .dim_names = list(axis1 = 1:2, axis2 = 1:3))
   y <- aperm(x)
   expect_equal(y, t(x))
 
   y <- aperm(x, c(2, 1))
   expect_equal(y, t(x))
 
-  x <- dibble(x = 1:24,
-              .dim_names = list(axis1 = 1:2,
-                                axis2 = 1:3,
-                                axis3 = 1:4))
+  x <- dibble(
+    x = 1:24,
+    .dim_names = list(axis1 = 1:2, axis2 = 1:3, axis3 = 1:4)
+  )
   y <- array(1:24, c(2, 3, 4))
   expect_equal(as.array(aperm(x, c(3, 1, 2))), aperm(y, c(3, 1, 2)))
 
@@ -69,11 +57,8 @@ test_that("`wrap_dibble() works", {
   set.seed(1234)
 
   # `!.tbl_ddf`()
-  x <- sample(c(FALSE, TRUE), 6,
-              replace = TRUE)
-  tbl_ddf <- dibble(x = x,
-                    .dim_names = list(axis1 = 1:2,
-                                      axis2 = 1:3))
+  x <- sample(c(FALSE, TRUE), 6, replace = TRUE)
+  tbl_ddf <- dibble(x = x, .dim_names = list(axis1 = 1:2, axis2 = 1:3))
   arr <- array(x, c(2, 3))
 
   expect_equal(!(!tbl_ddf), tbl_ddf[[1]])
@@ -81,9 +66,7 @@ test_that("`wrap_dibble() works", {
 
   # is.finite.tbl_ddf(), is.infinite.tbl_ddf(), is.nan.tbl_ddf(), is.na.tbl_ddf()
   x <- c(1, 2, NA, Inf, -Inf, NaN)
-  tbl_ddf <- dibble(x = x,
-                    .dim_names = list(axis1 = 1:2,
-                                      axis2 = 1:3))
+  tbl_ddf <- dibble(x = x, .dim_names = list(axis1 = 1:2, axis2 = 1:3))
   arr <- array(x, c(2, 3))
 
   expect_equal(as.array(is.finite(tbl_ddf)), is.finite(arr))
@@ -97,18 +80,20 @@ test_that("`wrap_dibble() works", {
 })
 
 test_that("`[.tbl_ddf`() works", {
-  tbl_ddf <- dibble(x = 1:12,
-                    y = 13:24,
-                    .dim_names = list(axis1 = 1:4,
-                                      axis2 = 1:3))
+  tbl_ddf <- dibble(
+    x = 1:12,
+    y = 13:24,
+    .dim_names = list(axis1 = 1:4, axis2 = 1:3)
+  )
   expect_equal(tbl_ddf[1], dibble(x = tbl_ddf[[1]]))
 })
 
 test_that("slice.tbl_ddf() works", {
-  tbl_ddf <- dibble(x = 1:12,
-                    y = 13:24,
-                    .dim_names = list(axis1 = 1:4,
-                                      axis2 = 1:3))
+  tbl_ddf <- dibble(
+    x = 1:12,
+    y = 13:24,
+    .dim_names = list(axis1 = 1:4, axis2 = 1:3)
+  )
   arr_x <- array(1:12, c(4, 3))
   arr_y <- array(13:24, c(4, 3))
 
@@ -117,20 +102,22 @@ test_that("slice.tbl_ddf() works", {
 })
 
 test_that("mutate.tbl_ddf() works", {
-  tbl_ddf <- dibble(x = 1:12,
-                    y = 13:24,
-                    .dim_names = list(axis1 = 1:4,
-                                      axis2 = 1:3)) |>
+  tbl_ddf <- dibble(
+    x = 1:12,
+    y = 13:24,
+    .dim_names = list(axis1 = 1:4, axis2 = 1:3)
+  ) |>
     mutate(z = x + y)
 
   expect_equal(tbl_ddf$z, tbl_ddf$x + tbl_ddf$y)
 })
 
 test_that("select.tbl_ddf() and relocate.tbl_ddf() work", {
-  tbl_ddf <- dibble(x = 1:12,
-                    y = 13:24,
-                    .dim_names = list(axis1 = 1:4,
-                                      axis2 = 1:3))
+  tbl_ddf <- dibble(
+    x = 1:12,
+    y = 13:24,
+    .dim_names = list(axis1 = 1:4, axis2 = 1:3)
+  )
   tbl_ddf_selected <- tbl_ddf |>
     select("axis2", "x")
   tbl_ddf_relocated <- tbl_ddf |>
@@ -148,14 +135,13 @@ test_that("select.tbl_ddf() and relocate.tbl_ddf() work", {
 })
 
 test_that("rename.tbl_ddf() works", {
-  tbl_ddf <- dibble(x = 1:12,
-                    y = 13:24,
-                    .dim_names = list(axis1 = 1:4,
-                                      axis2 = 1:3))
+  tbl_ddf <- dibble(
+    x = 1:12,
+    y = 13:24,
+    .dim_names = list(axis1 = 1:4, axis2 = 1:3)
+  )
   tbl_ddf_renamed <- tbl_ddf |>
-    rename("axis1_2" = "axis1",
-           "axis2_2" = "axis2",
-           "x_2" = "x")
+    rename("axis1_2" = "axis1", "axis2_2" = "axis2", "x_2" = "x")
   expect_equal(names(dimnames(tbl_ddf_renamed)), c("axis1_2", "axis2_2"))
   expect_equal(names(tbl_ddf_renamed), c("x_2", "y"))
 
@@ -165,14 +151,36 @@ test_that("rename.tbl_ddf() works", {
 })
 
 test_that("filter.tbl_ddf() works", {
-  tbl_ddf <- dibble(x = 1:6,
-                    y = 7:12,
-                    .dim_names = list(axis1 = 1:2,
-                                      axis2 = 1:3))
+  tbl_ddf <- dibble(
+    x = 1:6,
+    y = 7:12,
+    .dim_names = list(axis1 = 1:2, axis2 = 1:3)
+  )
   arr <- array(1:6, c(2, 3))
 
   tbl_ddf_filtered <- tbl_ddf |>
     filter(axis1 == 2)
+  expect_equal(as.vector(tbl_ddf_filtered[["x"]]), arr[2, ])
+
+  # .data
+  tbl_ddf_filtered <- tbl_ddf |>
+    filter(.data$axis1 == 2)
+  expect_equal(as.vector(tbl_ddf_filtered[["x"]]), arr[2, ])
+
+  name <- "axis1"
+  tbl_ddf_filtered <- tbl_ddf |>
+    filter(.data[[name]] == 2)
+  expect_equal(as.vector(tbl_ddf_filtered[["x"]]), arr[2, ])
+
+  # .env
+  value <- 2
+  tbl_ddf_filtered <- tbl_ddf |>
+    filter(.data$axis1 == .env$value)
+  expect_equal(as.vector(tbl_ddf_filtered[["x"]]), arr[2, ])
+
+  name <- "value"
+  tbl_ddf_filtered <- tbl_ddf |>
+    filter(.data$axis1 == .env[[name]])
   expect_equal(as.vector(tbl_ddf_filtered[["x"]]), arr[2, ])
 
   # Test that the class is preserved
@@ -181,9 +189,10 @@ test_that("filter.tbl_ddf() works", {
 })
 
 test_that("print.tbl_ddf() works", {
-  tbl_ddf <- dibble(x = 1:6,
-                    y = 7:12,
-                    .dim_names = list(axis1 = 1:2,
-                                      axis2 = 1:3))
+  tbl_ddf <- dibble(
+    x = 1:6,
+    y = 7:12,
+    .dim_names = list(axis1 = 1:2, axis2 = 1:3)
+  )
   expect_output(print(tbl_ddf))
 })

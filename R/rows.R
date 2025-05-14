@@ -1,7 +1,10 @@
-rows_upsert_dibble <- function(type = c("insert", "update", "patch", "upsert"),
-                               x, y,
-                               conflict = c("error", "ignore"),
-                               unmatched = c("error", "ignore")) {
+rows_upsert_dibble <- function(
+  type = c("insert", "update", "patch", "upsert"),
+  x,
+  y,
+  conflict = c("error", "ignore"),
+  unmatched = c("error", "ignore")
+) {
   type <- arg_match(type, c("insert", "update", "patch", "upsert"))
   conflict <- arg_match(conflict, c("error", "ignore"))
   unmatched <- arg_match(unmatched, c("error", "ignore"))
@@ -13,7 +16,10 @@ rows_upsert_dibble <- function(type = c("insert", "update", "patch", "upsert"),
   if (type == "insert") {
     if (conflict == "error") {
       stopifnot(
-        purrr::some(intersect_dim_names(list(dim_names_x, dim_names_y)), vec_is_empty)
+        purrr::some(
+          intersect_dim_names(list(dim_names_x, dim_names_y)),
+          vec_is_empty
+        )
       )
     }
   } else if (type %in% c("update", "patch")) {
@@ -62,18 +68,15 @@ rows_upsert_dibble <- function(type = c("insert", "update", "patch", "upsert"),
   }
 
   if (is_ddf_col_new) {
-    y <- exec(`[`, y, !!!loc_y_in_y,
-              drop = FALSE)
+    y <- exec(`[`, y, !!!loc_y_in_y, drop = FALSE)
 
     if (type == "insert") {
-      x <- exec(`[`, x, !!!loc_x_in_x,
-                drop = FALSE)
+      x <- exec(`[`, x, !!!loc_x_in_x, drop = FALSE)
 
       new <- exec(`[<-`, new, !!!loc_y_in_new, y)
       new <- exec(`[<-`, new, !!!loc_x_in_new, x)
     } else if (type == "patch") {
-      new_in_y <- exec(`[`, new, !!!loc_y_in_new,
-                       drop = FALSE)
+      new_in_y <- exec(`[`, new, !!!loc_y_in_new, drop = FALSE)
 
       loc_na <- is.na(new_in_y)
       new_in_y[loc_na] <- y[loc_na]
@@ -84,18 +87,15 @@ rows_upsert_dibble <- function(type = c("insert", "update", "patch", "upsert"),
     }
   } else {
     for (nm in names(y)) {
-      y_nm <- exec(`[`, y[[nm]], !!!loc_y_in_y,
-                   drop = FALSE)
+      y_nm <- exec(`[`, y[[nm]], !!!loc_y_in_y, drop = FALSE)
 
       if (type == "insert") {
-        x_nm <- exec(`[`, x[[nm]], !!!loc_x_in_x,
-                     drop = FALSE)
+        x_nm <- exec(`[`, x[[nm]], !!!loc_x_in_x, drop = FALSE)
 
         new[[nm]] <- exec(`[<-`, new[[nm]], !!!loc_y_in_new, y_nm)
         new[[nm]] <- exec(`[<-`, new[[nm]], !!!loc_x_in_new, x_nm)
       } else if (type == "patch") {
-        new_in_y <- exec(`[`, new[[nm]], !!!loc_y_in_new,
-                         drop = FALSE)
+        new_in_y <- exec(`[`, new[[nm]], !!!loc_y_in_new, drop = FALSE)
 
         loc_na <- is.na(new_in_y)
         new_in_y[loc_na] <- y_nm[loc_na]
@@ -108,84 +108,114 @@ rows_upsert_dibble <- function(type = c("insert", "update", "patch", "upsert"),
   }
 
   if (is_ddf_col_new) {
-    new_ddf_col(new, new_dim_names,
-                class = class)
+    new_ddf_col(new, new_dim_names, class = class)
   } else {
-    new_tbl_ddf(new, new_dim_names,
-                class = class)
+    new_tbl_ddf(new, new_dim_names, class = class)
   }
 }
 
 #' @importFrom dplyr rows_insert
 #' @export
-rows_insert.ddf_col <- function(x, y,
-                                by = NULL, ...,
-                                conflict = c("error", "ignore"),
-                                copy = FALSE,
-                                in_place = FALSE) {
-  rows_upsert_dibble("insert", x, y,
-                     conflict = conflict)
+rows_insert.ddf_col <- function(
+  x,
+  y,
+  by = NULL,
+  ...,
+  conflict = c("error", "ignore"),
+  copy = FALSE,
+  in_place = FALSE
+) {
+  rows_upsert_dibble("insert", x, y, conflict = conflict)
 }
 
 #' @export
-rows_insert.tbl_ddf <- function(x, y,
-                                by = NULL, ...,
-                                conflict = c("error", "ignore"),
-                                copy = FALSE,
-                                in_place = FALSE) {
-  rows_upsert_dibble("insert", x, y,
-                     conflict = conflict)
+rows_insert.tbl_ddf <- function(
+  x,
+  y,
+  by = NULL,
+  ...,
+  conflict = c("error", "ignore"),
+  copy = FALSE,
+  in_place = FALSE
+) {
+  rows_upsert_dibble("insert", x, y, conflict = conflict)
 }
 
 #' @importFrom dplyr rows_update
 #' @export
-rows_update.ddf_col <- function(x, y, by = NULL, ...,
-                                unmatched = c("error", "ignore"),
-                                copy = FALSE,
-                                in_place = FALSE) {
-  rows_upsert_dibble("update", x, y,
-                     unmatched = unmatched)
+rows_update.ddf_col <- function(
+  x,
+  y,
+  by = NULL,
+  ...,
+  unmatched = c("error", "ignore"),
+  copy = FALSE,
+  in_place = FALSE
+) {
+  rows_upsert_dibble("update", x, y, unmatched = unmatched)
 }
 
 #' @export
-rows_update.tbl_ddf <- function(x, y, by = NULL, ...,
-                                unmatched = c("error", "ignore"),
-                                copy = FALSE,
-                                in_place = FALSE) {
-  rows_upsert_dibble("update", x, y,
-                     unmatched = unmatched)
+rows_update.tbl_ddf <- function(
+  x,
+  y,
+  by = NULL,
+  ...,
+  unmatched = c("error", "ignore"),
+  copy = FALSE,
+  in_place = FALSE
+) {
+  rows_upsert_dibble("update", x, y, unmatched = unmatched)
 }
 
 #' @importFrom dplyr rows_patch
 #' @export
-rows_patch.ddf_col <- function(x, y, by = NULL, ...,
-                               unmatched = c("error", "ignore"),
-                               copy = FALSE,
-                               in_place = FALSE) {
-  rows_upsert_dibble("patch", x, y,
-                     unmatched = unmatched)
+rows_patch.ddf_col <- function(
+  x,
+  y,
+  by = NULL,
+  ...,
+  unmatched = c("error", "ignore"),
+  copy = FALSE,
+  in_place = FALSE
+) {
+  rows_upsert_dibble("patch", x, y, unmatched = unmatched)
 }
 
 #' @export
-rows_patch.tbl_ddf <- function(x, y, by = NULL, ...,
-                               unmatched = c("error", "ignore"),
-                               copy = FALSE,
-                               in_place = FALSE) {
-  rows_upsert_dibble("patch", x, y,
-                     unmatched = unmatched)
+rows_patch.tbl_ddf <- function(
+  x,
+  y,
+  by = NULL,
+  ...,
+  unmatched = c("error", "ignore"),
+  copy = FALSE,
+  in_place = FALSE
+) {
+  rows_upsert_dibble("patch", x, y, unmatched = unmatched)
 }
 
 #' @importFrom dplyr rows_upsert
 #' @export
-rows_upsert.ddf_col <- function(x, y, by = NULL, ...,
-                                copy = FALSE,
-                                in_place = FALSE) {
+rows_upsert.ddf_col <- function(
+  x,
+  y,
+  by = NULL,
+  ...,
+  copy = FALSE,
+  in_place = FALSE
+) {
   rows_upsert_dibble("upsert", x, y)
 }
 
 #' @export
-rows_upsert.tbl_ddf <- function(x, y, by = NULL, ...,
-                                copy = FALSE,
-                                in_place = FALSE) {
+rows_upsert.tbl_ddf <- function(
+  x,
+  y,
+  by = NULL,
+  ...,
+  copy = FALSE,
+  in_place = FALSE
+) {
   rows_upsert_dibble("upsert", x, y)
 }

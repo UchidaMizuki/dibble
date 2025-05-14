@@ -1,13 +1,10 @@
 commas <- function(...) {
-  paste0(...,
-         collapse = ", ")
+  paste0(..., collapse = ", ")
 }
 
 big_mark <- function(x) {
   mark <- if (identical(getOption("OutDec"), ",")) "." else ","
-  formatC(x,
-          big.mark = mark,
-          format = "d")
+  formatC(x, big.mark = mark, format = "d")
 }
 
 wrap_dibble <- function(f) {
@@ -24,9 +21,7 @@ wrap_ddf_col <- function(f, matrix = FALSE) {
   }
 
   function(x, ...) {
-    new_ddf_col(f(as(x), ...),
-                dim_names = dimnames(x),
-                class = class(x))
+    new_ddf_col(f(as(x), ...), dim_names = dimnames(x), class = class(x))
   }
 }
 
@@ -51,11 +46,10 @@ set_diff <- function(x, y) {
 
 all_equal_dim_names <- function(target, current) {
   if (identical(names(target), names(current))) {
-    all(purrr::map2_lgl(target, current,
-                        function(target, current) {
-                          vec_size(target) == vec_size(current) &&
-                            all(vec_equal(target, current, na_equal = TRUE))
-                        }))
+    all(purrr::map2_lgl(target, current, function(target, current) {
+      vec_size(target) == vec_size(current) &&
+        all(vec_equal(target, current, na_equal = TRUE))
+    }))
   } else {
     FALSE
   }
@@ -68,8 +62,7 @@ get_n_print <- function(n, rows) {
   }
   if (is.na(rows) || rows > 20) {
     10
-  }
-  else {
+  } else {
     rows
   }
 }

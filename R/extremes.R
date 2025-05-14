@@ -18,90 +18,78 @@ NULL
 
 #' @rdname extremes
 #' @export
-pmax <- function(...,
-                 na.rm = FALSE) {
+pmax <- function(..., na.rm = FALSE) {
   UseMethod("pmax")
 }
 
 #' @rdname extremes
 #' @export
-pmax.default <- function(...,
-                         na.rm = FALSE) {
-  base::pmax(...,
-             na.rm = na.rm)
+pmax.default <- function(..., na.rm = FALSE) {
+  base::pmax(..., na.rm = na.rm)
 }
 
 #' @rdname extremes
 #' @export
-pmax.ddf_col <- function(...,
-                         na.rm = FALSE) {
-  pmax_dibble(...,
-              na.rm = na.rm)
+pmax.ddf_col <- function(..., na.rm = FALSE) {
+  pmax_dibble(..., na.rm = na.rm)
 }
 
 #' @rdname extremes
 #' @export
-pmax.tbl_ddf <- function(...,
-                         na.rm = FALSE) {
-  pmax_dibble(...,
-              na.rm = na.rm)
+pmax.tbl_ddf <- function(..., na.rm = FALSE) {
+  pmax_dibble(..., na.rm = na.rm)
 }
 
 pmax_dibble <- function(..., na.rm) {
   args <- list2(...)
   class <- class(args[[1]])
   dim_names <- union_dim_names(purrr::map(args, dimnames))
-  args <- purrr::modify(args,
-                        function(x) {
-                          as.array(broadcast(x, dim_names))
-                        })
+  args <- purrr::modify(args, function(x) {
+    as.array(broadcast(x, dim_names))
+  })
 
-  new_ddf_col(exec(base::pmax, !!!args, na.rm = na.rm),
-              dim_names,
-              class = setdiff(class, "tbl_ddf"))
+  new_ddf_col(
+    exec(base::pmax, !!!args, na.rm = na.rm),
+    dim_names,
+    class = setdiff(class, "tbl_ddf")
+  )
 }
 
 #' @rdname extremes
 #' @export
-pmin <- function(...,
-                 na.rm = FALSE) {
+pmin <- function(..., na.rm = FALSE) {
   UseMethod("pmin")
 }
 
 #' @rdname extremes
 #' @export
-pmin.default <- function(...,
-                         na.rm = FALSE) {
-  base::pmin(...,
-             na.rm = na.rm)
+pmin.default <- function(..., na.rm = FALSE) {
+  base::pmin(..., na.rm = na.rm)
 }
 
 #' @rdname extremes
 #' @export
-pmin.ddf_col <- function(...,
-                         na.rm = FALSE) {
-  pmin_dibble(...,
-              na.rm = na.rm)
+pmin.ddf_col <- function(..., na.rm = FALSE) {
+  pmin_dibble(..., na.rm = na.rm)
 }
 
 #' @rdname extremes
 #' @export
-pmin.tbl_ddf <- function(...,
-                         na.rm = FALSE) {
-  pmin_dibble(...,
-              na.rm = na.rm)
+pmin.tbl_ddf <- function(..., na.rm = FALSE) {
+  pmin_dibble(..., na.rm = na.rm)
 }
 
 pmin_dibble <- function(..., na.rm) {
   args <- list2(...)
   class <- class(args[[1]])
   dim_names <- union_dim_names(purrr::map(args, dimnames))
-  args <- purrr::modify(args,
-                        function(x) {
-                          as.array(broadcast(x, dim_names))
-                        })
+  args <- purrr::modify(args, function(x) {
+    as.array(broadcast(x, dim_names))
+  })
 
-  new_ddf_col(exec(base::pmin, !!!args, na.rm = na.rm),
-              dim_names,
-              class = setdiff(class, "tbl_ddf"))
+  new_ddf_col(
+    exec(base::pmin, !!!args, na.rm = na.rm),
+    dim_names,
+    class = setdiff(class, "tbl_ddf")
+  )
 }

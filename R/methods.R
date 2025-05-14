@@ -36,8 +36,7 @@ Ops_dibble <- function(e1, e2) {
     }
   }
 
-  new_ddf_col(NextMethod(), new_dim_names,
-              class = class)
+  new_ddf_col(NextMethod(), new_dim_names, class = class)
 }
 
 matrixOps_dibble <- function(e1, e2) {
@@ -51,7 +50,10 @@ matrixOps_dibble <- function(e1, e2) {
   size_dim_names_e1 <- vec_size(dim_names_e1)
   size_dim_names_e2 <- vec_size(dim_names_e2)
 
-  new_dim_name <- union_dim_names(list(dim_names_e1[size_dim_names_e1], dim_names_e2[1]))
+  new_dim_name <- union_dim_names(list(
+    dim_names_e1[size_dim_names_e1],
+    dim_names_e2[1]
+  ))
   dim_names_e1[size_dim_names_e1] <- new_dim_name
   dim_names_e2[1] <- new_dim_name
 
@@ -82,8 +84,7 @@ matrixOps_dibble <- function(e1, e2) {
     as.vector(out)
   } else {
     dim(out) <- list_sizes_unnamed(new_dim_names)
-    new_ddf_col(out, new_dim_names,
-                class = class)
+    new_ddf_col(out, new_dim_names, class = class)
   }
 }
 
