@@ -45,7 +45,7 @@ arr1 <- array(1:6, c(2, 3), list(axis1 = letters[1:2], axis2 = letters[1:3]))
 arr2 <- array(1:2, 2, list(axis2 = letters[1:2]))
 
 try(arr1 * arr2)
-#> Error in arr1 * arr2 : 適切な配列ではありません
+#> Error in arr1 * arr2 : non-conformable arrays
 
 ddf1 <- as_dibble(arr1)
 ddf2 <- as_dibble(arr2)
