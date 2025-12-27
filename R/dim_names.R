@@ -39,7 +39,7 @@ as_dim_names <- function(x, dim_names) {
   dim_names <- dim_names[vec_match(new_axes, old_axes)]
 
   x <- purrr::map2(x, dim_names, function(x, dim_name) {
-    x <- x %||% unique(dim_name)
+    x <- x %||% vctrs::vec_unique(dim_name)
     stopifnot(
       !is.null(x)
     )
@@ -56,9 +56,14 @@ is_dim_names <- function(x) {
 union_dim_names <- function(x) {
   x <- list_unchop(x)
   nms <- names(x)
-  nms_unique <- unique(nms)
+  nms_unique <- if (is.null(nms)) {
+    NULL
+  } else {
+    vctrs::vec_unique(nms)
+  }
+
   out <- purrr::map(nms_unique, function(nm_unique) {
-    unique(list_unchop(unname(x[nms == nm_unique])))
+    vctrs::vec_unique(list_unchop(unname(x[nms == nm_unique])))
   })
   names(out) <- nms_unique
   out
