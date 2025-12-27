@@ -1,3 +1,8 @@
+# dibble 0.3.2
+
+* Support `.data` and `.env` pronouns in `filter()` (#30).
+* Replace `unique()` with `vctrs::vec_unique()` for speed improvement.
+
 # dibble 0.3.1
 
 * Updated R version dependency to 4.3 to use matrixOps.
