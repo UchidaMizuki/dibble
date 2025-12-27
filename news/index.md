@@ -1,5 +1,14 @@
 # Changelog
 
+## dibble 0.3.2
+
+- Support `.data` and `.env` pronouns in
+  [`filter()`](https://dplyr.tidyverse.org/reference/filter.html)
+  ([\#30](https://github.com/UchidaMizuki/dibble/issues/30)).
+- Replace [`unique()`](https://rdrr.io/r/base/unique.html) with
+  [`vctrs::vec_unique()`](https://vctrs.r-lib.org/reference/vec_unique.html)
+  for speed improvement.
+
 ## dibble 0.3.1
 
 CRAN release: 2025-02-06
