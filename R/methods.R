@@ -50,6 +50,9 @@ matrixOps_dibble <- function(e1, e2) {
   size_dim_names_e1 <- vec_size(dim_names_e1)
   size_dim_names_e2 <- vec_size(dim_names_e2)
 
+  if (names(dim_names_e1[size_dim_names_e1]) != names(dim_names_e2[1])) {
+    abort("Names of the inner dimensions must match for matrix operations.")
+  }
   new_dim_name <- union_dim_names(list(
     dim_names_e1[size_dim_names_e1],
     dim_names_e2[1]

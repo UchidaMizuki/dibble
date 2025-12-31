@@ -14,6 +14,10 @@ test_that("`%*%`() works", {
   expect_equal(as.matrix(rev_axis(ddf_x, 2) %*% ddf_y), unname(mat_x %*% mat_y))
   expect_equal(as.matrix(ddf_x %*% rev_axis(ddf_y, 1)), unname(mat_x %*% mat_y))
 
+  ddf_x_wrong_names <- ddf_x
+  names(dimnames(ddf_x_wrong_names))[[2]] <- "wrong_axis2"
+  expect_error(ddf_x_wrong_names %*% ddf_y)
+
   ddf_x <- dibble(x = ddf_x)
   ddf_y <- dibble(x = ddf_y)
   expect_equal(as.matrix(ddf_x %*% ddf_y), unname(mat_x %*% mat_y))
