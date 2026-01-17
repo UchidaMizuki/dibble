@@ -7,7 +7,7 @@
 ## Citation
 
 Source:
-[`DESCRIPTION`](https://github.com/UchidaMizuki/dibble/blob/main/DESCRIPTION)
+[`DESCRIPTION`](https://github.com/UchidaMizuki/dibble/blob/v0.3.2/DESCRIPTION)
 
 Uchida M (2026). *dibble: Dimensional Data Frames*. R package version
 0.3.2, <https://github.com/UchidaMizuki/dibble>.
