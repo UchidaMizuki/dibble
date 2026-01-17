@@ -2,6 +2,8 @@
 
 ## dibble 0.3.2
 
+CRAN release: 2026-01-16
+
 - Support `.data` and `.env` pronouns in
   [`filter()`](https://dplyr.tidyverse.org/reference/filter.html)
   ([\#30](https://github.com/UchidaMizuki/dibble/issues/30)).
